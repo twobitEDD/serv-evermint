@@ -4,6 +4,7 @@ KEY="dev0"
 CHAINID="evermint_80808-1"
 MONIKER="mymoniker"
 BINARY="./evmd"
+MIN_DENOM="wei"
 DATA_DIR=$(mktemp -d -t evermint-datadir.XXXXX)
 
 echo "create and add new keys"
@@ -12,7 +13,7 @@ echo "init node with moniker=$MONIKER and chain-id=$CHAINID"
 "$BINARY" init $MONIKER --chain-id $CHAINID --home $DATA_DIR
 echo "prepare genesis: Allocate genesis accounts"
 "$BINARY" add-genesis-account \
-  "$("$BINARY" keys show $KEY -a --home $DATA_DIR --keyring-backend test)" 1000000000000000000wei,1000000000000000000stake \
+  "$("$BINARY" keys show $KEY -a --home $DATA_DIR --keyring-backend test)" "1000000000000000000$MIN_DENOM,1000000000000000000stake" \
   --home $DATA_DIR --keyring-backend test
 echo "prepare genesis: Sign genesis transaction"
 "$BINARY" gentx $KEY 1000000000000000000stake --keyring-backend test --home $DATA_DIR --keyring-backend test --chain-id $CHAINID

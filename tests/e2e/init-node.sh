@@ -5,6 +5,7 @@ CHAINID="${CHAIN_ID:-evermint_80808-1}"
 MONIKER="localtestnet"
 KEYRING="test" # remember to change to other types of keyring like 'file' in-case exposing to outside world, otherwise your balance will be wiped quickly. The keyring test does not require private key to steal tokens from you
 BINARY="evmd"
+MIN_DENOM="wei"
 KEYALGO="eth_secp256k1" #gitleaks:allow
 LOGLEVEL="info"
 # to trace evm
@@ -35,12 +36,12 @@ set -e
 # Set moniker for this node
 "$BINARY" init "$MONIKER" --chain-id "$CHAINID"
 
-# Change parameter token denominations to wei
-jq '.app_state.staking.params.bond_denom="wei"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.crisis.constant_fee.denom="wei"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.gov.deposit_params.min_deposit[0].denom="wei"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.evm.params.evm_denom="wei"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.inflation.params.mint_denom="wei"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+# Change parameter token denominations
+jq '.app_state.staking.params.bond_denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.crisis.constant_fee.denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.gov.deposit_params.min_deposit[0].denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.evm.params.evm_denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.inflation.params.mint_denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # set gov proposing && voting period
 jq '.app_state.gov.deposit_params.max_deposit_period="30s"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
@@ -64,13 +65,13 @@ jq '.app_state.claims.params.duration_until_decay="100000s"' "$GENESIS" > "$TMP_
 
 # Claim module account:
 # 0xA61808Fe40fEb8B3433778BBC2ecECCAA47c8c47 || evm15cvq3ljql6utxseh0zau9m8ve2j8erz80qzkas
-jq -r --arg amount_to_claim "$amount_to_claim" '.app_state.bank.balances += [{"address":"evm15cvq3ljql6utxseh0zau9m8ve2j8erz80qzkas","coins":[{"denom":"wei", "amount":$amount_to_claim}]}]' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq -r --arg amount_to_claim "$amount_to_claim" '.app_state.bank.balances += [{"address":"evm15cvq3ljql6utxseh0zau9m8ve2j8erz80qzkas","coins":[{"denom":"'$MIN_DENOM'", "amount":$amount_to_claim}]}]' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # disable produce empty block
 sed -i 's/create_empty_blocks = true/create_empty_blocks = false/g' "$CONFIG_TOML"
 
 # Allocate genesis accounts (cosmos formatted addresses)
-"$BINARY" add-genesis-account $KEY 100000000000000000000000000wei --keyring-backend $KEYRING
+"$BINARY" add-genesis-account $KEY "100000000000000000000000000$MIN_DENOM" --keyring-backend $KEYRING
 
 # Update total supply with claim values
 # Bc is required to add this big numbers
@@ -90,7 +91,7 @@ sed -i 's/pprof_laddr = "localhost:6060"/pprof_laddr = "0.0.0.0:6060"/g' "$CONFI
 sed -i 's/127.0.0.1/0.0.0.0/g' "$APP_TOML"
 
 # Sign genesis transaction
-"$BINARY" gentx $KEY 1000000000000000000000wei --keyring-backend $KEYRING --chain-id "$CHAINID"
+"$BINARY" gentx $KEY "1000000000000000000000$MIN_DENOM" --keyring-backend $KEYRING --chain-id "$CHAINID"
 ## In case you want to create multiple validators at genesis
 ## 1. Back to `"$BINARY" keys add` step, init more keys
 ## 2. Back to `"$BINARY" add-genesis-account` step, add balance for those
@@ -105,4 +106,4 @@ sed -i 's/127.0.0.1/0.0.0.0/g' "$APP_TOML"
 "$BINARY" validate-genesis
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-"$BINARY" start "$TRACE" --log_level $LOGLEVEL --minimum-gas-prices=0.0001wei --json-rpc.api eth,txpool,personal,net,debug,web3
+"$BINARY" start "$TRACE" --log_level $LOGLEVEL "--minimum-gas-prices=0.0001$MIN_DENOM" --json-rpc.api eth,txpool,personal,net,debug,web3

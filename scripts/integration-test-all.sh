@@ -20,6 +20,7 @@ KEY="dev0"
 CHAINID="evermint_80808-1"
 MONIKER="mymoniker"
 BINARY="evmd"
+MIN_DENOM="wei"
 
 ## default port prefixes for node
 NODE_P2P_PORT="2660"
@@ -71,7 +72,7 @@ init_func() {
     "$PWD"/build/"$BINARY" keys add $KEY"$i" --keyring-backend test --home "$DATA_DIR$i" --no-backup --algo "eth_secp256k1"
     "$PWD"/build/"$BINARY" init $MONIKER --chain-id $CHAINID --home "$DATA_DIR$i"
     "$PWD"/build/"$BINARY" add-genesis-account \
-    "$("$PWD"/build/"$BINARY" keys show "$KEY$i" --keyring-backend test -a --home "$DATA_DIR$i")" 1000000000000000000wei,1000000000000000000stake \
+    "$("$PWD"/build/"$BINARY" keys show "$KEY$i" --keyring-backend test -a --home "$DATA_DIR$i")" "1000000000000000000$MIN_DENOM,1000000000000000000stake" \
     --keyring-backend test --home "$DATA_DIR$i"
     "$PWD"/build/"$BINARY" gentx "$KEY$i" 1000000000000000000stake --chain-id $CHAINID --keyring-backend test --home "$DATA_DIR$i"
     "$PWD"/build/"$BINARY" collect-gentxs --home "$DATA_DIR$i"

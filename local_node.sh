@@ -6,6 +6,7 @@ KEYS[2]="dev2"
 CHAINID="evermint_70707-1" # devnet
 MONIKER="localtestnet"
 BINARY="evmd"
+MIN_DENOM="wei"
 # Remember to change to other types of keyring like 'file' in-case exposing to outside world,
 # otherwise your balance will be wiped quickly
 # The keyring test does not require private key to steal tokens from you
@@ -63,12 +64,12 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 	# Set moniker for the node
 	"$BINARY" init $MONIKER -o --chain-id $CHAINID --home "$HOMEDIR"
 
-	# Change parameter token denominations to wei
-	jq '.app_state["staking"]["params"]["bond_denom"]="wei"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-	jq '.app_state["crisis"]["constant_fee"]["denom"]="wei"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-	jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="wei"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-	jq '.app_state["evm"]["params"]["evm_denom"]="wei"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-	jq '.app_state["inflation"]["params"]["mint_denom"]="wei"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+	# Change parameter token denominations to native coin base denom
+	jq '.app_state["staking"]["params"]["bond_denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+	jq '.app_state["crisis"]["constant_fee"]["denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+	jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+	jq '.app_state["evm"]["params"]["evm_denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+	jq '.app_state["inflation"]["params"]["mint_denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 	# Set gas limit in genesis
 	jq '.consensus_params["block"]["max_gas"]="10000000"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
@@ -89,7 +90,7 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 
 	# Claim module account:
 	# 0xA61808Fe40fEb8B3433778BBC2ecECCAA47c8c47 || evm15cvq3ljql6utxseh0zau9m8ve2j8erz80qzkas
-	jq -r --arg amount_to_claim "$amount_to_claim" '.app_state["bank"]["balances"] += [{"address":"evm15cvq3ljql6utxseh0zau9m8ve2j8erz80qzkas","coins":[{"denom":"wei", "amount":$amount_to_claim}]}]' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+	jq -r --arg amount_to_claim "$amount_to_claim" '.app_state["bank"]["balances"] += [{"address":"evm15cvq3ljql6utxseh0zau9m8ve2j8erz80qzkas","coins":[{"denom":"'$MIN_DENOM'", "amount":$amount_to_claim}]}]' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 	if [[ $1 == "pending" ]]; then
 		if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -135,7 +136,7 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 
 	# Allocate genesis accounts (cosmos formatted addresses)
 	for KEY in "${KEYS[@]}"; do
-		"$BINARY" add-genesis-account "$KEY" 100000000000000000000000000wei --keyring-backend $KEYRING --home "$HOMEDIR"
+		"$BINARY" add-genesis-account "$KEY" "100000000000000000000000000$MIN_DENOM" --keyring-backend $KEYRING --home "$HOMEDIR"
 	done
 
 	# bc is required to add these big numbers
@@ -143,7 +144,7 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 	jq -r --arg total_supply "$total_supply" '.app_state["bank"]["supply"][0]["amount"]=$total_supply' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 	# Sign genesis transaction
-	"$BINARY" gentx "${KEYS[0]}" 1000000000000000000000wei --keyring-backend $KEYRING --chain-id $CHAINID --home "$HOMEDIR"
+	"$BINARY" gentx "${KEYS[0]}" "1000000000000000000000$MIN_DENOM" --keyring-backend $KEYRING --chain-id $CHAINID --home "$HOMEDIR"
 	## In case you want to create multiple validators at genesis
 	## 1. Back to `"$BINARY" keys add` step, init more keys
 	## 2. Back to `"$BINARY" add-genesis-account` step, add balance for those
@@ -163,4 +164,4 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 fi
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-"$BINARY" start --metrics "$TRACE" --log_level $LOGLEVEL --minimum-gas-prices=0.0001wei --json-rpc.api eth,txpool,personal,net,debug,web3 --api.enable --home "$HOMEDIR"
+"$BINARY" start --metrics "$TRACE" --log_level $LOGLEVEL --minimum-gas-prices="0.0001$MIN_DENOM" --json-rpc.api eth,txpool,personal,net,debug,web3 --api.enable --home "$HOMEDIR"
