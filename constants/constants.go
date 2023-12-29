@@ -9,13 +9,13 @@ import (
 // App
 
 const (
-	ApplicationName = "evermint"
+	ApplicationName = "nevermind"
 
-	ApplicationBinaryName = "evmd"
+	ApplicationBinaryName = "nvmd"
 
-	ApplicationHome = ".evermint"
+	ApplicationHome = ".nevermind"
 
-	GitHubRepo = "https://github.com/EscanBE/evermint" // must be well-formed url pattern: "https://github.com/owner/repo"
+	GitHubRepo = "https://github.com/VictorTrustyDev/nevermind" // must be well-formed url pattern: "https://github.com/owner/repo"
 )
 
 // Denom
@@ -31,11 +31,11 @@ const (
 	//
 	// During code, we will use the term 'native coin' for this denomination
 	// so other developers can take advantage of renaming constants when forking this project.
-	BaseDenom = "wei"
+	BaseDenom = "uever"
 
-	DisplayDenom = "ether"
+	DisplayDenom = "ever"
 
-	SymbolDenom = "ETH"
+	SymbolDenom = "EVER"
 
 	BaseDenomExponent = 18
 )
@@ -44,7 +44,7 @@ const (
 
 const (
 	// Bech32Prefix is the HRP (human-readable part) of the Bech32 encoded address of this chain
-	Bech32Prefix = "evm"
+	Bech32Prefix = "ever"
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = Bech32Prefix
@@ -69,11 +69,11 @@ const (
 
 const (
 	// MainnetChainID defines the Cosmos-style EIP155 chain ID for mainnet
-	MainnetChainID = "evermint_90909"
+	MainnetChainID = "nevermind_123456"
 	// TestnetChainID defines the Cosmos-style EIP155 chain ID for testnet
-	TestnetChainID = "evermint_80808"
+	TestnetChainID = "nevermind_1234"
 	// DevnetChainID defines the Cosmos-style EIP155 chain ID for devnet
-	DevnetChainID = "evermint_70707"
+	DevnetChainID = "nevermind_12"
 
 	MainnetFullChainId = MainnetChainID + "-1"
 	TestnetFullChainId = TestnetChainID + "-1"
