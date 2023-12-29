@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+	"github.com/EscanBE/evermint/v12/constants"
 	"math/big"
 	"strings"
 	"testing"
@@ -16,7 +18,7 @@ func TestParseChainID(t *testing.T) {
 		expInt   *big.Int
 	}{
 		{
-			"valid chain-id, single digit", "evermint_1-1", false, big.NewInt(1),
+			"valid chain-id, single digit", fmt.Sprintf("%s_1-1", constants.ChainIdPrefix), false, big.NewInt(1),
 		},
 		{
 			"valid chain-id, multiple digits", "aragonchain_256-1", false, big.NewInt(256),
@@ -46,16 +48,16 @@ func TestParseChainID(t *testing.T) {
 			"invalid chain-id, special chars", "$&*#!_1-1", true, nil,
 		},
 		{
-			"invalid eip155 chain-id, cannot start with 0", "evermint_001-1", true, nil,
+			"invalid eip155 chain-id, cannot start with 0", fmt.Sprintf("%s_001-1", constants.ChainIdPrefix), true, nil,
 		},
 		{
-			"invalid eip155 chain-id, cannot invalid base", "evermint_0x212-1", true, nil,
+			"invalid eip155 chain-id, cannot invalid base", fmt.Sprintf("%s_0x212-1", constants.ChainIdPrefix), true, nil,
 		},
 		{
-			"invalid eip155 chain-id, non-integer", "evm-evermint_80808-1", true, nil,
+			"invalid eip155 chain-id, non-integer", fmt.Sprintf("evm-%s_80808-1", constants.ChainIdPrefix), true, nil,
 		},
 		{
-			"invalid epoch, undefined", "evermint_-", true, nil,
+			"invalid epoch, undefined", fmt.Sprintf("%s_-", constants.ChainIdPrefix), true, nil,
 		},
 		{
 			"blank chain ID", " ", true, nil,
@@ -67,7 +69,7 @@ func TestParseChainID(t *testing.T) {
 			"empty content for chain id, eip155 and epoch numbers", "_-", true, nil,
 		},
 		{
-			"long chain-id", "evermint_" + strings.Repeat("1", 45) + "-1", true, nil,
+			"long chain-id", constants.ChainIdPrefix + "_" + strings.Repeat("1", 45) + "-1", true, nil,
 		},
 	}
 

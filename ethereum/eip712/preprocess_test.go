@@ -3,6 +3,7 @@ package eip712_test
 import (
 	"encoding/hex"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"strings"
 	"testing"
 
@@ -30,7 +31,7 @@ var (
 		encoding.MakeConfig(app.ModuleBasics).TxConfig,
 	)
 )
-var feePayerAddress = "evm17xpfvakm2amg962yls6f84z3kell8c5lcryk68"
+var feePayerAddress = marker.ReplaceAbleAddress("evm17xpfvakm2amg962yls6f84z3kell8c5lcryk68")
 
 type TestCaseStruct struct {
 	txBuilder              client.TxBuilder
@@ -202,7 +203,7 @@ func createPopulatedTestCase(t *testing.T) TestCaseStruct {
 
 	msgSend := banktypes.MsgSend{
 		FromAddress: feePayerAddress,
-		ToAddress:   "evm12luku6uxehhak02py4rcz65zu0swh7wj08n0z0",
+		ToAddress:   marker.ReplaceAbleWithBadChecksum("evm12luku6uxehhak02py4rcz65zu0swh7wj08n0z0"),
 		Amount: sdk.NewCoins(
 			sdk.NewCoin(
 				constants.BaseDenom,

@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"math"
 	"strings"
 	"time"
@@ -219,7 +220,7 @@ func delegate(clawbackAccount *types.ClawbackVestingAccount, amount sdkmath.Int)
 	addr, err := sdk.AccAddressFromBech32(clawbackAccount.Address)
 	s.Require().NoError(err)
 
-	val, err := sdk.ValAddressFromBech32("evmvaloper1z3t55m0l9h0eupuz3dp5t5cypyv674jjjtazjl")
+	val, err := sdk.ValAddressFromBech32(marker.ReplaceAbleAddress("evmvaloper1z3t55m0l9h0eupuz3dp5t5cypyv674jjjtazjl"))
 	s.Require().NoError(err)
 	delegateMsg := stakingtypes.NewMsgDelegate(addr, val, sdk.NewCoin(constants.BaseDenom, amount))
 

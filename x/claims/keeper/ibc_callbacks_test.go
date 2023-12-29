@@ -4,6 +4,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
@@ -68,12 +69,12 @@ func (suite *KeeperTestSuite) TestAckknowledgementPacket() {
 		{
 			"error - no escrowed funds",
 			func() {
-				addr, err := sdk.AccAddressFromBech32("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7")
+				addr, err := sdk.AccAddressFromBech32(marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"))
 				suite.Require().NoError(err)
 
 				mockpacket.Data = transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
-						Sender:   "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Sender:   marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Receiver: "cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
 					},
 				)
@@ -89,12 +90,12 @@ func (suite *KeeperTestSuite) TestAckknowledgementPacket() {
 			func() {
 				suite.SetupTestWithEscrow()
 
-				addr, err := sdk.AccAddressFromBech32("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7")
+				addr, err := sdk.AccAddressFromBech32(marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"))
 				suite.Require().NoError(err)
 
 				mockpacket.Data = transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
-						Sender:   "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Sender:   marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Receiver: "cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
 					},
 				)
@@ -111,12 +112,12 @@ func (suite *KeeperTestSuite) TestAckknowledgementPacket() {
 			func() {
 				suite.SetupTestWithEscrow()
 
-				addr, err := sdk.AccAddressFromBech32("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7")
+				addr, err := sdk.AccAddressFromBech32(marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"))
 				suite.Require().NoError(err)
 
 				mockpacket.Data = transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
-						Sender:   "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Sender:   marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Receiver: "cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
 					},
 				)
@@ -151,8 +152,8 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 	secpAddr := sdk.AccAddress(pk.PubKey().Address())
 	secpAddrEvermint := secpAddr.String()
 	secpAddrCosmos := sdk.MustBech32ifyAddressBytes(sdk.Bech32MainPrefix, secpAddr)
-	senderStr := "evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz"
-	receiverStr := "evm1hf0468jjpe6m6vx38s97z2qqe8ldu0nj8llzpx"
+	senderStr := marker.ReplaceAbleAddress("evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz")
+	receiverStr := marker.ReplaceAbleAddress("evm1hf0468jjpe6m6vx38s97z2qqe8ldu0nj8llzpx")
 	sender, err := sdk.AccAddressFromBech32(senderStr)
 	suite.Require().NoError(err)
 	receiver, err := sdk.AccAddressFromBech32(receiverStr)

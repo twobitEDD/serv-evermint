@@ -109,7 +109,7 @@ func DefaultConfig() Config {
 		AppConstructor:    NewAppConstructor(encCfg),
 		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Codec),
 		TimeoutCommit:     3 * time.Second,
-		ChainID:           fmt.Sprintf("evermint_%d-1", tmrand.Int63n(9999999999999)+1),
+		ChainID:           fmt.Sprintf("%s_%d-1", constants.ChainIdPrefix, tmrand.Int63n(9999999999999)+1),
 		NumValidators:     4,
 		BondDenom:         constants.BaseDenom,
 		MinGasPrices:      fmt.Sprintf("0.000006%s", constants.BaseDenom),

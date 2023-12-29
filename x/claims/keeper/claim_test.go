@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"time"
 
 	"cosmossdk.io/math"
@@ -1053,7 +1054,7 @@ func (suite *KeeperTestSuite) TestClawbackEmptyAccountsAirdrop() {
 	}{
 		{
 			name:           "address active",
-			address:        "evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z",
+			address:        marker.ReplaceAbleAddress("evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z"),
 			sequence:       1,
 			expectClawback: false,
 			claimsRecord: types.ClaimsRecord{
@@ -1063,7 +1064,7 @@ func (suite *KeeperTestSuite) TestClawbackEmptyAccountsAirdrop() {
 		},
 		{
 			name:           "address inactive",
-			address:        "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+			address:        marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 			sequence:       0,
 			expectClawback: true,
 			claimsRecord: types.ClaimsRecord{

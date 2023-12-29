@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"math/big"
 
 	"github.com/EscanBE/evermint/v12/x/erc20/keeper"
@@ -395,7 +396,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 }
 
 func (suite *KeeperTestSuite) TestConvertCoinToERC20FromPacket() {
-	senderAddr := "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"
+	senderAddr := marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7")
 
 	testCases := []struct {
 		name     string
@@ -614,7 +615,7 @@ func (suite *KeeperTestSuite) TestOnAcknowledgementPacket() {
 }
 
 func (suite *KeeperTestSuite) TestOnTimeoutPacket() {
-	senderAddr := "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"
+	senderAddr := marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7")
 
 	testCases := []struct {
 		name     string

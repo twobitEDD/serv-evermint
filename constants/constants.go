@@ -68,18 +68,20 @@ const (
 // Chain ID
 
 const (
+	ChainIdPrefix = "nevermind"
+
 	// MainnetChainID defines the Cosmos-style EIP155 chain ID for mainnet
-	MainnetChainID = "nevermind_123456"
+	MainnetChainID = ChainIdPrefix + "_123567"
 	// TestnetChainID defines the Cosmos-style EIP155 chain ID for testnet
-	TestnetChainID = "nevermind_1234"
+	TestnetChainID = ChainIdPrefix + "_5678"
 	// DevnetChainID defines the Cosmos-style EIP155 chain ID for devnet
-	DevnetChainID = "nevermind_12"
+	DevnetChainID = ChainIdPrefix + "_1234"
 
 	MainnetFullChainId = MainnetChainID + "-1"
 	TestnetFullChainId = TestnetChainID + "-1"
 	DevnetFullChainId  = DevnetChainID + "-1"
 
-	MainnetEIP155ChainId = 90909
-	TestnetEIP155ChainId = 80808
-	DevnetEIP155ChainId  = 70707
+	MainnetEIP155ChainId = 123567
+	TestnetEIP155ChainId = 5678
+	DevnetEIP155ChainId  = 1234
 )

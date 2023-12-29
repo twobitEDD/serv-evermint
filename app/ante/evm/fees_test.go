@@ -1,6 +1,7 @@
 package evm_test
 
 import (
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"math/big"
 
 	sdkmath "cosmossdk.io/math"
@@ -55,8 +56,8 @@ func (suite *AnteTestSuite) TestEthMinGasPriceDecorator() {
 				err := suite.app.FeeMarketKeeper.SetParams(suite.ctx, params)
 				suite.Require().NoError(err)
 				testMsg := banktypes.MsgSend{
-					FromAddress: "evm1x8fhpj9nmhqk8z9kpgjt95ck2xwyue0ppeqynn",
-					ToAddress:   "evm1dx67l23hz9l0k9hcher8xz04uj7wf3yuqpfj0p",
+					FromAddress: marker.ReplaceAbleAddress("evm1x8fhpj9nmhqk8z9kpgjt95ck2xwyue0ppeqynn"),
+					ToAddress:   marker.ReplaceAbleAddress("evm1dx67l23hz9l0k9hcher8xz04uj7wf3yuqpfj0p"),
 					Amount:      sdk.Coins{sdk.Coin{Amount: sdkmath.NewInt(10), Denom: denom}},
 				}
 				txBuilder := suite.CreateTestCosmosTxBuilder(sdkmath.NewInt(0), denom, &testMsg)

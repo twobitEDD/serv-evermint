@@ -122,6 +122,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		pruning.PruningCmd(a.newApp),
 		NewConvertAddressCmd(),
 	}
+
+	// End of command rename chain
+
 	rootCmd.AddCommand(commands...)
 
 	appserver.AddCommands(

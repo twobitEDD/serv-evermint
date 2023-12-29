@@ -16,7 +16,13 @@ parent:
   </a>
 </div>
 
-#### Evermint is a fork of open source Evmos v12.1.6, maintained by Escan team for the purpose of blockchain developers can easily create their own EVM-enabled blockchain network in one minute.
+### Create your own fully customized EVM-enabled blockchain network in just 2 steps
+
+[> Quick rename](https://github.com/EscanBE/evermint/blob/main/RENAME_CHAIN.md)
+
+### About Evermint
+
+Evermint is a fork of open source Evmos v12.1.6, maintained by Escan team with bug fixes, customization and enable developers to fork to own chain, fully customized, in just 2 steps.
 
 ### About Evmos
 
@@ -32,25 +38,16 @@ Head over there and check it out.
 
 **Note**: Requires [Go 1.20+](https://golang.org/dl/)
 
-## Installation
-
-For prerequisites and detailed build instructions
-please read the [Installation](https://docs.evmos.org/protocol/evmos-cli) instructions.
-Once the dependencies are installed, run:
-
-```bash
-make install
-```
-
 ## Quick Start
 
 To learn how the Evmos works from a high-level perspective,
 go to the [Protocol Overview](https://docs.evmos.org/protocol) section from the documentation.
 You can also check the instructions to [Run a Node](https://docs.evmos.org/protocol/evmos-cli#run-an-evmos-node).
 
-#### Additional feature provided:
+### Additional feature provided by Evermint:
 1. Command convert between 0x address and bech32 address, or any custom bech32 HRP
 ```bash
 evmd convert-address evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz evmos
 # alias: "ca"
 ```
+2. [Rename chain](https://github.com/EscanBE/evermint/blob/main/RENAME_CHAIN.md)

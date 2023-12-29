@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -101,20 +102,20 @@ func TestGetNativeAddressFromBech32(t *testing.T) {
 		},
 		{
 			"native address",
-			"evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z",
-			"evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z",
+			marker.ReplaceAbleAddress("evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z"),
+			marker.ReplaceAbleAddress("evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z"),
 			false,
 		},
 		{
 			"cosmos address",
 			"cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
-			"evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z",
+			marker.ReplaceAbleAddress("evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z"),
 			false,
 		},
 		{
 			"osmosis address",
 			"osmo1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhnecd2",
-			"evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z",
+			marker.ReplaceAbleAddress("evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z"),
 			false,
 		},
 	}

@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -110,8 +111,8 @@ func TestIBCTestingSuite(t *testing.T) {
 }
 
 func (suite *IBCTestingSuite) TestOnAcknowledgementPacketIBC() {
-	sender := "evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz"   //nolint:goconst
-	receiver := "evm1hf0468jjpe6m6vx38s97z2qqe8ldu0nj8llzpx" //nolint:goconst
+	sender := marker.ReplaceAbleAddress("evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz")   //nolint:goconst
+	receiver := marker.ReplaceAbleAddress("evm1hf0468jjpe6m6vx38s97z2qqe8ldu0nj8llzpx") //nolint:goconst
 
 	senderAddr, err := sdk.AccAddressFromBech32(sender)
 	suite.Require().NoError(err)
@@ -206,8 +207,8 @@ func (suite *IBCTestingSuite) TestOnAcknowledgementPacketIBC() {
 }
 
 func (suite *IBCTestingSuite) TestOnRecvPacketIBC() {
-	sender := "evm1hf0468jjpe6m6vx38s97z2qqe8ldu0nj8llzpx"
-	receiver := "evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz"
+	sender := marker.ReplaceAbleAddress("evm1hf0468jjpe6m6vx38s97z2qqe8ldu0nj8llzpx")
+	receiver := marker.ReplaceAbleAddress("evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz")
 	triggerAmt := types.IBCTriggerAmt
 
 	senderAddr, err := sdk.AccAddressFromBech32(sender)

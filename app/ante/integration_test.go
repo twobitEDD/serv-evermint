@@ -2,6 +2,7 @@ package ante_test
 
 import (
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"time"
 
 	sdkmath "cosmossdk.io/math"
@@ -34,7 +35,7 @@ var _ = Describe("when sending a Cosmos transaction", func() {
 
 			msg = &banktypes.MsgSend{
 				FromAddress: addr.String(),
-				ToAddress:   "evm1dx67l23hz9l0k9hcher8xz04uj7wf3yuqpfj0p",
+				ToAddress:   marker.ReplaceAbleAddress("evm1dx67l23hz9l0k9hcher8xz04uj7wf3yuqpfj0p"),
 				Amount:      sdk.Coins{sdk.Coin{Amount: sdkmath.NewInt(1e14), Denom: constants.BaseDenom}},
 			}
 
@@ -69,7 +70,7 @@ var _ = Describe("when sending a Cosmos transaction", func() {
 
 			msg = &banktypes.MsgSend{
 				FromAddress: addr.String(),
-				ToAddress:   "evm1dx67l23hz9l0k9hcher8xz04uj7wf3yuqpfj0p",
+				ToAddress:   marker.ReplaceAbleAddress("evm1dx67l23hz9l0k9hcher8xz04uj7wf3yuqpfj0p"),
 				Amount:      sdk.Coins{sdk.Coin{Amount: sdkmath.NewInt(1e14), Denom: constants.BaseDenom}},
 			}
 
@@ -106,7 +107,7 @@ var _ = Describe("when sending a Cosmos transaction", func() {
 
 			msg = &banktypes.MsgSend{
 				FromAddress: addr.String(),
-				ToAddress:   "evm1dx67l23hz9l0k9hcher8xz04uj7wf3yuqpfj0p",
+				ToAddress:   marker.ReplaceAbleAddress("evm1dx67l23hz9l0k9hcher8xz04uj7wf3yuqpfj0p"),
 				Amount:      sdk.Coins{sdk.Coin{Amount: sdkmath.NewInt(1), Denom: constants.BaseDenom}},
 			}
 

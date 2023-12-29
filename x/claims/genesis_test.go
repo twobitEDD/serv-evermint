@@ -3,6 +3,7 @@ package claims_test
 import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"testing"
 	"time"
 
@@ -78,8 +79,8 @@ func TestGenesisTestSuite(t *testing.T) {
 }
 
 var (
-	acc1 = sdk.MustAccAddressFromBech32("evm1qxx0fdsmruzuar2fay88lfw6sce6emamyuyrg4vf")
-	acc2 = sdk.MustAccAddressFromBech32("evm1nsrs4t7dngkdltehkm3p6n8dp22sz3mcp720n4")
+	acc1 = sdk.MustAccAddressFromBech32(marker.ReplaceAbleAddress("evm1qxx0fdsmruzuar2fay88lfw6sce6emamyuyrg4vf"))
+	acc2 = sdk.MustAccAddressFromBech32(marker.ReplaceAbleAddress("evm1nsrs4t7dngkdltehkm3p6n8dp22sz3mcp720n4"))
 )
 
 func (suite *GenesisTestSuite) TestClaimInitGenesis() {

@@ -2,6 +2,7 @@ package ibc
 
 import (
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/EscanBE/evermint/v12/rename_chain/marker"
 	"testing"
 
 	"github.com/EscanBE/evermint/v12/x/claims/types"
@@ -58,7 +59,7 @@ func TestGetTransferSenderRecipient(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1",
-						Receiver: "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Receiver: marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Amount:   "123456",
 					},
 				),
@@ -86,13 +87,13 @@ func TestGetTransferSenderRecipient(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
-						Receiver: "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Receiver: marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Amount:   "123456",
 					},
 				),
 			},
-			"evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z",
-			"evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+			marker.ReplaceAbleAddress("evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z"),
+			marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 			false,
 		},
 		{
@@ -100,14 +101,14 @@ func TestGetTransferSenderRecipient(t *testing.T) {
 			channeltypes.Packet{
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
-						Sender:   "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Sender:   marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Receiver: "cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
 						Amount:   "123456",
 					},
 				),
 			},
-			"evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
-			"evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z",
+			marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
+			marker.ReplaceAbleAddress("evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z"),
 			false,
 		},
 		{
@@ -116,13 +117,13 @@ func TestGetTransferSenderRecipient(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "osmo1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhnecd2",
-						Receiver: "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Receiver: marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Amount:   "123456",
 					},
 				),
 			},
-			"evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z",
-			"evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+			marker.ReplaceAbleAddress("evm1qql8ag4cluz6r4dz28p3w00dnc9w8ueuhjd72z"),
+			marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 			false,
 		},
 	}
@@ -166,7 +167,7 @@ func TestGetTransferAmount(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
-						Receiver: "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Receiver: marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Amount:   "",
 					},
 				),
@@ -180,7 +181,7 @@ func TestGetTransferAmount(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
-						Receiver: "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Receiver: marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Amount:   "test",
 					},
 				),
@@ -194,7 +195,7 @@ func TestGetTransferAmount(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
-						Receiver: "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Receiver: marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Amount:   "10000",
 					},
 				),
@@ -208,7 +209,7 @@ func TestGetTransferAmount(t *testing.T) {
 				Data: transfertypes.ModuleCdc.MustMarshalJSON(
 					&transfertypes.FungibleTokenPacketData{
 						Sender:   "cosmos1qql8ag4cluz6r4dz28p3w00dnc9w8ueulg2gmc",
-						Receiver: "evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7",
+						Receiver: marker.ReplaceAbleAddress("evm1x2w87cvt5mqjncav4lxy8yfreynn273xe08fl7"),
 						Amount:   types.IBCTriggerAmt,
 					},
 				),

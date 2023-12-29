@@ -45,7 +45,7 @@ import (
 	evertypes "github.com/EscanBE/evermint/v12/types"
 	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
 
-	evermintkeyring "github.com/EscanBE/evermint/v12/crypto/keyring"
+	appkeyring "github.com/EscanBE/evermint/v12/crypto/keyring"
 	"github.com/EscanBE/evermint/v12/testutil/network"
 )
 
@@ -212,7 +212,7 @@ func initTestnetFiles(
 	args initArgs,
 ) error {
 	if args.chainID == "" {
-		args.chainID = fmt.Sprintf("evermint_%d-1", tmrand.Int63n(9999999999999)+1)
+		args.chainID = fmt.Sprintf("%s_%d-1", constants.ChainIdPrefix, tmrand.Int63n(9999999999999)+1)
 	}
 
 	nodeIDs := make([]string, args.numValidators)
@@ -264,7 +264,7 @@ func initTestnetFiles(
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
 
-		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, clientCtx.Codec, evermintkeyring.Option())
+		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, clientCtx.Codec, appkeyring.Option())
 		if err != nil {
 			return err
 		}
