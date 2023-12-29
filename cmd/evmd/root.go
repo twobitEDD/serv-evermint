@@ -105,7 +105,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	cfg.Seal()
 
 	a := appCreator{encodingConfig}
-	rootCmd.AddCommand(
+
+	commands := []*cobra.Command{
 		appclient.ValidateChainID(
 			InitCmd(chainapp.ModuleBasics, chainapp.DefaultNodeHome),
 		),
@@ -119,7 +120,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		debug.Cmd(),
 		config.Cmd(),
 		pruning.PruningCmd(a.newApp),
-	)
+		NewConvertAddressCmd(),
+	}
+	rootCmd.AddCommand(commands...)
 
 	appserver.AddCommands(
 		rootCmd,
