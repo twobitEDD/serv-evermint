@@ -33,6 +33,12 @@ Types of changes (Stanzas):
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
+# Unreleased
+
+### Bug Fixes
+
+- (evm) [#3](https://github.com/EscanBE/evermint/pull/3) Correct context block height when trace transaction
+
 # Changelog
 
 ## [v12.1.6] - 2023-07-04
