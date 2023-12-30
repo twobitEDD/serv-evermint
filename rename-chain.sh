@@ -31,5 +31,6 @@ go mod tidy
 rm -rf ./rename_chain
 rm -rf ./build
 rm -f ./rename-chain.sh
+rm -f ./RENAME_CHAIN.md
 
 echo "Done."
