@@ -35,6 +35,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Unreleased
 
+### Improvement
+
+- (rename-chain) [#4](https://github.com/EscanBE/evermint/pull/4) Restore files that should not be changed after rename chain
+
 ### Bug Fixes
 
 - (evm) [#3](https://github.com/EscanBE/evermint/pull/3) Correct context block height when trace transaction
