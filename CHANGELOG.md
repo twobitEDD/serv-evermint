@@ -42,6 +42,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Bug Fixes
 
 - (evm) [#3](https://github.com/EscanBE/evermint/pull/3) Correct context block height when trace transaction
+- (evm) [#5](https://github.com/EscanBE/evermint/pull/5) Re-calculate base-fee & adjust gas-meter reset behavior when trace transaction/block
 
 # Changelog
 
