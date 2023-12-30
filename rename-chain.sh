@@ -20,6 +20,10 @@ set -eu # Abort execution if any command fails
 # Run go tool to rename chain
 go run --tags renamechain rename_chain/main.go
 
+# Restore files that should not be changed
+git checkout -- CHANGELOG.md
+git checkout -- README.md
+
 # Update dependencies
 cd ./contracts
 npm i
