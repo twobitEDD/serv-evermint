@@ -9,13 +9,13 @@ import (
 // App
 
 const (
-	ApplicationName = "nevermind"
+	ApplicationName = "evermint"
 
-	ApplicationBinaryName = "nvmd"
+	ApplicationBinaryName = "evmd"
 
-	ApplicationHome = ".nevermind"
+	ApplicationHome = ".evermint"
 
-	GitHubRepo = "https://github.com/VictorTrustyDev/nevermind" // must be well-formed url pattern: "https://github.com/owner/repo"
+	GitHubRepo = "https://github.com/EscanBE/evermint" // must be well-formed url pattern: "https://github.com/owner/repo"
 )
 
 // Denom
@@ -31,11 +31,11 @@ const (
 	//
 	// During code, we will use the term 'native coin' for this denomination
 	// so other developers can take advantage of renaming constants when forking this project.
-	BaseDenom = "uever"
+	BaseDenom = "wei"
 
-	DisplayDenom = "ever"
+	DisplayDenom = "ether"
 
-	SymbolDenom = "EVER"
+	SymbolDenom = "ETH"
 
 	BaseDenomExponent = 18
 )
@@ -44,7 +44,7 @@ const (
 
 const (
 	// Bech32Prefix is the HRP (human-readable part) of the Bech32 encoded address of this chain
-	Bech32Prefix = "ever"
+	Bech32Prefix = "evm"
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = Bech32Prefix
@@ -68,20 +68,20 @@ const (
 // Chain ID
 
 const (
-	ChainIdPrefix = "nevermind"
+	ChainIdPrefix = "evermint"
 
 	// MainnetChainID defines the Cosmos-style EIP155 chain ID for mainnet
-	MainnetChainID = ChainIdPrefix + "_123567"
+	MainnetChainID = ChainIdPrefix + "_90909"
 	// TestnetChainID defines the Cosmos-style EIP155 chain ID for testnet
-	TestnetChainID = ChainIdPrefix + "_5678"
+	TestnetChainID = ChainIdPrefix + "_80808"
 	// DevnetChainID defines the Cosmos-style EIP155 chain ID for devnet
-	DevnetChainID = ChainIdPrefix + "_1234"
+	DevnetChainID = ChainIdPrefix + "_70707"
 
 	MainnetFullChainId = MainnetChainID + "-1"
 	TestnetFullChainId = TestnetChainID + "-1"
 	DevnetFullChainId  = DevnetChainID + "-1"
 
-	MainnetEIP155ChainId = 123567
-	TestnetEIP155ChainId = 5678
-	DevnetEIP155ChainId  = 1234
+	MainnetEIP155ChainId = 90909
+	TestnetEIP155ChainId = 80808
+	DevnetEIP155ChainId  = 70707
 )
