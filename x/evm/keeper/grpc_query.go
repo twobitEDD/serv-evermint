@@ -388,10 +388,10 @@ func (k Keeper) TraceTx(c context.Context, req *types.QueryTraceTxRequest) (*typ
 		return nil, status.Errorf(codes.InvalidArgument, "output limit cannot be negative, got %d", req.TraceConfig.Limit)
 	}
 
-	// minus one to get the context of block beginning
-	contextHeight := req.BlockNumber - 1
+	// use the context of required context block beginning
+	contextHeight := req.BlockNumber
 	if contextHeight < 1 {
-		// 0 is a special value in `ContextWithHeight`
+		// 0 is a special value, means latest block
 		contextHeight = 1
 	}
 
@@ -465,10 +465,10 @@ func (k Keeper) TraceBlock(c context.Context, req *types.QueryTraceBlockRequest)
 		return nil, status.Errorf(codes.InvalidArgument, "output limit cannot be negative, got %d", req.TraceConfig.Limit)
 	}
 
-	// minus one to get the context of block beginning
-	contextHeight := req.BlockNumber - 1
+	// use the context of required context block beginning
+	contextHeight := req.BlockNumber
 	if contextHeight < 1 {
-		// 0 is a special value in `ContextWithHeight`
+		// 0 is a special value, means latest block
 		contextHeight = 1
 	}
 
