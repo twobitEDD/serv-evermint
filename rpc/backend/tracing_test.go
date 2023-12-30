@@ -110,9 +110,11 @@ func (suite *BackendTestSuite) TestTraceTransaction() {
 			func() {
 				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				client := suite.backend.clientCtx.Client.(*mocks.Client)
-				_, err := RegisterBlockMultipleTxs(client, 1, []types.Tx{txBz, txBz2})
+				var height int64 = 1
+				_, err := RegisterBlockMultipleTxs(client, height, []types.Tx{txBz, txBz2})
 				suite.Require().NoError(err)
 				RegisterTraceTransactionWithPredecessors(queryClient, msgEthereumTx, []*evmtypes.MsgEthereumTx{msgEthereumTx})
+				RegisterConsensusParams(client, height)
 			},
 			&types.Block{Header: types.Header{Height: 1, ChainID: ChainID}, Data: types.Data{Txs: []types.Tx{txBz, txBz2}}},
 			[]*abci.ResponseDeliverTx{
@@ -151,9 +153,11 @@ func (suite *BackendTestSuite) TestTraceTransaction() {
 			func() {
 				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				client := suite.backend.clientCtx.Client.(*mocks.Client)
-				_, err := RegisterBlock(client, 1, txBz)
+				var height int64 = 1
+				_, err := RegisterBlock(client, height, txBz)
 				suite.Require().NoError(err)
 				RegisterTraceTransaction(queryClient, msgEthereumTx)
+				RegisterConsensusParams(client, height)
 			},
 			&types.Block{Header: types.Header{Height: 1}, Data: types.Data{Txs: []types.Tx{txBz}}},
 			[]*abci.ResponseDeliverTx{
@@ -227,7 +231,10 @@ func (suite *BackendTestSuite) TestTraceBlock() {
 			"fail - cannot unmarshal data",
 			func() {
 				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
+				client := suite.backend.clientCtx.Client.(*mocks.Client)
+				var height int64 = 1
 				RegisterTraceBlock(queryClient, []*evmtypes.MsgEthereumTx{msgEthTx})
+				RegisterConsensusParams(client, height)
 			},
 			[]*evmtypes.TxTraceResult{},
 			&resBlockFilled,
