@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"math/big"
 	"time"
 
@@ -399,6 +400,12 @@ func (k Keeper) TraceTx(c context.Context, req *types.QueryTraceTxRequest) (*typ
 	ctx = ctx.WithBlockHeight(contextHeight)
 	ctx = ctx.WithBlockTime(req.BlockTime)
 	ctx = ctx.WithHeaderHash(common.Hex2Bytes(req.BlockHash))
+
+	// Only the block max gas from the consensus params is needed to calculate base fee
+	ctx = ctx.WithConsensusParams(&abci.ConsensusParams{
+		Block: &abci.BlockParams{MaxGas: req.BlockMaxGas},
+	})
+
 	chainID, err := getChainID(ctx, req.ChainId)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -409,7 +416,14 @@ func (k Keeper) TraceTx(c context.Context, req *types.QueryTraceTxRequest) (*typ
 	}
 	signer := ethtypes.MakeSigner(cfg.ChainConfig, big.NewInt(ctx.BlockHeight()))
 
+	// Calculate base fee of the context block that being traced
+	baseFee := k.feeMarketKeeper.CalculateBaseFee(ctx)
+	if baseFee != nil {
+		cfg.BaseFee = baseFee
+	}
+
 	txConfig := statedb.NewEmptyTxConfig(common.BytesToHash(ctx.HeaderHash().Bytes()))
+
 	for i, tx := range req.Predecessors {
 		ethTx := tx.AsTransaction()
 		msg, err := ethTx.AsMessage(signer, cfg.BaseFee)
@@ -418,6 +432,9 @@ func (k Keeper) TraceTx(c context.Context, req *types.QueryTraceTxRequest) (*typ
 		}
 		txConfig.TxHash = ethTx.Hash()
 		txConfig.TxIndex = uint(i)
+
+		// reset gas meter per transaction to avoid stacking the gas used of every predecessor in the same gas meter
+		ctx = ctx.WithGasMeter(evertypes.NewInfiniteGasMeterWithLimit(msg.Gas()))
 		rsp, err := k.ApplyMessageWithConfig(ctx, msg, types.NewNoOpTracer(), true, cfg, txConfig)
 		if err != nil {
 			continue
@@ -476,6 +493,12 @@ func (k Keeper) TraceBlock(c context.Context, req *types.QueryTraceBlockRequest)
 	ctx = ctx.WithBlockHeight(contextHeight)
 	ctx = ctx.WithBlockTime(req.BlockTime)
 	ctx = ctx.WithHeaderHash(common.Hex2Bytes(req.BlockHash))
+
+	// Only the block max gas from the consensus params is needed to calculate base fee
+	ctx = ctx.WithConsensusParams(&abci.ConsensusParams{
+		Block: &abci.BlockParams{MaxGas: req.BlockMaxGas},
+	})
+
 	chainID, err := getChainID(ctx, req.ChainId)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -486,6 +509,13 @@ func (k Keeper) TraceBlock(c context.Context, req *types.QueryTraceBlockRequest)
 		return nil, status.Error(codes.Internal, "failed to load evm config")
 	}
 	signer := ethtypes.MakeSigner(cfg.ChainConfig, big.NewInt(ctx.BlockHeight()))
+
+	// Calculate base fee of the context block that being traced
+	baseFee := k.feeMarketKeeper.CalculateBaseFee(ctx)
+	if baseFee != nil {
+		cfg.BaseFee = baseFee
+	}
+
 	txsLength := len(req.Txs)
 	results := make([]*types.TxTraceResult, 0, txsLength)
 
@@ -588,6 +618,8 @@ func (k *Keeper) traceTx(
 		}
 	}()
 
+	// reset gas meter per transaction to avoid stacking the gas used of every predecessor in the same gas meter
+	ctx = ctx.WithGasMeter(evertypes.NewInfiniteGasMeterWithLimit(msg.Gas()))
 	res, err := k.ApplyMessageWithConfig(ctx, msg, tracer, commitMessage, cfg, txConfig)
 	if err != nil {
 		return nil, 0, status.Error(codes.Internal, err.Error())
