@@ -33,7 +33,15 @@ Types of changes (Stanzas):
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
-# Unreleased
+# Evermint changelog
+
+## [v12.2.0] - 2023-12-31
+
+**This is the first release of Evermint**
+
+### Features
+- (rename-chain) Enable developers to fork and transform Evermint to their own chain, fully customized. 👉 [Read more](https://github.com/EscanBE/evermint/blob/main/RENAME_CHAIN.md)
+- (cli) Allow convert between 0x address and bech32 address, or any custom bech32 HRP: `evmd convert-address evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz evmos`
 
 ### Improvement
 
@@ -44,7 +52,15 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (evm) [#3](https://github.com/EscanBE/evermint/pull/3) Correct context block height when trace transaction
 - (evm) [#5](https://github.com/EscanBE/evermint/pull/5) Re-calculate base-fee & adjust gas-meter reset behavior when trace transaction/block
 
-# Changelog
+## [Evermint v12] - 2023-12-30
+
+The Evermint project is officially forked from Evmos v12.1.6 at this point and is going to release the next versions from v12.2.x instead of a fresh start.
+
+Escan team will maintain this project with bug fixes, customization and enable developers to fork and transform Evermint to their own chain, fully customized.
+
+The first Evermint release will be v12.2.0.
+
+# Legacy changelog from Evmos
 
 ## [v12.1.6] - 2023-07-04
 
