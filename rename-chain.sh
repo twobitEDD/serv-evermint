@@ -24,6 +24,7 @@ go run --tags renamechain rename_chain/main.go
 cd ./contracts
 npm i
 cd ..
+rm -f go.sum
 go mod tidy
 
 # Cleanup

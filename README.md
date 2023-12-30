@@ -20,6 +20,8 @@ parent:
 
 [> Quick rename](https://github.com/EscanBE/evermint/blob/main/RENAME_CHAIN.md)
 
+[> View example after rename](https://github.com/EscanBE/evermint/pull/1)
+
 ### About Evermint
 
 Evermint is a fork of open source Evmos v12.1.6, maintained by Escan team with bug fixes, customization and enable developers to fork to own chain, fully customized, in just 2 steps.

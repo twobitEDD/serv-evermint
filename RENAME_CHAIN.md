@@ -2,13 +2,19 @@
 _(support Linux & MacOS only)_
 
 Step 1: Open `constants.go` and change every constant in there.
+Do `git commit` (+ `git push`) to save your changes.
 
-Step 2: Do `git commit` (+ `git push`) to save your changes.
+Step 2: Run `./rename-chain.sh`
 
-Step 3: Run `./rename-chain.sh`
+Done, you have your own chain now. Try running tests to make sure everything is working fine.
 
-Done, you have your own chain now.
+[View example after rename](https://github.com/EscanBE/evermint/pull/1)
 ___
 Cleanup notes to be checked after running script:
-- Make sure directory `./rename_chain` is deleted.
-- Make sure `./rename-chain.sh` is deleted.
+- Directory `./rename_chain` is deleted.
+- Script `./rename-chain.sh` is deleted.
+- Make sure the following words, which belong to definition of evermint, are no longer exists:
+  - evmd (binary name)
+  - evermint (git repo + application name)
+  - evm1 (bech32 prefix)
+  - EscanBE (git owner name)
