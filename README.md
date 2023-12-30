@@ -1,55 +1,27 @@
-<!--
-parent:
-  order: false
--->
+This is branch [rename-chain/original](https://github.com/EscanBE/evermint/tree/rename-chain/original), the original Evermint chain before renamed as example in [PR #1](https://github.com/EscanBE/evermint/pull/1)
 
-<div align="center">
-  <h1>Evermint</h1>
-</div>
+Summary original symbols of the chain before rename:
+```golang
+const (
+	ApplicationName = "evermint"
+	ApplicationBinaryName = "evmd"
+	ApplicationHome = ".evermint"
 
-<div align="center">
-  <a href="https://github.com/EscanBE/evermint/blob/main/LICENSE">
-    <img alt="License: LGPL-3.0" src="https://img.shields.io/github/license/EscanBE/evermint.svg" />
-  </a>
-  <a href="https://pkg.go.dev/github.com/evmos/evmos">
-    <img alt="GoDoc" src="https://godoc.org/github.com/evmos/evmos?status.svg" />
-  </a>
-</div>
+	GitHubRepo = "https://github.com/EscanBE/evermint" // must be well-formed url pattern: "https://github.com/owner/repo"
 
-### Create your own fully customized EVM-enabled blockchain network in just 2 steps
+	BaseDenom = "wei"
+	DisplayDenom = "ether"
+	SymbolDenom = "ETH"
+	BaseDenomExponent = 18
 
-[> Quick rename](https://github.com/EscanBE/evermint/blob/main/RENAME_CHAIN.md)
+	Bech32Prefix = "evm"
 
-[> View example after rename](https://github.com/EscanBE/evermint/pull/1)
+	MainnetFullChainId = "evermint_90909-1"
+	TestnetFullChainId = "evermint_80808-1"
+	DevnetFullChainId  = "evermint_70707-1"
 
-### About Evermint
-
-Evermint is a fork of open source Evmos v12.1.6, maintained by Escan team with bug fixes, customization and enable developers to fork to own chain, fully customized, in just 2 steps.
-
-### About Evmos
-
-Evmos is a scalable, high-throughput Proof-of-Stake blockchain
-that is fully compatible and interoperable with Ethereum.
-It's built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/)
-which runs on top of the [Tendermint Core](https://github.com/tendermint/tendermint) consensus engine.
-
-## Documentation
-
-Evermint does not maintain its own documentation site, user can refer to Evmos documentation hosted at [evmos/docs](https://github.com/evmos/docs) and can be found at [docs.evmos.org](https://docs.evmos.org).
-Head over there and check it out.
-
-**Note**: Requires [Go 1.20+](https://golang.org/dl/)
-
-## Quick Start
-
-To learn how the Evmos works from a high-level perspective,
-go to the [Protocol Overview](https://docs.evmos.org/protocol) section from the documentation.
-You can also check the instructions to [Run a Node](https://docs.evmos.org/protocol/evmos-cli#run-an-evmos-node).
-
-### Additional feature provided by Evermint:
-1. Command convert between 0x address and bech32 address, or any custom bech32 HRP
-```bash
-evmd convert-address evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz evmos
-# alias: "ca"
+	MainnetEIP155ChainId = 90909
+	TestnetEIP155ChainId = 80808
+	DevnetEIP155ChainId  = 70707
+)
 ```
-2. [Rename chain](https://github.com/EscanBE/evermint/blob/main/RENAME_CHAIN.md)
