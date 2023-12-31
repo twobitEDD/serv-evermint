@@ -38,6 +38,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Features
 
 - (store) [#13](https://github.com/EscanBE/evermint/pull/13) Add local `snapshots` management commands (backport #12)
+- (store) [#15](https://github.com/EscanBE/evermint/pull/15) Add `inspect` command and sub-commands (backport #14)
 
 ### Improvement
 
