@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/EscanBE/evermint/v12/cmd/evmd/inspect"
 	"github.com/EscanBE/evermint/v12/constants"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
 	"io"
@@ -150,6 +151,7 @@ You gonna get "data/application.db" unpacked
 			)
 			return snapshotCmd
 		}(),
+		inspect.Cmd(),
 	}
 
 	// End of command rename chain
