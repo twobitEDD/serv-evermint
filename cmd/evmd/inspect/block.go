@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	dbm "github.com/cometbft/cometbft-db"
-	tmstore "github.com/cometbft/cometbft/store"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/spf13/cobra"
+	tmstore "github.com/tendermint/tendermint/store"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -44,7 +44,7 @@ func BlockCmd() *cobra.Command {
 			home := cfg.RootDir
 
 			dataDir := filepath.Join(home, "data")
-			db, err := dbm.NewDB("blockstore", server.GetAppDBBackend(serverCtx.Viper), dataDir)
+			db, err := dbm.NewDB("blockstore", dbm.BackendType(cfg.DBBackend), dataDir)
 			if err != nil {
 				panic(errors.Wrap(err, "error while opening db"))
 			}
