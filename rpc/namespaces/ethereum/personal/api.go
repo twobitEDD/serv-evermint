@@ -13,7 +13,7 @@ import (
 	"github.com/EscanBE/evermint/v12/crypto/hd"
 	"github.com/EscanBE/evermint/v12/types"
 
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"

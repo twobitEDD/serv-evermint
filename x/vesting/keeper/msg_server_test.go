@@ -2,10 +2,9 @@ package keeper_test
 
 import (
 	"fmt"
-	"time"
-
 	evertypes "github.com/EscanBE/evermint/v12/types"
 	vestingexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -551,8 +550,8 @@ func (suite *KeeperTestSuite) TestConvertVestingAccount() {
 			func() authtypes.AccountI {
 				from, priv := utiltx.NewAccAddressAndKey()
 				baseAcc := authtypes.NewBaseAccount(from, priv.PubKey(), 1, 5)
-				vestingPeriods := sdkvesting.Periods{{Length: 0, Amount: balances}}
-				vestingAcc := types.NewClawbackVestingAccount(baseAcc, from, balances, startTime, nil, vestingPeriods)
+				zeroVestingPeriods := sdkvesting.Periods{{Length: 0, Amount: balances}}
+				vestingAcc := types.NewClawbackVestingAccount(baseAcc, from, balances, startTime, nil, zeroVestingPeriods)
 				suite.app.AccountKeeper.SetAccount(suite.ctx, vestingAcc)
 				return vestingAcc
 			},
@@ -561,29 +560,31 @@ func (suite *KeeperTestSuite) TestConvertVestingAccount() {
 	}
 
 	for _, tc := range testCases {
-		suite.SetupTest() // reset
-		ctx := sdk.WrapSDKContext(suite.ctx)
+		suite.Run(tc.name, func() {
+			suite.SetupTest() // reset
+			ctx := sdk.WrapSDKContext(suite.ctx)
 
-		acc := tc.malleate()
+			acc := tc.malleate()
 
-		msg := types.NewMsgConvertVestingAccount(acc.GetAddress())
-		res, err := suite.app.VestingKeeper.ConvertVestingAccount(ctx, msg)
+			msg := types.NewMsgConvertVestingAccount(acc.GetAddress())
+			res, err := suite.app.VestingKeeper.ConvertVestingAccount(ctx, msg)
 
-		if tc.expPass {
-			suite.Require().NoError(err)
-			suite.Require().NotNil(res)
+			if tc.expPass {
+				suite.Require().NoError(err)
+				suite.Require().NotNil(res)
 
-			account := suite.app.AccountKeeper.GetAccount(suite.ctx, acc.GetAddress())
+				account := suite.app.AccountKeeper.GetAccount(suite.ctx, acc.GetAddress())
 
-			_, ok := account.(vestingexported.VestingAccount)
-			suite.Require().False(ok)
+				_, ok := account.(vestingexported.VestingAccount)
+				suite.Require().False(ok)
 
-			_, ok = account.(evertypes.EthAccountI)
-			suite.Require().True(ok)
+				_, ok = account.(evertypes.EthAccountI)
+				suite.Require().True(ok)
 
-		} else {
-			suite.Require().Error(err)
-			suite.Require().Nil(res)
-		}
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Nil(res)
+			}
+		})
 	}
 }

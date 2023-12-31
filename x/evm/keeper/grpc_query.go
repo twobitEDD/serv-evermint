@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	abci "github.com/tendermint/tendermint/abci/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"math/big"
 	"time"
 
@@ -402,8 +402,8 @@ func (k Keeper) TraceTx(c context.Context, req *types.QueryTraceTxRequest) (*typ
 	ctx = ctx.WithHeaderHash(common.Hex2Bytes(req.BlockHash))
 
 	// Only the block max gas from the consensus params is needed to calculate base fee
-	ctx = ctx.WithConsensusParams(&abci.ConsensusParams{
-		Block: &abci.BlockParams{MaxGas: req.BlockMaxGas},
+	ctx = ctx.WithConsensusParams(&tmproto.ConsensusParams{
+		Block: &tmproto.BlockParams{MaxGas: req.BlockMaxGas},
 	})
 
 	chainID, err := getChainID(ctx, req.ChainId)
@@ -495,8 +495,8 @@ func (k Keeper) TraceBlock(c context.Context, req *types.QueryTraceBlockRequest)
 	ctx = ctx.WithHeaderHash(common.Hex2Bytes(req.BlockHash))
 
 	// Only the block max gas from the consensus params is needed to calculate base fee
-	ctx = ctx.WithConsensusParams(&abci.ConsensusParams{
-		Block: &abci.BlockParams{MaxGas: req.BlockMaxGas},
+	ctx = ctx.WithConsensusParams(&tmproto.ConsensusParams{
+		Block: &tmproto.BlockParams{MaxGas: req.BlockMaxGas},
 	})
 
 	chainID, err := getChainID(ctx, req.ChainId)

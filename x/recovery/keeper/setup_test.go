@@ -17,7 +17,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibcgotesting "github.com/cosmos/ibc-go/v6/testing"
+	ibcgotesting "github.com/cosmos/ibc-go/v7/testing"
 
 	"github.com/EscanBE/evermint/v12/app"
 	claimstypes "github.com/EscanBE/evermint/v12/x/claims/types"
@@ -43,7 +43,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 	// consensus key
 	consAddress := sdk.ConsAddress(utiltx.GenerateAddress().Bytes())
 
-	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState())
+	chainID := constants.MainnetFullChainId
+	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState(), chainID)
 	header := testutil.NewHeader(
 		1, time.Now().UTC(), constants.MainnetFullChainId, consAddress, nil, nil,
 	)
