@@ -37,6 +37,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 **From this version, CometBFT is officially used as the consensus engine.**
 
+### Features
+
+- (store) [#12](https://github.com/EscanBE/evermint/pull/12) Add local `snapshots` management commands
+
 ### Improvement
 
 - (test) [#10](https://github.com/EscanBE/evermint/pull/10) Use Testnet chain-id instead of Mainnet chain-id for tests
