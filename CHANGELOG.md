@@ -44,6 +44,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 - (test) [#11](https://github.com/EscanBE/evermint/pull/11) Use Testnet chain-id instead of Mainnet chain-id for tests (backport #10)
 
+### Bug Fixes
+
+- (rename-chain) [#19](https://github.com/EscanBE/evermint/pull/19) Check network chain-id string must contain EVM chain-id (backport #18)
+
 # Evermint changelog
 
 ## [v12.2.0] - 2023-12-31
