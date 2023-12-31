@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/cosmos/cosmos-sdk/client/snapshot"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/spf13/viper"
 	"io"
@@ -124,6 +125,41 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		config.Cmd(),
 		pruning.PruningCmd(a.newApp),
 		NewConvertAddressCmd(),
+		func() *cobra.Command {
+			snapshotCmd := snapshot.Cmd(a.newApp)
+			snapshotCmd.Long = fmt.Sprintf(`
+How to use "%s snapshot" command:
+
+In this context, we gonna to export snapshot for height 100000
+
+1. Create state-sync snapshot on a running node with "export"
+> sudo systemctl stop %s
+> %s snapshots export --height 100000
+You gonna get state-sync snapshot at "%s/snapshots/" dir as usual:
+> Log: Snapshot created at height 100000, format 3, chunks 10
+
+2. Pack snapshot with "dump":
+> %s snapshots dump 100000 3
+You gonna get "100000-3.tar.gz" at current working directory
+
+3. Share to another node or reset data of current node with "unsafe-reset-all"
+
+4. Unsafe-reset the node and unpack snapshot with "load":
+> %s snapshots load 100000-3.tar.gz
+
+5. Then restore app state with "restore":
+> %s snapshots restore 100000 3
+You gonna get "data/application.db" unpacked
+
+6. Now bootstrap state with "bootstrap-state":
+%s tendermint bootstrap-state
+`,
+				constants.ApplicationBinaryName, constants.ApplicationBinaryName, constants.ApplicationBinaryName,
+				constants.ApplicationHome,
+				constants.ApplicationBinaryName, constants.ApplicationBinaryName, constants.ApplicationBinaryName, constants.ApplicationBinaryName,
+			)
+			return snapshotCmd
+		}(),
 	}
 
 	// End of command rename chain
