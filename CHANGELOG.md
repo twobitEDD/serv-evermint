@@ -33,7 +33,9 @@ Types of changes (Stanzas):
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
-# Unreleased
+# Evermint changelog
+
+## [v12.2.1] - 2024-01-01
 
 ### Features
 
@@ -47,8 +49,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Bug Fixes
 
 - (rename-chain) [#19](https://github.com/EscanBE/evermint/pull/19) Check network chain-id string must contain EVM chain-id (backport #18)
-
-# Evermint changelog
 
 ## [v12.2.0] - 2023-12-31
 
