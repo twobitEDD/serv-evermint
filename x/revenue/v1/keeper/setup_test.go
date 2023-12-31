@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/EscanBE/evermint/v12/constants"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -55,6 +56,7 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState())
+	chainID := constants.TestnetFullChainId
+	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState(), chainID)
 	suite.SetupApp()
 }

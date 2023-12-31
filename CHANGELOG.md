@@ -33,6 +33,12 @@ Types of changes (Stanzas):
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
+# Unreleased
+
+### Improvement
+
+- (test) [#11](https://github.com/EscanBE/evermint/pull/11) Use Testnet chain-id instead of Mainnet chain-id for tests (backport #10)
+
 # Evermint changelog
 
 ## [v12.2.0] - 2023-12-31

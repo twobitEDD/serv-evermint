@@ -67,6 +67,7 @@ func init() {
 func Setup(
 	isCheckTx bool,
 	feemarketGenesis *feemarkettypes.GenesisState,
+	chainId string,
 ) *Evermint {
 	privVal := mock.NewPV()
 	pubKey, _ := privVal.GetPubKey()
@@ -108,7 +109,7 @@ func Setup(
 		// Initialize the chain
 		chainApp.InitChain(
 			abci.RequestInitChain{
-				ChainId:         constants.MainnetFullChainId,
+				ChainId:         chainId,
 				Validators:      []abci.ValidatorUpdate{},
 				ConsensusParams: DefaultConsensusParams,
 				AppStateBytes:   stateBytes,

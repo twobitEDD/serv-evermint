@@ -40,12 +40,13 @@ type KeeperTestSuite struct {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
+	chainID := constants.TestnetFullChainId
 	// consensus key
 	consAddress := sdk.ConsAddress(utiltx.GenerateAddress().Bytes())
 
-	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState())
+	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState(), chainID)
 	header := testutil.NewHeader(
-		1, time.Now().UTC(), constants.MainnetFullChainId, consAddress, nil, nil,
+		1, time.Now().UTC(), chainID, consAddress, nil, nil,
 	)
 	suite.ctx = suite.app.BaseApp.NewContext(false, header)
 

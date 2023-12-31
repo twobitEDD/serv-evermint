@@ -75,11 +75,12 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 	suite.consAddress = sdk.ConsAddress(priv.PubKey().Address())
 
 	// Init app
-	suite.app = app.Setup(checkTx, nil)
+	chainID := constants.MainnetFullChainId
+	suite.app = app.Setup(checkTx, nil, chainID)
 
 	// Set Context
 	header := testutil.NewHeader(
-		1, time.Now().UTC(), constants.MainnetFullChainId, suite.consAddress, nil, nil,
+		1, time.Now().UTC(), chainID, suite.consAddress, nil, nil,
 	)
 	suite.ctx = suite.app.BaseApp.NewContext(checkTx, header)
 

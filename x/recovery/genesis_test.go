@@ -31,13 +31,14 @@ type GenesisTestSuite struct {
 }
 
 func (suite *GenesisTestSuite) SetupTest() {
+	chainID := constants.TestnetFullChainId
 	// consensus key
 	consAddress := sdk.ConsAddress(utiltx.GenerateAddress().Bytes())
 
-	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState())
+	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState(), chainID)
 	suite.ctx = suite.app.BaseApp.NewContext(false, tmproto.Header{
 		Height:          1,
-		ChainID:         constants.TestnetFullChainId,
+		ChainID:         chainID,
 		Time:            time.Now().UTC(),
 		ProposerAddress: consAddress.Bytes(),
 
