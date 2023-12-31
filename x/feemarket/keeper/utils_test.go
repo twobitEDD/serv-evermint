@@ -36,7 +36,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 )
 
-func (suite *KeeperTestSuite) SetupApp(checkTx bool) {
+func (suite *KeeperTestSuite) SetupApp(checkTx bool, chainID string) {
 	t := suite.T()
 	// account key
 	priv, err := ethsecp256k1.GenerateKey()
@@ -50,7 +50,7 @@ func (suite *KeeperTestSuite) SetupApp(checkTx bool) {
 	suite.consAddress = sdk.ConsAddress(priv.PubKey().Address())
 
 	header := testutil.NewHeader(
-		1, time.Now().UTC(), constants.TestnetFullChainId, suite.consAddress, nil, nil,
+		1, time.Now().UTC(), chainID, suite.consAddress, nil, nil,
 	)
 
 	suite.ctx = suite.app.BaseApp.NewContext(checkTx, header)
@@ -143,6 +143,7 @@ func setupTest(localMinGasPrices string) (*ethsecp256k1.PrivKey, banktypes.MsgSe
 }
 
 func setupChain(localMinGasPricesStr string) {
+	chainID := constants.TestnetFullChainId
 	// Initialize the app, so we can use SetMinGasPrices to set the
 	// validator-specific min-gas-prices setting
 	db := dbm.NewMemDB()
@@ -168,7 +169,7 @@ func setupChain(localMinGasPricesStr string) {
 	// Initialize the chain
 	chainApp.InitChain(
 		abci.RequestInitChain{
-			ChainId:         constants.TestnetFullChainId,
+			ChainId:         chainID,
 			Validators:      []abci.ValidatorUpdate{},
 			AppStateBytes:   stateBytes,
 			ConsensusParams: chainapp.DefaultConsensusParams,
@@ -176,7 +177,7 @@ func setupChain(localMinGasPricesStr string) {
 	)
 
 	s.app = chainApp
-	s.SetupApp(false)
+	s.SetupApp(false, chainID)
 }
 
 func getNonce(addressBytes []byte) uint64 {

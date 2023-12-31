@@ -74,14 +74,16 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
+	chainID := constants.TestnetFullChainId
 	checkTx := false
-	suite.app = app.Setup(checkTx, nil)
+	suite.app = app.Setup(checkTx, nil, chainID)
 	suite.SetupApp(checkTx)
 }
 
 func (suite *KeeperTestSuite) SetupTestWithT(t require.TestingT) {
+	chainID := constants.TestnetFullChainId
 	checkTx := false
-	suite.app = app.Setup(checkTx, nil)
+	suite.app = app.Setup(checkTx, nil, chainID)
 	suite.SetupAppWithT(checkTx, t)
 }
 

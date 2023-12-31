@@ -85,10 +85,11 @@ func (suite *LedgerTestSuite) SetupChainAppApp() {
 	consAddress := sdk.ConsAddress(utiltx.GenerateAddress().Bytes())
 
 	// init app
-	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState())
+	chainID := constants.TestnetFullChainId
+	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState(), chainID)
 	suite.ctx = suite.app.BaseApp.NewContext(false, tmproto.Header{
 		Height:          1,
-		ChainID:         constants.TestnetFullChainId,
+		ChainID:         chainID,
 		Time:            time.Now().UTC(),
 		ProposerAddress: consAddress.Bytes(),
 
