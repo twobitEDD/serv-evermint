@@ -43,10 +43,10 @@ func (suite *KeeperTestSuite) SetupTest() {
 	// consensus key
 	consAddress := sdk.ConsAddress(utiltx.GenerateAddress().Bytes())
 
-	chainID := constants.MainnetFullChainId
+	chainID := constants.TestnetFullChainId
 	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState(), chainID)
 	header := testutil.NewHeader(
-		1, time.Now().UTC(), constants.MainnetFullChainId, consAddress, nil, nil,
+		1, time.Now().UTC(), chainID, consAddress, nil, nil,
 	)
 	suite.ctx = suite.app.BaseApp.NewContext(false, header)
 

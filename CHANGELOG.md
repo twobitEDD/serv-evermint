@@ -37,6 +37,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 **From this version, CometBFT is officially used as the consensus engine.**
 
+### Improvement
+
+- (test) [#10](https://github.com/EscanBE/evermint/pull/10) Use Testnet chain-id instead of Mainnet chain-id for tests
+
 ### State Machine Breaking
 
 - (deps) [#8](https://github.com/EscanBE/evermint/pull/8) Bump cosmos-sdk v0.47.5 and ibc v7.3.1
@@ -48,6 +52,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 **This is the first release of Evermint**
 
 ### Features
+
 - (rename-chain) Enable developers to fork and transform Evermint to their own chain, fully customized. 👉 [Read more](https://github.com/EscanBE/evermint/blob/main/RENAME_CHAIN.md)
 - (cli) Allow convert between 0x address and bech32 address, or any custom bech32 HRP: `evmd convert-address evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz evmos`
 
