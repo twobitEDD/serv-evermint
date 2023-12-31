@@ -16,7 +16,7 @@ import (
 func BlockCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "block [latest | <height>]",
-		Short: "Inspect a specific block or latest block persisted in the db",
+		Short: "Get a specific block or latest block persisted in the db, marshal to JSON and print out",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			var reqHeight int64
@@ -74,6 +74,16 @@ func BlockCmd() *cobra.Command {
 				panic(errors.Wrap(err, "failed to marshal block to JSON"))
 			}
 
+			fmt.Println("--- Block ---")
+			fmt.Println(string(bz))
+
+			meta := blockStore.LoadBaseMeta()
+			bz, err = json.Marshal(meta)
+			if err != nil {
+				panic(errors.Wrap(err, "failed to marshal block meta to JSON"))
+			}
+
+			fmt.Println("--- Meta ---")
 			fmt.Println(string(bz))
 		},
 	}
