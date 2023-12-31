@@ -37,35 +37,38 @@ set -e
 "$BINARY" init "$MONIKER" --chain-id "$CHAINID"
 
 # Change parameter token denominations
-jq '.app_state.staking.params.bond_denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.crisis.constant_fee.denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.gov.deposit_params.min_deposit[0].denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.evm.params.evm_denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.inflation.params.mint_denom="'$MIN_DENOM'"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.staking.params.bond_denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.crisis.constant_fee.denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.gov.deposit_params.min_deposit[0].denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # legacy
+jq '.app_state.gov.params.min_deposit[0].denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # v0.47
+jq '.app_state.evm.params.evm_denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.inflation.params.mint_denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # set gov proposing && voting period
-jq '.app_state.gov.deposit_params.max_deposit_period="30s"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.gov.voting_params.voting_period="30s"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.gov.deposit_params.max_deposit_period="30s"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # legacy
+jq '.app_state.gov.params.max_deposit_period="30s"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # v0.47
+jq '.app_state.gov.voting_params.voting_period="30s"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # legacy
+jq '.app_state.gov.params.voting_period="30s"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # v0.47
 
 # Set gas limit in genesis
-jq '.consensus_params.block.max_gas="10000000"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.consensus_params.block.max_gas="10000000"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # Set claims start time
 node_address=$("$BINARY" keys list | grep  "address: " | cut -c12-)
 current_date=$(date -u +"%Y-%m-%dT%TZ")
-jq -r --arg current_date "$current_date" '.app_state.claims.params.airdrop_start_time=$current_date' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq -r --arg current_date "$current_date" '.app_state.claims.params.airdrop_start_time=$current_date' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # Set claims records for validator account
 amount_to_claim=10000
-jq -r --arg node_address "$node_address" --arg amount_to_claim "$amount_to_claim" '.app_state.claims.claims_records=[{"initial_claimable_amount":$amount_to_claim, "actions_completed":[false, false, false, false],"address":$node_address}]' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq -r --arg node_address "$node_address" --arg amount_to_claim "$amount_to_claim" '.app_state.claims.claims_records=[{"initial_claimable_amount":$amount_to_claim, "actions_completed":[false, false, false, false],"address":$node_address}]' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # Set claims decay
-jq '.app_state.claims.params.duration_of_decay="1000000s"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.claims.params.duration_until_decay="100000s"' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.claims.params.duration_of_decay="1000000s"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.claims.params.duration_until_decay="100000s"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # Claim module account:
 # 0xA61808Fe40fEb8B3433778BBC2ecECCAA47c8c47 || evm15cvq3ljql6utxseh0zau9m8ve2j8erz80qzkas
-jq -r --arg amount_to_claim "$amount_to_claim" '.app_state.bank.balances += [{"address":"evm15cvq3ljql6utxseh0zau9m8ve2j8erz80qzkas","coins":[{"denom":"'$MIN_DENOM'", "amount":$amount_to_claim}]}]' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq -r --arg amount_to_claim "$amount_to_claim" '.app_state.bank.balances += [{"address":"evm15cvq3ljql6utxseh0zau9m8ve2j8erz80qzkas","coins":[{"denom":"'$MIN_DENOM'", "amount":$amount_to_claim}]}]' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # disable produce empty block
 sed -i 's/create_empty_blocks = true/create_empty_blocks = false/g' "$CONFIG_TOML"
@@ -77,7 +80,7 @@ sed -i 's/create_empty_blocks = true/create_empty_blocks = false/g' "$CONFIG_TOM
 # Bc is required to add this big numbers
 # total_supply=$(bc <<< "$amount_to_claim+$validators_supply")
 total_supply=100000000000000000000010000
-jq -r --arg total_supply "$total_supply" '.app_state.bank.supply[0].amount=$total_supply' "$GENESIS" > "$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq -r --arg total_supply "$total_supply" '.app_state.bank.supply[0].amount=$total_supply' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # set custom pruning settings
 if [ "$PRUNING" = "custom" ]; then
@@ -87,8 +90,11 @@ if [ "$PRUNING" = "custom" ]; then
 fi
 
 # make sure the localhost IP is 0.0.0.0
-sed -i 's/pprof_laddr = "localhost:6060"/pprof_laddr = "0.0.0.0:6060"/g' "$CONFIG_TOML"
+sed -i 's/localhost/0.0.0.0/g' "$CONFIG_TOML"
 sed -i 's/127.0.0.1/0.0.0.0/g' "$APP_TOML"
+
+# use timeout_commit 1s to make test faster
+sed -i 's/timeout_commit = "3s"/timeout_commit = "1s"/g' "$CONFIG_TOML"
 
 # Sign genesis transaction
 "$BINARY" gentx $KEY "1000000000000000000000$MIN_DENOM" --keyring-backend $KEYRING --chain-id "$CHAINID"
@@ -106,4 +112,10 @@ sed -i 's/127.0.0.1/0.0.0.0/g' "$APP_TOML"
 "$BINARY" validate-genesis
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-"$BINARY" start "$TRACE" --log_level $LOGLEVEL "--minimum-gas-prices=0.0001$MIN_DENOM" --json-rpc.api eth,txpool,personal,net,debug,web3
+"$BINARY" start \
+  --metrics "$TRACE" --log_level "$LOGLEVEL" \
+  --minimum-gas-prices="0.0001$MIN_DENOM" \
+  --json-rpc.api eth,txpool,personal,net,debug,web3 \
+  --api.enable \
+  --grpc.enable true \
+  --chain-id "$CHAINID"

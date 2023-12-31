@@ -2,9 +2,9 @@ package types
 
 import (
 	evertypes "github.com/EscanBE/evermint/v12/types"
+	"github.com/cometbft/cometbft/crypto/tmhash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/tendermint/tendermint/crypto/tmhash"
 )
 
 // NewTokenPair returns an instance of TokenPair

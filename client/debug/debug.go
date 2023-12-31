@@ -10,6 +10,7 @@ import (
 
 	"github.com/EscanBE/evermint/v12/ethereum/eip712"
 	evertypes "github.com/EscanBE/evermint/v12/types"
+	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cosmos/cosmos-sdk/client"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,7 +19,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/tendermint/tendermint/libs/bytes"
 )
 
 // Cmd creates a main CLI command

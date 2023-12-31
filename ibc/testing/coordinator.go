@@ -1,6 +1,8 @@
 package ibctesting
 
 import (
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	"math/rand"
 	"testing"
 	"time"
 
@@ -9,8 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibctesting "github.com/cosmos/ibc-go/v6/testing"
-	ibchelpers "github.com/cosmos/ibc-go/v6/testing/simapp/helpers"
+	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,11 +27,10 @@ func NewCoordinator(t *testing.T, nEVMChains, mCosmosChains int) *ibctesting.Coo
 		CurrentTime: globalStartTime,
 	}
 
-	// setup EVM chains
-	ibctesting.DefaultTestingAppInit = DefaultTestingAppInit
-
 	for i := 1; i <= nEVMChains; i++ {
 		chainID := ibctesting.GetChainID(i)
+		// setup EVM chains
+		ibctesting.DefaultTestingAppInit = DefaultTestingAppInit(chainID)
 		chains[chainID] = NewTestChain(t, coord, chainID)
 	}
 
@@ -171,11 +171,12 @@ func SignAndDeliver(
 	fee sdk.Coins,
 	chainID string, accNums, accSeqs []uint64, expPass bool, priv ...cryptotypes.PrivKey,
 ) (sdk.GasInfo, *sdk.Result, error) {
-	tx, err := ibchelpers.GenTx(
+	tx, err := simtestutil.GenSignedMockTx(
+		rand.New(rand.NewSource(time.Now().UnixNano())),
 		txCfg,
 		msgs,
 		fee,
-		ibchelpers.DefaultGenTxGas,
+		simtestutil.DefaultGenTxGas,
 		chainID,
 		accNums,
 		accSeqs,

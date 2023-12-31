@@ -31,7 +31,7 @@ Evermint is a fork of open source Evmos v12.1.6, maintained by Escan team with b
 Evmos is a scalable, high-throughput Proof-of-Stake blockchain
 that is fully compatible and interoperable with Ethereum.
 It's built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/)
-which runs on top of the [Tendermint Core](https://github.com/tendermint/tendermint) consensus engine.
+which runs on top of the [Tendermint Core](https://github.com/cometbft/cometbft) consensus engine.
 
 ## Documentation
 

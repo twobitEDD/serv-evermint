@@ -2,11 +2,14 @@ package cosmos_test
 
 import (
 	"fmt"
+	"github.com/EscanBE/evermint/v12/constants"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"math/big"
 	"testing"
 	"time"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -293,6 +296,16 @@ func (suite *AnteTestSuite) TestRejectMsgsInAuthz() {
 		return msg
 	}
 
+	msgEthereumTx := evmtypes.NewTx(&evmtypes.EvmTxArgs{
+		ChainID:   big.NewInt(constants.TestnetEIP155ChainId),
+		Nonce:     0,
+		GasLimit:  100_000,
+		GasFeeCap: suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
+		GasTipCap: big.NewInt(1),
+		Input:     nil,
+		Accesses:  &ethtypes.AccessList{},
+	})
+
 	testcases := []struct {
 		name         string
 		msgs         []sdk.Msg
@@ -326,7 +339,7 @@ func (suite *AnteTestSuite) TestRejectMsgsInAuthz() {
 							testAddresses[3],
 							sdk.NewCoins(sdk.NewInt64Coin(evmtypes.DefaultEVMDenom, 100e6)),
 						),
-						&evmtypes.MsgEthereumTx{},
+						msgEthereumTx,
 					},
 				),
 			},
@@ -339,7 +352,7 @@ func (suite *AnteTestSuite) TestRejectMsgsInAuthz() {
 					testAddresses[1],
 					2,
 					[]sdk.Msg{
-						&evmtypes.MsgEthereumTx{},
+						msgEthereumTx,
 					},
 				),
 			},
@@ -436,14 +449,14 @@ func (suite *AnteTestSuite) TestRejectMsgsInAuthz() {
 					Type: abci.CheckTxType_New,
 				},
 			)
-			suite.Require().Equal(resCheckTx.Code, tc.expectedCode, resCheckTx.Log)
+			suite.Require().Equal(tc.expectedCode, resCheckTx.Code, resCheckTx.Log)
 
 			resDeliverTx := suite.app.DeliverTx(
 				abci.RequestDeliverTx{
 					Tx: bz,
 				},
 			)
-			suite.Require().Equal(resDeliverTx.Code, tc.expectedCode, resDeliverTx.Log)
+			suite.Require().Equal(tc.expectedCode, resDeliverTx.Code, resDeliverTx.Log)
 		})
 	}
 }

@@ -16,11 +16,12 @@ func (suite *KeeperTestSuite) DoSetupTest() {
 	checkTx := false
 
 	// init app
-	suite.app = app.Setup(checkTx, nil)
+	chainID := constants.MainnetFullChainId
+	suite.app = app.Setup(checkTx, nil, chainID)
 
 	// setup context
 	header := testutil.NewHeader(
-		1, time.Now().UTC(), constants.MainnetFullChainId, suite.consAddress, nil, nil,
+		1, time.Now().UTC(), chainID, suite.consAddress, nil, nil,
 	)
 	suite.ctx = suite.app.BaseApp.NewContext(checkTx, header)
 

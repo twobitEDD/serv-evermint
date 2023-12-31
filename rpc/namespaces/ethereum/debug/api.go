@@ -22,11 +22,11 @@ import (
 
 	"github.com/EscanBE/evermint/v12/rpc/backend"
 	rpctypes "github.com/EscanBE/evermint/v12/rpc/types"
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
 	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 // HandlerT keeps track of the cpu profiler and trace execution

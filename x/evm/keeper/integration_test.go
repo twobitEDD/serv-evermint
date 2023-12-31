@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"encoding/json"
 	"github.com/EscanBE/evermint/v12/constants"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"math/big"
 
 	"cosmossdk.io/math"
@@ -21,11 +22,10 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
 	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
 )
 
 var _ = Describe("Feemarket", func() {
@@ -174,6 +174,7 @@ func setupChain(localMinGasPricesStr string) {
 	// Initialize the app, so we can use SetMinGasPrices to set the
 	// validator-specific min-gas-prices setting
 	db := dbm.NewMemDB()
+	chainID := constants.TestnetFullChainId
 	chainApp := chainapp.NewEvermint(
 		log.NewNopLogger(),
 		db,
@@ -183,7 +184,8 @@ func setupChain(localMinGasPricesStr string) {
 		chainapp.DefaultNodeHome,
 		5,
 		encoding.MakeConfig(chainapp.ModuleBasics),
-		simapp.EmptyAppOptions{},
+		simtestutil.NewAppOptionsWithFlagHome(chainapp.DefaultNodeHome),
+		baseapp.SetChainID(chainID),
 		baseapp.SetMinGasPrices(localMinGasPricesStr),
 	)
 
@@ -196,7 +198,7 @@ func setupChain(localMinGasPricesStr string) {
 	// Initialize the chain
 	chainApp.InitChain(
 		abci.RequestInitChain{
-			ChainId:         constants.TestnetFullChainId,
+			ChainId:         chainID,
 			Validators:      []abci.ValidatorUpdate{},
 			AppStateBytes:   stateBytes,
 			ConsensusParams: chainapp.DefaultConsensusParams,

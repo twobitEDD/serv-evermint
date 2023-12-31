@@ -3,31 +3,33 @@ package app
 import (
 	"encoding/json"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"time"
 
+	"cosmossdk.io/simapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/EscanBE/evermint/v12/encoding"
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 )
 
 // EthDefaultConsensusParams defines the default Tendermint consensus params used in
 // Evermint app testing.
-var EthDefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
+var EthDefaultConsensusParams = &tmproto.ConsensusParams{
+	Block: &tmproto.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   -1, // no limit
 	},
@@ -50,6 +52,7 @@ func EthSetup(isCheckTx bool, patchGenesis func(*Evermint, simapp.GenesisState) 
 
 // EthSetupWithDB initializes a new Evermint app. A Nop logger is set in Evermint app.
 func EthSetupWithDB(isCheckTx bool, patchGenesis func(*Evermint, simapp.GenesisState) simapp.GenesisState, db dbm.DB) *Evermint {
+	chainID := constants.TestnetFullChainId
 	chainApp := NewEvermint(log.NewNopLogger(),
 		db,
 		nil,
@@ -58,7 +61,9 @@ func EthSetupWithDB(isCheckTx bool, patchGenesis func(*Evermint, simapp.GenesisS
 		DefaultNodeHome,
 		5,
 		encoding.MakeConfig(ModuleBasics),
-		simapp.EmptyAppOptions{})
+		simtestutil.NewAppOptionsWithFlagHome(DefaultNodeHome),
+		baseapp.SetChainID(chainID),
+	)
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewTestGenesisState(chainApp.AppCodec())
@@ -74,7 +79,7 @@ func EthSetupWithDB(isCheckTx bool, patchGenesis func(*Evermint, simapp.GenesisS
 		// Initialize the chain
 		chainApp.InitChain(
 			abci.RequestInitChain{
-				ChainId:         constants.TestnetFullChainId,
+				ChainId:         chainID,
 				Validators:      []abci.ValidatorUpdate{},
 				ConsensusParams: DefaultConsensusParams,
 				AppStateBytes:   stateBytes,
@@ -168,7 +173,7 @@ func genesisStateWithValSet(codec codec.Codec, genesisState simapp.GenesisState,
 	})
 
 	// update total supply
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
 	genesisState[banktypes.ModuleName] = codec.MustMarshalJSON(bankGenesis)
 
 	return genesisState

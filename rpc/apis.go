@@ -19,7 +19,7 @@ import (
 	"github.com/EscanBE/evermint/v12/rpc/namespaces/ethereum/web3"
 	"github.com/EscanBE/evermint/v12/types"
 
-	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
+	rpcclient "github.com/cometbft/cometbft/rpc/jsonrpc/client"
 )
 
 // RPC namespaces and API version

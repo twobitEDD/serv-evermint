@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/EscanBE/evermint/v12/constants"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -49,6 +50,7 @@ func TestKeeperTestSuite(t *testing.T) {
 // SetupTest setup test environment, it uses`require.TestingT` to support both `testing.T` and `testing.B`.
 func (suite *KeeperTestSuite) SetupTest() {
 	checkTx := false
-	suite.app = app.Setup(checkTx, nil)
+	chainID := constants.TestnetFullChainId
+	suite.app = app.Setup(checkTx, nil, chainID)
 	suite.SetupApp(checkTx)
 }

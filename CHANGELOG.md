@@ -33,6 +33,14 @@ Types of changes (Stanzas):
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
+# Unreleased
+
+**From this version, CometBFT is officially used as the consensus engine.**
+
+### State Machine Breaking
+
+- (deps) [#8](https://github.com/EscanBE/evermint/pull/8) Bump cosmos-sdk v0.47.5 and ibc v7.3.1
+
 # Evermint changelog
 
 ## [v12.2.0] - 2023-12-31

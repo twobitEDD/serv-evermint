@@ -8,9 +8,9 @@ import (
 
 	"cosmossdk.io/math"
 
+	chainparams "cosmossdk.io/simapp/params"
 	"github.com/EscanBE/evermint/v12/ethereum/eip712"
 	"github.com/cosmos/cosmos-sdk/client"
-	chainparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
 	"github.com/tidwall/gjson"

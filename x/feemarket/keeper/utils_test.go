@@ -3,13 +3,13 @@ package keeper_test
 import (
 	"encoding/json"
 	"github.com/EscanBE/evermint/v12/constants"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"math/big"
 	"time"
 
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -31,9 +31,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
 )
 
 func (suite *KeeperTestSuite) SetupApp(checkTx bool) {
@@ -70,7 +70,7 @@ func (suite *KeeperTestSuite) SetupApp(checkTx bool) {
 	validator, err := stakingtypes.NewValidator(valAddr, priv.PubKey(), stakingtypes.Description{})
 	require.NoError(t, err)
 	validator = stakingkeeper.TestingUpdateValidator(suite.app.StakingKeeper, suite.ctx, validator, true)
-	err = suite.app.StakingKeeper.AfterValidatorCreated(suite.ctx, validator.GetOperator())
+	err = suite.app.StakingKeeper.Hooks().AfterValidatorCreated(suite.ctx, validator.GetOperator())
 	require.NoError(t, err)
 
 	err = suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
@@ -143,6 +143,7 @@ func setupTest(localMinGasPrices string) (*ethsecp256k1.PrivKey, banktypes.MsgSe
 }
 
 func setupChain(localMinGasPricesStr string) {
+	chainID := constants.TestnetFullChainId
 	// Initialize the app, so we can use SetMinGasPrices to set the
 	// validator-specific min-gas-prices setting
 	db := dbm.NewMemDB()
@@ -155,8 +156,9 @@ func setupChain(localMinGasPricesStr string) {
 		chainapp.DefaultNodeHome,
 		5,
 		encoding.MakeConfig(chainapp.ModuleBasics),
-		simapp.EmptyAppOptions{},
+		simtestutil.EmptyAppOptions{},
 		baseapp.SetMinGasPrices(localMinGasPricesStr),
+		baseapp.SetChainID(chainID),
 	)
 
 	genesisState := chainapp.NewTestGenesisState(chainApp.AppCodec())
@@ -168,7 +170,7 @@ func setupChain(localMinGasPricesStr string) {
 	// Initialize the chain
 	chainApp.InitChain(
 		abci.RequestInitChain{
-			ChainId:         constants.TestnetFullChainId,
+			ChainId:         chainID,
 			Validators:      []abci.ValidatorUpdate{},
 			AppStateBytes:   stateBytes,
 			ConsensusParams: chainapp.DefaultConsensusParams,

@@ -1,12 +1,13 @@
 package epochs_test
 
 import (
+	"github.com/EscanBE/evermint/v12/constants"
 	"testing"
 	"time"
 
 	feemarkettypes "github.com/EscanBE/evermint/v12/x/feemarket/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	chainapp "github.com/EscanBE/evermint/v12/app"
 	"github.com/EscanBE/evermint/v12/x/epochs"
@@ -19,7 +20,8 @@ func TestEpochsExportGenesis(t *testing.T) {
 	feemarketGenesis.Params.EnableHeight = 1
 	feemarketGenesis.Params.NoBaseFee = false
 
-	app := chainapp.Setup(false, feemarketGenesis)
+	chainID := constants.TestnetFullChainId
+	app := chainapp.Setup(false, feemarketGenesis, chainID)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	chainStartTime := ctx.BlockTime()
@@ -50,7 +52,8 @@ func TestEpochsInitGenesis(t *testing.T) {
 	feemarketGenesis.Params.EnableHeight = 1
 	feemarketGenesis.Params.NoBaseFee = false
 
-	app := chainapp.Setup(false, feemarketGenesis)
+	chainID := constants.TestnetFullChainId
+	app := chainapp.Setup(false, feemarketGenesis, chainID)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	// On init genesis, default epochs information is set
