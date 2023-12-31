@@ -35,6 +35,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Unreleased
 
+### Features
+
+- (store) [#13](https://github.com/EscanBE/evermint/pull/13) Add local `snapshots` management commands (backport #12)
+
 ### Improvement
 
 - (test) [#11](https://github.com/EscanBE/evermint/pull/11) Use Testnet chain-id instead of Mainnet chain-id for tests (backport #10)
