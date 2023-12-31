@@ -16,7 +16,7 @@ func (suite *KeeperTestSuite) DoSetupTest() {
 	checkTx := false
 
 	// init app
-	chainID := constants.MainnetFullChainId
+	chainID := constants.TestnetFullChainId
 	suite.app = app.Setup(checkTx, nil, chainID)
 
 	// setup context

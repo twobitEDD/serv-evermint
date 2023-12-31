@@ -42,7 +42,7 @@ func TestEvermintExport(t *testing.T) {
 		Coins:   sdk.NewCoins(sdk.NewCoin(constants.BaseDenom, sdk.NewInt(100000000000000))),
 	}
 
-	chainID := constants.MainnetFullChainId
+	chainID := constants.TestnetFullChainId
 	db := dbm.NewMemDB()
 	chainApp := NewEvermint(
 		log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics),
