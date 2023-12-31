@@ -44,6 +44,7 @@ rem Change parameter token denominations to native coin
 cat %GENESIS% | jq ".app_state[\"staking\"][\"params\"][\"bond_denom\"]=\"%MIN_DENOM%\""   >   %TMPGENESIS% && move %TMPGENESIS% %GENESIS%
 cat %GENESIS% | jq ".app_state[\"crisis\"][\"constant_fee\"][\"denom\"]=\"%MIN_DENOM%\"" > %TMPGENESIS% && move %TMPGENESIS% %GENESIS%
 cat %GENESIS% | jq ".app_state[\"gov\"][\"deposit_params\"][\"min_deposit\"][0][\"denom\"]=\"%MIN_DENOM%\"" > %TMPGENESIS% && move %TMPGENESIS% %GENESIS%
+cat %GENESIS% | jq ".app_state[\"gov\"][\"params\"][\"min_deposit\"][0][\"denom\"]=\"%MIN_DENOM%\"" > %TMPGENESIS% && move %TMPGENESIS% %GENESIS%
 cat %GENESIS% | jq ".app_state[\"mint\"][\"params\"][\"mint_denom\"]=\"%MIN_DENOM%\"" > %TMPGENESIS% && move %TMPGENESIS% %GENESIS%
 
 rem increase block time (?)
@@ -67,7 +68,5 @@ rem Collect genesis tx
 rem Run this to ensure everything worked and that the genesis file is setup correctly
 %BINARY% validate-genesis
 
-
-
 rem Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-%BINARY% start --pruning=nothing %TRACE% --log_level %LOGLEVEL% --minimum-gas-prices=0.0001%MIN_DENOM%
+%BINARY% start --pruning=nothing %TRACE% --log_level %LOGLEVEL% --minimum-gas-prices=0.0001%MIN_DENOM% --json-rpc.api eth,txpool,personal,net,debug,web3 --api.enable --grpc.enable true --chain-id %CHAINID%
