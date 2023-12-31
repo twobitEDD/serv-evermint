@@ -46,6 +46,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 - (test) [#10](https://github.com/EscanBE/evermint/pull/10) Use Testnet chain-id instead of Mainnet chain-id for tests
 
+### Bug Fixes
+
+- (rename-chain) [#18](https://github.com/EscanBE/evermint/pull/18) Check network chain-id string must contain EVM chain-id
+
 ### State Machine Breaking
 
 - (deps) [#8](https://github.com/EscanBE/evermint/pull/8) Bump cosmos-sdk v0.47.5 and ibc v7.3.1
