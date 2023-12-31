@@ -57,7 +57,7 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 
 	// Set Context
 	header := testutil.NewHeader(
-		1, time.Now().UTC(), constants.MainnetFullChainId, suite.consAddress, nil, nil,
+		1, time.Now().UTC(), constants.TestnetFullChainId, suite.consAddress, nil, nil,
 	)
 	suite.ctx = suite.app.BaseApp.NewContext(false, header)
 

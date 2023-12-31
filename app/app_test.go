@@ -52,7 +52,7 @@ func TestEvermintExport(t *testing.T) {
 	// Initialize the chain
 	chainApp.InitChain(
 		abci.RequestInitChain{
-			ChainId:       constants.MainnetFullChainId,
+			ChainId:       constants.TestnetFullChainId,
 			Validators:    []abci.ValidatorUpdate{},
 			AppStateBytes: stateBytes,
 		},

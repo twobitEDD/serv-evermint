@@ -45,7 +45,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState())
 	header := testutil.NewHeader(
-		1, time.Now().UTC(), constants.MainnetFullChainId, consAddress, nil, nil,
+		1, time.Now().UTC(), constants.TestnetFullChainId, consAddress, nil, nil,
 	)
 	suite.ctx = suite.app.BaseApp.NewContext(false, header)
 
