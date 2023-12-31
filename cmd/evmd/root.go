@@ -131,15 +131,15 @@ In this context, we gonna to export snapshot for height 100000
 > sudo systemctl stop %s
 > %s snapshots export --height 100000
 You gonna get state-sync snapshot at "%s/snapshots/" dir as usual:
-> Log: Snapshot created at height 100000, format 3, chunks 10
+> Log: Snapshot created at height 100000, format 2, chunks 10
 2. Pack snapshot with "dump":
-> %s snapshots dump 100000 3
-You gonna get "100000-3.tar.gz" at current working directory
+> %s snapshots dump 100000 2
+You gonna get "100000-2.tar.gz" at current working directory
 3. Share to another node or reset data of current node with "unsafe-reset-all"
 4. Unsafe-reset the node and unpack snapshot with "load":
-> %s snapshots load 100000-3.tar.gz
+> %s snapshots load 100000-2.tar.gz
 5. Then restore app state with "restore":
-> %s snapshots restore 100000 3
+> %s snapshots restore 100000 2
 You gonna get "data/application.db" unpacked
 6. Now bootstrap state with "bootstrap-state":
 %s tendermint bootstrap-state
