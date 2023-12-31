@@ -90,6 +90,9 @@ func main() {
 	} else if strings.ToLower(constants.MainnetChainID) != constants.MainnetChainID {
 		fmt.Println("ERR: mainnet chain id must be in lower case")
 		os.Exit(1)
+	} else if !strings.HasSuffix(constants.MainnetChainID, fmt.Sprintf("_%d", constants.MainnetEIP155ChainId)) {
+		fmt.Printf("ERR: invalid mainnet chain-id: (constants.MainnetChainID) %s must containts %d (constants.MainnetEIP155ChainId)\n", constants.MainnetChainID, constants.MainnetEIP155ChainId)
+		os.Exit(1)
 	}
 
 	if constants.TestnetChainID == EvermintOg_TestnetChainID {
@@ -98,6 +101,9 @@ func main() {
 	} else if strings.ToLower(constants.TestnetChainID) != constants.TestnetChainID {
 		fmt.Println("ERR: testnet chain id must be in lower case")
 		os.Exit(1)
+	} else if !strings.HasSuffix(constants.TestnetChainID, fmt.Sprintf("_%d", constants.TestnetEIP155ChainId)) {
+		fmt.Printf("ERR: invalid testnet chain-id: (constants.TestnetChainID) %s must containts %d (constants.TestnetEIP155ChainId)\n", constants.TestnetChainID, constants.TestnetEIP155ChainId)
+		os.Exit(1)
 	}
 
 	if constants.DevnetChainID == EvermintOg_DevnetChainID {
@@ -105,6 +111,9 @@ func main() {
 		os.Exit(1)
 	} else if strings.ToLower(constants.DevnetChainID) != constants.DevnetChainID {
 		fmt.Println("ERR: devnet chain id must be in lower case")
+		os.Exit(1)
+	} else if !strings.HasSuffix(constants.DevnetChainID, fmt.Sprintf("_%d", constants.DevnetEIP155ChainId)) {
+		fmt.Printf("ERR: invalid devnet chain-id: (constants.DevnetChainID) %s must containts %d (constants.DevnetEIP155ChainId)\n", constants.DevnetChainID, constants.DevnetEIP155ChainId)
 		os.Exit(1)
 	}
 
