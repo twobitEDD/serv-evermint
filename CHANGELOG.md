@@ -59,6 +59,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 - (deps) [#8](https://github.com/EscanBE/evermint/pull/8) Bump cosmos-sdk v0.47.5 and ibc v7.3.1
 - (evm) [#25](https://github.com/EscanBE/evermint/pull/25) Enable [EIP-3855](https://eips.ethereum.org/EIPS/eip-3855) by default
+- (deps) [#36](https://github.com/EscanBE/evermint/pull/36) Bump CometBFT to v0.37.4
 
 # Evermint changelog
 
