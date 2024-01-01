@@ -241,6 +241,27 @@ func (suite *AnteTestSuite) TestEthGasConsumeDecorator() {
 	dynamicFeeTx.From = addr.Hex()
 	dynamicFeeTxPriority := int64(1)
 
+	zeroBalanceAddr := testutiltx.GenerateAddress()
+	zeroBalanceAcc := suite.app.AccountKeeper.NewAccountWithAddress(suite.ctx, zeroBalanceAddr.Bytes())
+	suite.app.AccountKeeper.SetAccount(suite.ctx, zeroBalanceAcc)
+	zeroFeeLegacyTx := evmtypes.NewTx(&evmtypes.EvmTxArgs{
+		ChainID:  chainID,
+		Nonce:    1,
+		Amount:   big.NewInt(10),
+		GasLimit: 1_000_000,
+		GasPrice: big.NewInt(0),
+	})
+	zeroFeeLegacyTx.From = zeroBalanceAddr.Hex()
+	zeroFeeAccessListTx := evmtypes.NewTx(&evmtypes.EvmTxArgs{
+		ChainID:  chainID,
+		Nonce:    1,
+		Amount:   big.NewInt(10),
+		GasLimit: 1_000_000,
+		GasPrice: big.NewInt(0),
+		Accesses: &ethtypes.AccessList{{Address: zeroBalanceAddr, StorageKeys: nil}},
+	})
+	zeroFeeAccessListTx.From = zeroBalanceAddr.Hex()
+
 	var vmdb *statedb.StateDB
 
 	testCases := []struct {
@@ -424,6 +445,40 @@ func (suite *AnteTestSuite) TestEthGasConsumeDecorator() {
 					rewards,
 					"the total rewards should be the same as after the setup, since the fees are paid using the account balance",
 				)
+			},
+		},
+		{
+			name:     "success - zero fees (disabled base fee + min gas price)",
+			tx:       zeroFeeLegacyTx,
+			gasLimit: zeroFeeLegacyTx.GetGas(),
+			malleate: func(ctx sdk.Context) sdk.Context {
+				suite.disableBaseFee(ctx)
+				suite.disableMinGasPrice(ctx)
+				return ctx
+			},
+			expPass:     true,
+			expPanic:    false,
+			expPriority: 0,
+			postCheck: func(ctx sdk.Context) {
+				finalBalance := suite.app.BankKeeper.GetBalance(ctx, zeroBalanceAddr.Bytes(), constants.BaseDenom)
+				suite.Require().True(finalBalance.IsZero())
+			},
+		},
+		{
+			name:     "success - zero fees (disabled base fee + min gas price) - legacy tx",
+			tx:       zeroFeeLegacyTx,
+			gasLimit: zeroFeeLegacyTx.GetGas(),
+			malleate: func(ctx sdk.Context) sdk.Context {
+				suite.disableBaseFee(ctx)
+				suite.disableMinGasPrice(ctx)
+				return ctx
+			},
+			expPass:     true,
+			expPanic:    false,
+			expPriority: 0,
+			postCheck: func(ctx sdk.Context) {
+				finalBalance := suite.app.BankKeeper.GetBalance(ctx, zeroBalanceAddr.Bytes(), constants.BaseDenom)
+				suite.Require().True(finalBalance.IsZero())
 			},
 		},
 	}
