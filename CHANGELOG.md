@@ -42,6 +42,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Bug Fixes
 
 - (gas) [#29](https://github.com/EscanBE/evermint/pull/29) Adjust max-gas computation logic to prevent potential out of gas issue (backport #28)
+- (fee) [#31](https://github.com/EscanBE/evermint/pull/31) Handle deduct zero fee of zero fee tx when x/feemarket disabled and min gas price is zero (backport #30)
 
 ### State Machine Breaking
 
