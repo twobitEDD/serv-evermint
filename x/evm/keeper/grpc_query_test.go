@@ -25,10 +25,10 @@ import (
 const invalidAddress = "0x0000"
 
 // expGasConsumed is the gas consumed in traceTx setup
-const expGasConsumed = 0x18e9
+const expGasConsumed = 0x18f5
 
 // expGasConsumedWithFeeMkt is the gas consumed in traceTx setup with enabled x/feemarket
-const expGasConsumedWithFeeMkt = 0x18e3
+const expGasConsumedWithFeeMkt = 0x18ef
 
 func (suite *KeeperTestSuite) TestQueryAccount() {
 	var (
@@ -938,7 +938,7 @@ func (suite *KeeperTestSuite) TestTraceTx() {
 			},
 			expPass:        true,
 			traceResponse:  "{\"gas\":34828,\"failed\":false,\"returnValue\":\"0000000000000000000000000000000000000000000000000000000000000001\",\"structLogs\":[{\"pc\":0,\"op\":\"PUSH1\",\"gas\":",
-			expGasConsumed: 0x364a, // gas consumed in traceTx setup + gas consumed in malleate func
+			expGasConsumed: 0x36da, // gas consumed in traceTx setup + gas consumed in malleate func
 		},
 		{
 			msg: "invalid chain id",
