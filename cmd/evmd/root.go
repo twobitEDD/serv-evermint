@@ -389,3 +389,7 @@ func initTendermintConfig() *tmcfg.Config {
 
 	return cfg
 }
+
+func init() {
+	flags.DefaultGasAdjustment = 1.2
+}
