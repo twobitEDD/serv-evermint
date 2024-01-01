@@ -49,6 +49,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Bug Fixes
 
 - (rename-chain) [#18](https://github.com/EscanBE/evermint/pull/18) Check network chain-id string must contain EVM chain-id
+- (gov) [#21](https://github.com/EscanBE/evermint/pull/21) Setting max metadata length for gov proposals submission
 
 ### State Machine Breaking
 

@@ -466,10 +466,8 @@ func NewEvermint(
 		AddRoute(incentivestypes.RouterKey, incentives.NewIncentivesProposalHandler(&chainApp.IncentivesKeeper))
 
 	govConfig := govtypes.DefaultConfig()
-	/*
-		Example of setting gov params:
-		govConfig.MaxMetadataLen = 10000
-	*/
+	govConfig.MaxMetadataLen = 10000
+
 	govKeeper := govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], chainApp.AccountKeeper, chainApp.BankKeeper,
 		stakingKeeper, chainApp.MsgServiceRouter(), govConfig, authAddr,
