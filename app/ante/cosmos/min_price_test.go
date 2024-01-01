@@ -2,6 +2,7 @@ package cosmos_test
 
 import (
 	sdkmath "cosmossdk.io/math"
+	"fmt"
 	cosmosante "github.com/EscanBE/evermint/v12/app/ante/cosmos"
 	"github.com/EscanBE/evermint/v12/constants"
 	"github.com/EscanBE/evermint/v12/rename_chain/marker"
@@ -105,8 +106,8 @@ func (suite *AnteTestSuite) TestMinGasPriceDecorator() {
 			true,
 		},
 		{
-			"invalid cosmos tx with wrong denom",
-			func() sdk.Tx {
+			name: "invalid cosmos tx with wrong denom",
+			malleate: func() sdk.Tx {
 				params := suite.app.FeeMarketKeeper.GetParams(suite.ctx)
 				params.MinGasPrice = sdk.NewDec(10)
 				err := suite.app.FeeMarketKeeper.SetParams(suite.ctx, params)
@@ -115,9 +116,56 @@ func (suite *AnteTestSuite) TestMinGasPriceDecorator() {
 				txBuilder := suite.CreateTestCosmosTxBuilder(sdkmath.NewInt(10), "stake", &testMsg)
 				return txBuilder.GetTx()
 			},
-			false,
-			"provided fee < minimum global fee",
-			true,
+			expPass:             false,
+			errMsg:              fmt.Sprintf("fee can only be %s", constants.BaseDenom),
+			allowPassOnSimulate: false,
+		},
+		{
+			name: "valid cosmos tx but wrong fee denom",
+			malleate: func() sdk.Tx {
+				params := suite.app.FeeMarketKeeper.GetParams(suite.ctx)
+				params.MinGasPrice = sdk.NewDec(10)
+				err := suite.app.FeeMarketKeeper.SetParams(suite.ctx, params)
+				suite.Require().NoError(err)
+
+				txBuilder := suite.CreateTestCosmosTxBuilder(sdkmath.NewInt(10), "stake", &testMsg)
+				txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("stake", sdkmath.NewInt(20))))
+				return txBuilder.GetTx()
+			},
+			expPass:             false,
+			errMsg:              fmt.Sprintf("fee can only be %s", constants.BaseDenom),
+			allowPassOnSimulate: false,
+		},
+		{
+			name: "valid cosmos tx, multiple fee and contains at least one is wrong fee denom",
+			malleate: func() sdk.Tx {
+				params := suite.app.FeeMarketKeeper.GetParams(suite.ctx)
+				params.MinGasPrice = sdk.NewDec(10)
+				err := suite.app.FeeMarketKeeper.SetParams(suite.ctx, params)
+				suite.Require().NoError(err)
+
+				txBuilder := suite.CreateTestCosmosTxBuilder(sdkmath.NewInt(10), "stake", &testMsg)
+				txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("stake", sdkmath.NewInt(20)), sdk.NewCoin(constants.BaseDenom, sdkmath.NewInt(20))))
+				return txBuilder.GetTx()
+			},
+			expPass:             false,
+			errMsg:              fmt.Sprintf("fee can only be %s", constants.BaseDenom),
+			allowPassOnSimulate: false,
+		},
+		{
+			name: "valid cosmos tx, insufficient fee",
+			malleate: func() sdk.Tx {
+				params := suite.app.FeeMarketKeeper.GetParams(suite.ctx)
+				params.MinGasPrice = sdk.NewDec(10)
+				err := suite.app.FeeMarketKeeper.SetParams(suite.ctx, params)
+				suite.Require().NoError(err)
+
+				txBuilder := suite.CreateTestCosmosTxBuilder(sdkmath.NewInt(1), constants.BaseDenom, &testMsg)
+				return txBuilder.GetTx()
+			},
+			expPass:             false,
+			errMsg:              "provided fee < minimum global fee",
+			allowPassOnSimulate: true,
 		},
 	}
 

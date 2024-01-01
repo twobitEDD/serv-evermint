@@ -38,6 +38,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 - (flags) [#23](https://github.com/EscanBE/evermint/pull/23) ~~Change default gas adjustment to 1.2 and~~ update default value of some flags (backport #22), partially reverted by [#27](https://github.com/EscanBE/evermint/pull/27)
+- (fee) [#38](https://github.com/EscanBE/evermint/pull/38) Reject cosmos txs that fee denom is not evm denom (backport #37)
 
 ### Bug Fixes
 
