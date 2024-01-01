@@ -45,6 +45,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvement
 
 - (test) [#10](https://github.com/EscanBE/evermint/pull/10) Use Testnet chain-id instead of Mainnet chain-id for tests
+- (flags) [#22](https://github.com/EscanBE/evermint/pull/22) Change default gas adjustment to 1.2 and update default value of some flags
 
 ### Bug Fixes
 
