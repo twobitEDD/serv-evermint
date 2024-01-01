@@ -404,6 +404,31 @@ var _ = Describe("Fee distribution:", Ordered, func() {
 					Expect(feeColectorBalance).To(Equal(preFeeColectorBalance.Add(validatorCoins)))
 					s.Commit()
 				})
+
+				It("should emits events", func() {
+					gasTipCap := big.NewInt(10000)
+					gasFeeCap := new(big.Int).Add(s.app.FeeMarketKeeper.GetBaseFee(s.ctx), gasTipCap)
+					res := contractInteract(
+						userKey,
+						&contractAddress,
+						nil,
+						gasFeeCap,
+						gasTipCap,
+						&ethtypes.AccessList{},
+					)
+					Expect(res.IsOK()).To(BeTrue())
+
+					var found bool
+					for _, event := range res.GetEvents() {
+						if event.Type == types.EventTypeDistributeDevRevenue {
+							found = true
+							break
+						}
+					}
+					Expect(found).To(BeTrue())
+
+					s.Commit()
+				})
 			})
 
 			Context("with a 100/0 validators-developers revenue", func() {
@@ -434,6 +459,35 @@ var _ = Describe("Fee distribution:", Ordered, func() {
 					Expect(feeColectorBalance).To(Equal(preFeeColectorBalance.Add(validatorCoins)))
 					s.Commit()
 				})
+
+				It("should not emit event", func() {
+					preBalance := s.app.BankKeeper.GetBalance(s.ctx, deployerAddress, denom)
+					gasTipCap := big.NewInt(10000)
+					gasFeeCap := new(big.Int).Add(s.app.FeeMarketKeeper.GetBaseFee(s.ctx), gasTipCap)
+					res := contractInteract(
+						userKey,
+						&contractAddress,
+						nil,
+						gasFeeCap,
+						gasTipCap,
+						&ethtypes.AccessList{},
+					)
+					Expect(res.IsOK()).To(BeTrue())
+
+					balance := s.app.BankKeeper.GetBalance(s.ctx, deployerAddress, denom)
+					Expect(balance).To(Equal(preBalance))
+
+					var found bool
+					for _, event := range res.GetEvents() {
+						if event.Type == types.EventTypeDistributeDevRevenue {
+							found = true
+							break
+						}
+					}
+					Expect(found).To(BeFalse())
+
+					s.Commit()
+				})
 			})
 
 			Context("with a 0/100 validators-developers revenue", func() {
@@ -462,6 +516,31 @@ var _ = Describe("Fee distribution:", Ordered, func() {
 					balance := s.app.BankKeeper.GetBalance(s.ctx, deployerAddress, denom)
 					Expect(balance).To(Equal(preBalance.Add(developerCoins)))
 					Expect(feeColectorBalance).To(Equal(preFeeColectorBalance))
+					s.Commit()
+				})
+
+				It("should emits events", func() {
+					gasTipCap := big.NewInt(10000)
+					gasFeeCap := new(big.Int).Add(s.app.FeeMarketKeeper.GetBaseFee(s.ctx), gasTipCap)
+					res := contractInteract(
+						userKey,
+						&contractAddress,
+						nil,
+						gasFeeCap,
+						gasTipCap,
+						&ethtypes.AccessList{},
+					)
+					Expect(res.IsOK()).To(BeTrue())
+
+					var found bool
+					for _, event := range res.GetEvents() {
+						if event.Type == types.EventTypeDistributeDevRevenue {
+							found = true
+							break
+						}
+					}
+					Expect(found).To(BeTrue())
+
 					s.Commit()
 				})
 			})
