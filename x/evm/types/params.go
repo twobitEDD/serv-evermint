@@ -20,14 +20,9 @@ var (
 	DefaultEnableCreate = true
 	// DefaultEnableCall enables contract calls (i.e true)
 	DefaultEnableCall = true
+	// DefaultExtraEIPs defines the list of all EIPs that are enabled by default
+	DefaultExtraEIPs = []int64{3855}
 )
-
-// AvailableExtraEIPs define the list of all EIPs that can be enabled by the
-// EVM interpreter. These EIPs are applied in order and can override the
-// instruction sets from the latest hard fork enabled by the ChainConfig. For
-// more info check:
-// https://github.com/ethereum/go-ethereum/blob/master/core/vm/interpreter.go#L97
-var AvailableExtraEIPs = []int64{1344, 1884, 2200, 2929, 3198, 3529}
 
 // NewParams creates a new Params instance
 func NewParams(evmDenom string, allowUnprotectedTxs, enableCreate, enableCall bool, config ChainConfig, extraEIPs []int64) Params {
@@ -49,7 +44,7 @@ func DefaultParams() Params {
 		EnableCreate:        DefaultEnableCreate,
 		EnableCall:          DefaultEnableCall,
 		ChainConfig:         DefaultChainConfig(),
-		ExtraEIPs:           nil,
+		ExtraEIPs:           DefaultExtraEIPs,
 		AllowUnprotectedTxs: DefaultAllowUnprotectedTxs,
 	}
 }
