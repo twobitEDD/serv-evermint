@@ -37,7 +37,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
-- (flags) [#23](https://github.com/EscanBE/evermint/pull/23) Change default gas adjustment to 1.2 and update default value of some flags (backport #22)
+- (flags) [#23](https://github.com/EscanBE/evermint/pull/23) ~~Change default gas adjustment to 1.2 and~~ update default value of some flags (backport #22), partially reverted by [#27](https://github.com/EscanBE/evermint/pull/27)
 
 ### State Machine Breaking
 
