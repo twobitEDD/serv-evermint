@@ -131,6 +131,12 @@ func (suite *AnteTestSuite) TestClaimStakingRewardsIfNecessary() {
 			expErr:   false,
 		},
 		{
+			name:     "pass - zero amount to be claimed",
+			malleate: func(addr sdk.AccAddress) {},
+			amount:   sdk.Coins{},
+			expErr:   false,
+		},
+		{
 			name:        "fail - wrong coin denom",
 			malleate:    func(addr sdk.AccAddress) {},
 			amount:      sdk.Coins{sdk.Coin{Denom: "wrongCoin", Amount: sdk.NewInt(1000)}},

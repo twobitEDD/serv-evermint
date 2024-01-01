@@ -17,6 +17,10 @@ func ClaimStakingRewardsIfNecessary(
 	addr sdk.AccAddress,
 	amount sdk.Coins,
 ) error {
+	if amount.IsZero() {
+		return nil
+	}
+
 	stakingDenom := stakingKeeper.BondDenom(ctx)
 	found, amountInStakingDenom := amount.Find(stakingDenom)
 	if !found {
