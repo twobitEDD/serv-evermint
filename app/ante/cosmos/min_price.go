@@ -31,14 +31,21 @@ func (mpd MinGasPriceDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate 
 		return ctx, errorsmod.Wrapf(errortypes.ErrInvalidType, "invalid transaction type %T, expected sdk.FeeTx", tx)
 	}
 
+	feeCoins := feeTx.GetFee()
+	evmParams := mpd.evmKeeper.GetParams(ctx)
+	evmDenom := evmParams.GetEvmDenom()
+
+	if !isNoFeeProvidedOrOnlyEvmDenom(feeCoins, evmDenom) {
+		return ctx, errorsmod.Wrapf(errortypes.ErrInvalidCoins, "fee can only be %s", evmDenom)
+	}
+
 	minGasPrice := mpd.feesKeeper.GetParams(ctx).MinGasPrice
 
 	// Short-circuit if min gas price is 0 or if simulating
 	if minGasPrice.IsZero() || simulate {
 		return next(ctx, tx, simulate)
 	}
-	evmParams := mpd.evmKeeper.GetParams(ctx)
-	evmDenom := evmParams.GetEvmDenom()
+
 	minGasPrices := sdk.DecCoins{
 		{
 			Denom:  evmDenom,
@@ -46,7 +53,6 @@ func (mpd MinGasPriceDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate 
 		},
 	}
 
-	feeCoins := feeTx.GetFee()
 	gas := feeTx.GetGas()
 
 	requiredFees := make(sdk.Coins, 0)
@@ -77,4 +83,17 @@ func (mpd MinGasPriceDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate 
 	}
 
 	return next(ctx, tx, simulate)
+}
+
+// isNoFeeProvidedOrOnlyEvmDenom returns true if fees is empty or only accept one fee denom which is the evm denom
+func isNoFeeProvidedOrOnlyEvmDenom(fees sdk.Coins, evmDenom string) bool {
+	if len(fees) == 0 {
+		return true
+	}
+
+	if len(fees) > 1 {
+		return false
+	}
+
+	return fees[0].Denom == evmDenom
 }
