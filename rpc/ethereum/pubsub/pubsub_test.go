@@ -85,3 +85,43 @@ func TestSubscribe(t *testing.T) {
 	wg.Wait()
 	time.Sleep(time.Second)
 }
+
+func TestConcurrencyPubSub(t *testing.T) {
+	q := NewEventBus()
+
+	lolSrc := make(chan coretypes.ResultEvent)
+	topicName := "lol"
+
+	err := q.AddTopic(topicName, lolSrc)
+	require.NoError(t, err)
+
+	var wg sync.WaitGroup
+	emptyMsg := coretypes.ResultEvent{}
+	for s := 1; s <= 100; s++ {
+		// subscribe
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			_, _, err := q.Subscribe(topicName)
+			require.NoError(t, err)
+		}()
+
+		// send event
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			lolSrc <- emptyMsg
+		}()
+	}
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		time.Sleep(2 * time.Second)
+
+		close(lolSrc)
+	}()
+
+	wg.Wait()
+}
