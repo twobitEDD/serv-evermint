@@ -33,6 +33,12 @@ Types of changes (Stanzas):
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
+# Unreleased
+
+### Improvements
+
+- (flags) [#23](https://github.com/EscanBE/evermint/pull/23) Change default gas adjustment to 1.2 and update default value of some flags (backport #22)
+
 # Evermint changelog
 
 ## [v12.2.1] - 2024-01-01
