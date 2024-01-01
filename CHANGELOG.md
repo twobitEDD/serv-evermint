@@ -39,6 +39,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 - (flags) [#23](https://github.com/EscanBE/evermint/pull/23) Change default gas adjustment to 1.2 and update default value of some flags (backport #22)
 
+### State Machine Breaking
+
+- (evm) [#26](https://github.com/EscanBE/evermint/pull/26) Enable [EIP-3855](https://eips.ethereum.org/EIPS/eip-3855) by default (backport #25)
+
 # Evermint changelog
 
 ## [v12.2.1] - 2024-01-01
