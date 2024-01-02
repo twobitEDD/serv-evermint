@@ -56,6 +56,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (fee) [#30](https://github.com/EscanBE/evermint/pull/30) Handle deduct zero fee of zero fee tx when x/feemarket disabled and min gas price is zero
 - (rpc+store) [#32](https://github.com/EscanBE/evermint/pull/32) Fix some concurrency issue in rpc and correct iavl tag
 
+### Client Breaking
+
+- (docs) [#43](https://github.com/EscanBE/evermint/pull/43) Fix proto dependencies + rebuild swagger
+
 ### State Machine Breaking
 
 - (deps) [#8](https://github.com/EscanBE/evermint/pull/8) Bump cosmos-sdk v0.47.5 and ibc v7.3.1

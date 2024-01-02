@@ -3396,8 +3396,7 @@ paths:
 
                   Tendermint sha256 hash of the transaction bytes. See
 
-                  https://github.com/cometbft/cometbft/issues/6539 for
-                  reference
+                  https://github.com/cometbft/cometbft/issues/6539 for reference
               logs:
                 type: array
                 items:
@@ -3738,15 +3737,11 @@ paths:
                       enable_call toggles state transitions that use the vm.Call
                       function
                   extra_eips:
+                    type: array
+                    items:
+                      type: string
+                      format: int64
                     title: extra_eips defines the additional EIPs for the vm.Config
-                    type: object
-                    properties:
-                      eips:
-                        type: array
-                        items:
-                          type: string
-                          format: int64
-                        title: eips defines the additional EIPs for the vm.Config
                   chain_config:
                     title: >-
                       chain_config defines the EVM chain configuration
@@ -4706,6 +4701,12 @@ paths:
           required: false
           type: string
           format: int64
+        - name: block_max_gas
+          description: block_max_gas of the block of the requested transaction.
+          in: query
+          required: false
+          type: string
+          format: int64
       tags:
         - Query
   /evmos/evm/v1/trace_tx:
@@ -5211,6 +5212,12 @@ paths:
           description: >-
             chain_id is the the eip155 chain id parsed from the requested block
             header.
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: block_max_gas
+          description: block_max_gas of the block of the requested transaction.
           in: query
           required: false
           type: string
@@ -5904,6 +5911,65 @@ paths:
           description: >-
             hash (in hex format) or denom (full denom with ibc prefix) of the
             denomination trace information.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /ibc/apps/transfer/v1/denoms/{denom}/total_escrow:
+    get:
+      summary: >-
+        TotalEscrowForDenom returns the total amount of tokens in escrow based
+        on the denom.
+      operationId: TotalEscrowForDenom
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            description: >-
+              QueryTotalEscrowForDenomResponse is the response type for
+              TotalEscrowForDenom RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: denom
           in: path
           required: true
           type: string
@@ -8422,7 +8488,13 @@ paths:
                       type: string
                     description: >-
                       allowed_clients defines the list of allowed client state
-                      types.
+                      types which can be created
+
+                      and interacted with. If a client type is removed from the
+                      allowed clients list, usage
+
+                      of this client will be disabled until it is added again to
+                      the list.
             description: >-
               QueryClientParamsResponse is the response type for the
               Query/ClientParams RPC
@@ -21870,7 +21942,7 @@ paths:
   /cosmos/distribution/v1beta1/delegators/{delegator_address}/rewards:
     get:
       summary: |-
-        DelegationTotalRewards queries the total rewards accrued by each
+        DelegationTotalRewards queries the total rewards accrued by a each
         validator.
       operationId: DelegationTotalRewards
       responses:
@@ -27403,25 +27475,15 @@ paths:
                     description: >-
                       The ratio representing the proportion of the deposit value
                       that must be paid at proposal submission.
-                  proposal_cancel_ratio:
-                    type: string
-                    description: >-
-                      The cancel ratio which will not be returned back to the
-                      depositors when a proposal is cancelled.
-
-
-                      Since: cosmos-sdk 0.48
-                  proposal_cancel_dest:
-                    type: string
-                    description: >-
-                      The address which will receive (proposal_cancel_ratio *
-                      deposit) proposal deposits.
-
-                      If empty, the (proposal_cancel_ratio * deposit) proposal
-                      deposits will be burned.
-
-
-                      Since: cosmos-sdk 0.48
+                  burn_vote_quorum:
+                    type: boolean
+                    title: burn deposits if a proposal does not meet quorum
+                  burn_proposal_deposit_prevote:
+                    type: boolean
+                    title: burn deposits if the proposal does not enter voting period
+                  burn_vote_veto:
+                    type: boolean
+                    title: burn deposits if quorum with vote type no_veto is met
             description: >-
               QueryParamsResponse is the response type for the Query/Params RPC
               method.
@@ -32893,7 +32955,7 @@ paths:
                       proposer_address:
                         type: string
                         format: byte
-                    description: Header defines the structure of a Tendermint block header.
+                    description: Header defines the structure of a block header.
                   valset:
                     type: array
                     items:
@@ -39395,7 +39457,7 @@ paths:
                       proposer_address:
                         type: string
                         format: byte
-                    description: Header defines the structure of a Tendermint block header.
+                    description: Header defines the structure of a block header.
                   data:
                     type: object
                     properties:
@@ -39641,8 +39703,8 @@ paths:
                                               type: string
                                               format: byte
                                           description: >-
-                                            Header defines the structure of a
-                                            Tendermint block header.
+                                            Header defines the structure of a block
+                                            header.
                                         commit:
                                           type: object
                                           properties:
@@ -39723,7 +39785,7 @@ paths:
                                                     format: byte
                                                 title: >-
                                                   PublicKey defines the keys available for
-                                                  use with Tendermint Validators
+                                                  use with Validators
                                               voting_power:
                                                 type: string
                                                 format: int64
@@ -39747,7 +39809,7 @@ paths:
                                                   format: byte
                                               title: >-
                                                 PublicKey defines the keys available for
-                                                use with Tendermint Validators
+                                                use with Validators
                                             voting_power:
                                               type: string
                                               format: int64
@@ -39779,7 +39841,7 @@ paths:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -40186,8 +40248,8 @@ paths:
                                               type: string
                                               format: byte
                                           description: >-
-                                            Header defines the structure of a
-                                            Tendermint block header.
+                                            Header defines the structure of a block
+                                            header.
                                         commit:
                                           type: object
                                           properties:
@@ -40268,7 +40330,7 @@ paths:
                                                     format: byte
                                                 title: >-
                                                   PublicKey defines the keys available for
-                                                  use with Tendermint Validators
+                                                  use with Validators
                                               voting_power:
                                                 type: string
                                                 format: int64
@@ -40292,7 +40354,7 @@ paths:
                                                   format: byte
                                               title: >-
                                                 PublicKey defines the keys available for
-                                                use with Tendermint Validators
+                                                use with Validators
                                             voting_power:
                                               type: string
                                               format: int64
@@ -40324,7 +40386,7 @@ paths:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -40706,7 +40768,7 @@ paths:
                       proposer_address:
                         type: string
                         format: byte
-                    description: Header defines the structure of a Tendermint block header.
+                    description: Header defines the structure of a block header.
                   data:
                     type: object
                     properties:
@@ -40952,8 +41014,8 @@ paths:
                                               type: string
                                               format: byte
                                           description: >-
-                                            Header defines the structure of a
-                                            Tendermint block header.
+                                            Header defines the structure of a block
+                                            header.
                                         commit:
                                           type: object
                                           properties:
@@ -41034,7 +41096,7 @@ paths:
                                                     format: byte
                                                 title: >-
                                                   PublicKey defines the keys available for
-                                                  use with Tendermint Validators
+                                                  use with Validators
                                               voting_power:
                                                 type: string
                                                 format: int64
@@ -41058,7 +41120,7 @@ paths:
                                                   format: byte
                                               title: >-
                                                 PublicKey defines the keys available for
-                                                use with Tendermint Validators
+                                                use with Validators
                                             voting_power:
                                               type: string
                                               format: int64
@@ -41090,7 +41152,7 @@ paths:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -41497,8 +41559,8 @@ paths:
                                               type: string
                                               format: byte
                                           description: >-
-                                            Header defines the structure of a
-                                            Tendermint block header.
+                                            Header defines the structure of a block
+                                            header.
                                         commit:
                                           type: object
                                           properties:
@@ -41579,7 +41641,7 @@ paths:
                                                     format: byte
                                                 title: >-
                                                   PublicKey defines the keys available for
-                                                  use with Tendermint Validators
+                                                  use with Validators
                                               voting_power:
                                                 type: string
                                                 format: int64
@@ -41603,7 +41665,7 @@ paths:
                                                   format: byte
                                               title: >-
                                                 PublicKey defines the keys available for
-                                                use with Tendermint Validators
+                                                use with Validators
                                             voting_power:
                                               type: string
                                               format: int64
@@ -41635,7 +41697,7 @@ paths:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -44761,7 +44823,7 @@ definitions:
 
       excludes the team vesting distribution, as this is minted once at genesis.
 
-      The initial InflationDistribution can be calculated from the Evermint Coin
+      The initial InflationDistribution can be calculated from the native token
 
       Model like this:
 
@@ -45135,16 +45197,6 @@ definitions:
         format: uint64
         title: gas returns the estimated gas
     title: EstimateGasResponse defines EstimateGas response
-  ethermint.evm.v1.ExtraEIPs:
-    type: object
-    properties:
-      eips:
-        type: array
-        items:
-          type: string
-          format: int64
-        title: eips defines the additional EIPs for the vm.Config
-    title: ExtraEIPs represents extra EIPs for the vm.Config
   ethermint.evm.v1.Log:
     type: object
     properties:
@@ -45489,15 +45541,11 @@ definitions:
         type: boolean
         title: enable_call toggles state transitions that use the vm.Call function
       extra_eips:
+        type: array
+        items:
+          type: string
+          format: int64
         title: extra_eips defines the additional EIPs for the vm.Config
-        type: object
-        properties:
-          eips:
-            type: array
-            items:
-              type: string
-              format: int64
-            title: eips defines the additional EIPs for the vm.Config
       chain_config:
         title: chain_config defines the EVM chain configuration parameters
         type: object
@@ -45688,15 +45736,11 @@ definitions:
               enable_call toggles state transitions that use the vm.Call
               function
           extra_eips:
+            type: array
+            items:
+              type: string
+              format: int64
             title: extra_eips defines the additional EIPs for the vm.Config
-            type: object
-            properties:
-              eips:
-                type: array
-                items:
-                  type: string
-                  format: int64
-                title: eips defines the additional EIPs for the vm.Config
           chain_config:
             title: chain_config defines the EVM chain configuration parameters
             type: object
@@ -46252,6 +46296,24 @@ definitions:
 
               chain.
     description: QueryParamsResponse is the response type for the Query/Params RPC method.
+  ibc.applications.transfer.v1.QueryTotalEscrowForDenomResponse:
+    type: object
+    properties:
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+    description: >-
+      QueryTotalEscrowForDenomResponse is the response type for
+      TotalEscrowForDenom RPC method.
   ibc.core.client.v1.ConsensusStateWithHeight:
     type: object
     properties:
@@ -46653,7 +46715,14 @@ definitions:
         type: array
         items:
           type: string
-        description: allowed_clients defines the list of allowed client state types.
+        description: >-
+          allowed_clients defines the list of allowed client state types which
+          can be created
+
+          and interacted with. If a client type is removed from the allowed
+          clients list, usage
+
+          of this client will be disabled until it is added again to the list.
     description: Params defines the set of IBC light client parameters.
   ibc.core.client.v1.QueryClientParamsResponse:
     type: object
@@ -46666,7 +46735,15 @@ definitions:
             type: array
             items:
               type: string
-            description: allowed_clients defines the list of allowed client state types.
+            description: >-
+              allowed_clients defines the list of allowed client state types
+              which can be created
+
+              and interacted with. If a client type is removed from the allowed
+              clients list, usage
+
+              of this client will be disabled until it is added again to the
+              list.
     description: >-
       QueryClientParamsResponse is the response type for the Query/ClientParams
       RPC
@@ -55822,25 +55899,15 @@ definitions:
         description: >-
           The ratio representing the proportion of the deposit value that must
           be paid at proposal submission.
-      proposal_cancel_ratio:
-        type: string
-        description: >-
-          The cancel ratio which will not be returned back to the depositors
-          when a proposal is cancelled.
-
-
-          Since: cosmos-sdk 0.48
-      proposal_cancel_dest:
-        type: string
-        description: >-
-          The address which will receive (proposal_cancel_ratio * deposit)
-          proposal deposits.
-
-          If empty, the (proposal_cancel_ratio * deposit) proposal deposits will
-          be burned.
-
-
-          Since: cosmos-sdk 0.48
+      burn_vote_quorum:
+        type: boolean
+        title: burn deposits if a proposal does not meet quorum
+      burn_proposal_deposit_prevote:
+        type: boolean
+        title: burn deposits if the proposal does not enter voting period
+      burn_vote_veto:
+        type: boolean
+        title: burn deposits if quorum with vote type no_veto is met
     description: |-
       Params defines the parameters for the x/gov module.
 
@@ -56347,25 +56414,15 @@ definitions:
             description: >-
               The ratio representing the proportion of the deposit value that
               must be paid at proposal submission.
-          proposal_cancel_ratio:
-            type: string
-            description: >-
-              The cancel ratio which will not be returned back to the depositors
-              when a proposal is cancelled.
-
-
-              Since: cosmos-sdk 0.48
-          proposal_cancel_dest:
-            type: string
-            description: >-
-              The address which will receive (proposal_cancel_ratio * deposit)
-              proposal deposits.
-
-              If empty, the (proposal_cancel_ratio * deposit) proposal deposits
-              will be burned.
-
-
-              Since: cosmos-sdk 0.48
+          burn_vote_quorum:
+            type: boolean
+            title: burn deposits if a proposal does not meet quorum
+          burn_proposal_deposit_prevote:
+            type: boolean
+            title: burn deposits if the proposal does not enter voting period
+          burn_vote_veto:
+            type: boolean
+            title: burn deposits if quorum with vote type no_veto is met
     description: QueryParamsResponse is the response type for the Query/Params RPC method.
   cosmos.gov.v1.QueryProposalResponse:
     type: object
@@ -57627,7 +57684,7 @@ definitions:
           proposer_address:
             type: string
             format: byte
-        description: Header defines the structure of a Tendermint block header.
+        description: Header defines the structure of a block header.
       valset:
         type: array
         items:
@@ -58932,7 +58989,7 @@ definitions:
               proposer_address:
                 type: string
                 format: byte
-            description: Header defines the structure of a Tendermint block header.
+            description: Header defines the structure of a block header.
           valset:
             type: array
             items:
@@ -61052,7 +61109,7 @@ definitions:
       proposer_address:
         type: string
         format: byte
-    description: Header defines the structure of a Tendermint block header.
+    description: Header defines the structure of a block header.
   tendermint.types.PartSetHeader:
     type: object
     properties:
@@ -61726,9 +61783,7 @@ definitions:
       verified with raw bytes from Tx.
        - SIGN_MODE_TEXTUAL: SIGN_MODE_TEXTUAL is a future signing mode that will verify some
       human-readable textual representation on top of the binary representation
-      from SIGN_MODE_DIRECT. It is currently experimental, and should be used
-      for testing purposes only, until Textual is fully released. Please follow
-      the tracking issue https://github.com/cosmos/cosmos-sdk/issues/11970.
+      from SIGN_MODE_DIRECT. It is currently not supported.
        - SIGN_MODE_DIRECT_AUX: SIGN_MODE_DIRECT_AUX specifies a signing mode which uses
       SignDocDirectAux. As opposed to SIGN_MODE_DIRECT, this sign mode does not
       require signers signing over other signers' `signer_info`. It also allows
@@ -62384,7 +62439,7 @@ definitions:
               proposer_address:
                 type: string
                 format: byte
-            description: Header defines the structure of a Tendermint block header.
+            description: Header defines the structure of a block header.
           data:
             type: object
             properties:
@@ -62627,8 +62682,8 @@ definitions:
                                       type: string
                                       format: byte
                                   description: >-
-                                    Header defines the structure of a Tendermint
-                                    block header.
+                                    Header defines the structure of a block
+                                    header.
                                 commit:
                                   type: object
                                   properties:
@@ -62708,7 +62763,7 @@ definitions:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -62732,7 +62787,7 @@ definitions:
                                           format: byte
                                       title: >-
                                         PublicKey defines the keys available for
-                                        use with Tendermint Validators
+                                        use with Validators
                                     voting_power:
                                       type: string
                                       format: int64
@@ -62764,7 +62819,7 @@ definitions:
                                     format: byte
                                 title: >-
                                   PublicKey defines the keys available for use
-                                  with Tendermint Validators
+                                  with Validators
                               voting_power:
                                 type: string
                                 format: int64
@@ -63568,14 +63623,7 @@ definitions:
               human-readable textual representation on top of the binary
               representation
 
-              from SIGN_MODE_DIRECT. It is currently experimental, and should be
-              used
-
-              for testing purposes only, until Textual is fully released. Please
-              follow
-
-              the tracking issue
-              https://github.com/cosmos/cosmos-sdk/issues/11970.
+              from SIGN_MODE_DIRECT. It is currently not supported.
                - SIGN_MODE_DIRECT_AUX: SIGN_MODE_DIRECT_AUX specifies a signing mode which uses
               SignDocDirectAux. As opposed to SIGN_MODE_DIRECT, this sign mode
               does not
@@ -63679,13 +63727,7 @@ definitions:
           human-readable textual representation on top of the binary
           representation
 
-          from SIGN_MODE_DIRECT. It is currently experimental, and should be
-          used
-
-          for testing purposes only, until Textual is fully released. Please
-          follow
-
-          the tracking issue https://github.com/cosmos/cosmos-sdk/issues/11970.
+          from SIGN_MODE_DIRECT. It is currently not supported.
            - SIGN_MODE_DIRECT_AUX: SIGN_MODE_DIRECT_AUX specifies a signing mode which uses
           SignDocDirectAux. As opposed to SIGN_MODE_DIRECT, this sign mode does
           not
@@ -65490,7 +65532,7 @@ definitions:
       secp256k1:
         type: string
         format: byte
-    title: PublicKey defines the keys available for use with Tendermint Validators
+    title: PublicKey defines the keys available for use with Validators
   tendermint.types.Block:
     type: object
     properties:
@@ -65570,7 +65612,7 @@ definitions:
           proposer_address:
             type: string
             format: byte
-        description: Header defines the structure of a Tendermint block header.
+        description: Header defines the structure of a block header.
       data:
         type: object
         properties:
@@ -65811,9 +65853,7 @@ definitions:
                                 proposer_address:
                                   type: string
                                   format: byte
-                              description: >-
-                                Header defines the structure of a Tendermint
-                                block header.
+                              description: Header defines the structure of a block header.
                             commit:
                               type: object
                               properties:
@@ -65893,7 +65933,7 @@ definitions:
                                         format: byte
                                     title: >-
                                       PublicKey defines the keys available for
-                                      use with Tendermint Validators
+                                      use with Validators
                                   voting_power:
                                     type: string
                                     format: int64
@@ -65917,7 +65957,7 @@ definitions:
                                       format: byte
                                   title: >-
                                     PublicKey defines the keys available for use
-                                    with Tendermint Validators
+                                    with Validators
                                 voting_power:
                                   type: string
                                   format: int64
@@ -65949,7 +65989,7 @@ definitions:
                                 format: byte
                             title: >-
                               PublicKey defines the keys available for use with
-                              Tendermint Validators
+                              Validators
                           voting_power:
                             type: string
                             format: int64
@@ -66460,7 +66500,7 @@ definitions:
                       proposer_address:
                         type: string
                         format: byte
-                    description: Header defines the structure of a Tendermint block header.
+                    description: Header defines the structure of a block header.
                   commit:
                     type: object
                     properties:
@@ -66540,7 +66580,7 @@ definitions:
                               format: byte
                           title: >-
                             PublicKey defines the keys available for use with
-                            Tendermint Validators
+                            Validators
                         voting_power:
                           type: string
                           format: int64
@@ -66564,7 +66604,7 @@ definitions:
                             format: byte
                         title: >-
                           PublicKey defines the keys available for use with
-                          Tendermint Validators
+                          Validators
                       voting_power:
                         type: string
                         format: int64
@@ -66594,9 +66634,7 @@ definitions:
                     secp256k1:
                       type: string
                       format: byte
-                  title: >-
-                    PublicKey defines the keys available for use with Tendermint
-                    Validators
+                  title: PublicKey defines the keys available for use with Validators
                 voting_power:
                   type: string
                   format: int64
@@ -66834,9 +66872,7 @@ definitions:
                             proposer_address:
                               type: string
                               format: byte
-                          description: >-
-                            Header defines the structure of a Tendermint block
-                            header.
+                          description: Header defines the structure of a block header.
                         commit:
                           type: object
                           properties:
@@ -66916,7 +66952,7 @@ definitions:
                                     format: byte
                                 title: >-
                                   PublicKey defines the keys available for use
-                                  with Tendermint Validators
+                                  with Validators
                               voting_power:
                                 type: string
                                 format: int64
@@ -66940,7 +66976,7 @@ definitions:
                                   format: byte
                               title: >-
                                 PublicKey defines the keys available for use
-                                with Tendermint Validators
+                                with Validators
                             voting_power:
                               type: string
                               format: int64
@@ -66972,7 +67008,7 @@ definitions:
                             format: byte
                         title: >-
                           PublicKey defines the keys available for use with
-                          Tendermint Validators
+                          Validators
                       voting_power:
                         type: string
                         format: int64
@@ -67070,7 +67106,7 @@ definitions:
               proposer_address:
                 type: string
                 format: byte
-            description: Header defines the structure of a Tendermint block header.
+            description: Header defines the structure of a block header.
           commit:
             type: object
             properties:
@@ -67144,9 +67180,7 @@ definitions:
                     secp256k1:
                       type: string
                       format: byte
-                  title: >-
-                    PublicKey defines the keys available for use with Tendermint
-                    Validators
+                  title: PublicKey defines the keys available for use with Validators
                 voting_power:
                   type: string
                   format: int64
@@ -67168,9 +67202,7 @@ definitions:
                   secp256k1:
                     type: string
                     format: byte
-                title: >-
-                  PublicKey defines the keys available for use with Tendermint
-                  Validators
+                title: PublicKey defines the keys available for use with Validators
               voting_power:
                 type: string
                 format: int64
@@ -67265,7 +67297,7 @@ definitions:
                   proposer_address:
                     type: string
                     format: byte
-                description: Header defines the structure of a Tendermint block header.
+                description: Header defines the structure of a block header.
               commit:
                 type: object
                 properties:
@@ -67343,7 +67375,7 @@ definitions:
                           format: byte
                       title: >-
                         PublicKey defines the keys available for use with
-                        Tendermint Validators
+                        Validators
                     voting_power:
                       type: string
                       format: int64
@@ -67367,7 +67399,7 @@ definitions:
                         format: byte
                     title: >-
                       PublicKey defines the keys available for use with
-                      Tendermint Validators
+                      Validators
                   voting_power:
                     type: string
                     format: int64
@@ -67397,9 +67429,7 @@ definitions:
                 secp256k1:
                   type: string
                   format: byte
-              title: >-
-                PublicKey defines the keys available for use with Tendermint
-                Validators
+              title: PublicKey defines the keys available for use with Validators
             voting_power:
               type: string
               format: int64
@@ -67494,7 +67524,7 @@ definitions:
           proposer_address:
             type: string
             format: byte
-        description: Header defines the structure of a Tendermint block header.
+        description: Header defines the structure of a block header.
       commit:
         type: object
         properties:
@@ -67576,9 +67606,7 @@ definitions:
           secp256k1:
             type: string
             format: byte
-        title: >-
-          PublicKey defines the keys available for use with Tendermint
-          Validators
+        title: PublicKey defines the keys available for use with Validators
       voting_power:
         type: string
         format: int64
@@ -67605,9 +67633,7 @@ definitions:
                 secp256k1:
                   type: string
                   format: byte
-              title: >-
-                PublicKey defines the keys available for use with Tendermint
-                Validators
+              title: PublicKey defines the keys available for use with Validators
             voting_power:
               type: string
               format: int64
@@ -67629,9 +67655,7 @@ definitions:
               secp256k1:
                 type: string
                 format: byte
-            title: >-
-              PublicKey defines the keys available for use with Tendermint
-              Validators
+            title: PublicKey defines the keys available for use with Validators
           voting_power:
             type: string
             format: int64
@@ -68088,9 +68112,7 @@ definitions:
                                 proposer_address:
                                   type: string
                                   format: byte
-                              description: >-
-                                Header defines the structure of a Tendermint
-                                block header.
+                              description: Header defines the structure of a block header.
                             commit:
                               type: object
                               properties:
@@ -68170,7 +68192,7 @@ definitions:
                                         format: byte
                                     title: >-
                                       PublicKey defines the keys available for
-                                      use with Tendermint Validators
+                                      use with Validators
                                   voting_power:
                                     type: string
                                     format: int64
@@ -68194,7 +68216,7 @@ definitions:
                                       format: byte
                                   title: >-
                                     PublicKey defines the keys available for use
-                                    with Tendermint Validators
+                                    with Validators
                                 voting_power:
                                   type: string
                                   format: int64
@@ -68226,7 +68248,7 @@ definitions:
                                 format: byte
                             title: >-
                               PublicKey defines the keys available for use with
-                              Tendermint Validators
+                              Validators
                           voting_power:
                             type: string
                             format: int64
@@ -68398,7 +68420,7 @@ definitions:
               proposer_address:
                 type: string
                 format: byte
-            description: Header defines the structure of a Tendermint block header.
+            description: Header defines the structure of a block header.
           data:
             type: object
             properties:
@@ -68641,8 +68663,8 @@ definitions:
                                       type: string
                                       format: byte
                                   description: >-
-                                    Header defines the structure of a Tendermint
-                                    block header.
+                                    Header defines the structure of a block
+                                    header.
                                 commit:
                                   type: object
                                   properties:
@@ -68722,7 +68744,7 @@ definitions:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -68746,7 +68768,7 @@ definitions:
                                           format: byte
                                       title: >-
                                         PublicKey defines the keys available for
-                                        use with Tendermint Validators
+                                        use with Validators
                                     voting_power:
                                       type: string
                                       format: int64
@@ -68778,7 +68800,7 @@ definitions:
                                     format: byte
                                 title: >-
                                   PublicKey defines the keys available for use
-                                  with Tendermint Validators
+                                  with Validators
                               voting_power:
                                 type: string
                                 format: int64
@@ -69177,8 +69199,8 @@ definitions:
                                       type: string
                                       format: byte
                                   description: >-
-                                    Header defines the structure of a Tendermint
-                                    block header.
+                                    Header defines the structure of a block
+                                    header.
                                 commit:
                                   type: object
                                   properties:
@@ -69258,7 +69280,7 @@ definitions:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -69282,7 +69304,7 @@ definitions:
                                           format: byte
                                       title: >-
                                         PublicKey defines the keys available for
-                                        use with Tendermint Validators
+                                        use with Validators
                                     voting_power:
                                       type: string
                                       format: int64
@@ -69314,7 +69336,7 @@ definitions:
                                     format: byte
                                 title: >-
                                   PublicKey defines the keys available for use
-                                  with Tendermint Validators
+                                  with Validators
                               voting_power:
                                 type: string
                                 format: int64
@@ -69489,7 +69511,7 @@ definitions:
               proposer_address:
                 type: string
                 format: byte
-            description: Header defines the structure of a Tendermint block header.
+            description: Header defines the structure of a block header.
           data:
             type: object
             properties:
@@ -69732,8 +69754,8 @@ definitions:
                                       type: string
                                       format: byte
                                   description: >-
-                                    Header defines the structure of a Tendermint
-                                    block header.
+                                    Header defines the structure of a block
+                                    header.
                                 commit:
                                   type: object
                                   properties:
@@ -69813,7 +69835,7 @@ definitions:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -69837,7 +69859,7 @@ definitions:
                                           format: byte
                                       title: >-
                                         PublicKey defines the keys available for
-                                        use with Tendermint Validators
+                                        use with Validators
                                     voting_power:
                                       type: string
                                       format: int64
@@ -69869,7 +69891,7 @@ definitions:
                                     format: byte
                                 title: >-
                                   PublicKey defines the keys available for use
-                                  with Tendermint Validators
+                                  with Validators
                               voting_power:
                                 type: string
                                 format: int64
@@ -70268,8 +70290,8 @@ definitions:
                                       type: string
                                       format: byte
                                   description: >-
-                                    Header defines the structure of a Tendermint
-                                    block header.
+                                    Header defines the structure of a block
+                                    header.
                                 commit:
                                   type: object
                                   properties:
@@ -70349,7 +70371,7 @@ definitions:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -70373,7 +70395,7 @@ definitions:
                                           format: byte
                                       title: >-
                                         PublicKey defines the keys available for
-                                        use with Tendermint Validators
+                                        use with Validators
                                     voting_power:
                                       type: string
                                       format: int64
@@ -70405,7 +70427,7 @@ definitions:
                                     format: byte
                                 title: >-
                                   PublicKey defines the keys available for use
-                                  with Tendermint Validators
+                                  with Validators
                               voting_power:
                                 type: string
                                 format: int64
