@@ -46,6 +46,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (fee) [#31](https://github.com/EscanBE/evermint/pull/31) Handle deduct zero fee of zero fee tx when x/feemarket disabled and min gas price is zero (backport #30)
 - (rpc+store) [#33](https://github.com/EscanBE/evermint/pull/33) Fix some concurrency issue in rpc and iavl (partially backport #32)
 
+### API Breaking
+
+- (proto+docs) [#44](https://github.com/EscanBE/evermint/pull/44) Fix proto dependencies + rebuild proto + rebuild swagger (partially backport #43)
+
 ### State Machine Breaking
 
 - (evm) [#26](https://github.com/EscanBE/evermint/pull/26) Enable [EIP-3855](https://eips.ethereum.org/EIPS/eip-3855) by default (backport #25)
