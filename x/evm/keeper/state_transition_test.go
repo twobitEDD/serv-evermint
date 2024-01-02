@@ -3,9 +3,6 @@ package keeper_test
 import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
-	"math"
-	"math/big"
-
 	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
 	"github.com/EscanBE/evermint/v12/x/evm/keeper"
 	"github.com/EscanBE/evermint/v12/x/evm/statedb"
@@ -20,6 +17,8 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
+	"math"
+	"math/big"
 )
 
 func (suite *KeeperTestSuite) TestGetHashFn() {
@@ -570,25 +569,26 @@ func (suite *KeeperTestSuite) TestApplyMessage() {
 
 func (suite *KeeperTestSuite) TestApplyMessageWithConfig() {
 	var (
-		msg             core.Message
-		err             error
-		expectedGasUsed uint64
-		config          *statedb.EVMConfig
-		keeperParams    types.Params
-		signer          ethtypes.Signer
-		vmdb            *statedb.StateDB
-		txConfig        statedb.TxConfig
-		chainCfg        *params.ChainConfig
+		msg          core.Message
+		err          error
+		config       *statedb.EVMConfig
+		keeperParams types.Params
+		signer       ethtypes.Signer
+		vmdb         *statedb.StateDB
+		txConfig     statedb.TxConfig
+		chainCfg     *params.ChainConfig
 	)
 
 	testCases := []struct {
-		name     string
-		malleate func()
-		expErr   bool
+		name           string
+		malleate       func()
+		expErr         bool
+		expErrContains string
+		expGasUsed     uint64
 	}{
 		{
-			"messsage applied ok",
-			func() {
+			name: "messsage applied ok",
+			malleate: func() {
 				msg, err = newNativeMessage(
 					vmdb.GetNonce(suite.address),
 					suite.ctx.BlockHeight(),
@@ -602,11 +602,12 @@ func (suite *KeeperTestSuite) TestApplyMessageWithConfig() {
 				)
 				suite.Require().NoError(err)
 			},
-			false,
+			expErr:     false,
+			expGasUsed: params.TxGas,
 		},
 		{
-			"call contract tx with config param EnableCall = false",
-			func() {
+			name: "call contract tx with config param EnableCall = false",
+			malleate: func() {
 				config.Params.EnableCall = false
 				msg, err = newNativeMessage(
 					vmdb.GetNonce(suite.address),
@@ -621,23 +622,86 @@ func (suite *KeeperTestSuite) TestApplyMessageWithConfig() {
 				)
 				suite.Require().NoError(err)
 			},
-			true,
+			expErr:         true,
+			expErrContains: types.ErrCallDisabled.Error(),
 		},
 		{
-			"create contract tx with config param EnableCreate = false",
-			func() {
+			name: "create contract tx with config param EnableCreate = false",
+			malleate: func() {
 				msg, err = suite.createContractGethMsg(vmdb.GetNonce(suite.address), signer, chainCfg, big.NewInt(1))
 				suite.Require().NoError(err)
 				config.Params.EnableCreate = false
 			},
-			true,
+			expErr:         true,
+			expErrContains: types.ErrCreateDisabled.Error(),
+		},
+		{
+			name: "transfer message success",
+			malleate: func() {
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     vmdb.GetNonce(suite.address),
+					GasLimit:  100_000,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    nil,
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg := types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				ethMsg.Sign(msgSigner, suite.signer)
+
+				var err error
+				msg, err = ethMsg.AsMessage(msgSigner, nil)
+				suite.Require().NoError(err)
+			},
+			expErr:     false,
+			expGasUsed: 50_000, // consume at least half of gas limit
+		},
+		{
+			name: "fail intrinsic gas check",
+			malleate: func() {
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     vmdb.GetNonce(suite.address),
+					GasLimit:  params.TxGas / 2,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    nil,
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg := types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				ethMsg.Sign(msgSigner, suite.signer)
+
+				var err error
+				msg, err = ethMsg.AsMessage(msgSigner, nil)
+				suite.Require().NoError(err)
+			},
+			expErr:         true,
+			expErrContains: core.ErrIntrinsicGas.Error(),
 		},
 	}
 
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			suite.SetupTest()
-			expectedGasUsed = params.TxGas
 
 			proposerAddress := suite.ctx.BlockHeader().ProposerAddress
 			config, err = suite.app.EvmKeeper.EVMConfig(suite.ctx, proposerAddress, big.NewInt(constants.TestnetEIP155ChainId))
@@ -654,12 +718,17 @@ func (suite *KeeperTestSuite) TestApplyMessageWithConfig() {
 
 			if tc.expErr {
 				suite.Require().Error(err)
+				if len(tc.expErrContains) == 0 {
+					fmt.Println("error message:", err.Error())
+					suite.FailNow("bad setup testcase")
+				}
+				suite.Contains(err.Error(), tc.expErrContains)
 				return
 			}
 
 			suite.Require().NoError(err)
-			suite.Require().False(res.Failed())
-			suite.Require().Equal(expectedGasUsed, res.GasUsed)
+			suite.False(res.Failed())
+			suite.Equal(tc.expGasUsed, res.GasUsed)
 		})
 	}
 }
