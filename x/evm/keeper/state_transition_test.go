@@ -715,6 +715,190 @@ func (suite *KeeperTestSuite) TestApplyTransaction() {
 	}
 }
 
+func (suite *KeeperTestSuite) TestApplyMessage() {
+	var (
+		msg          core.Message
+		err          error
+		keeperParams types.Params
+		signer       ethtypes.Signer
+		chainCfg     *params.ChainConfig
+	)
+
+	testCases := []struct {
+		name                  string
+		simulateCommitDbError bool
+		malleate              func()
+		expErr                bool
+		expErrContains        string
+		expGasUsed            uint64
+		expGasRemaining       uint64
+	}{
+		{
+			name: "message applied ok",
+			malleate: func() {
+				msg, err = newNativeMessage(
+					getNonce(suite.address.Bytes()),
+					suite.ctx.BlockHeight(),
+					suite.address,
+					chainCfg,
+					suite.signer,
+					signer,
+					ethtypes.AccessListTxType,
+					nil,
+					nil,
+				)
+				suite.Require().NoError(err)
+			},
+			expErr:     false,
+			expGasUsed: params.TxGas,
+		},
+		{
+			name: "transfer message success",
+			malleate: func() {
+				suite.FundDefaultAddress(1_000_000)
+
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     getNonce(suite.address.Bytes()),
+					GasLimit:  60_000,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    big.NewInt(1),
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg := types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				ethMsg.Sign(msgSigner, suite.signer)
+
+				var err error
+				msg, err = ethMsg.AsMessage(msgSigner, nil)
+				suite.Require().NoError(err)
+			},
+			expErr:     false,
+			expGasUsed: 30_000, // consume at least half of gas limit
+		},
+		{
+			name:                  "fail intrinsic gas check",
+			simulateCommitDbError: true,
+			malleate: func() {
+				suite.FundDefaultAddress(1_000_000)
+
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     getNonce(suite.address.Bytes()),
+					GasLimit:  params.TxGas / 2,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    big.NewInt(1),
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg := types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				ethMsg.Sign(msgSigner, suite.signer)
+
+				var err error
+				msg, err = ethMsg.AsMessage(msgSigner, nil)
+				suite.Require().NoError(err)
+			},
+			expErr:         true,
+			expErrContains: core.ErrIntrinsicGas.Error(),
+		},
+		{
+			name:                  "failed to commit state DB",
+			simulateCommitDbError: true,
+			malleate: func() {
+				suite.FundDefaultAddress(1_000_000)
+
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     getNonce(suite.address.Bytes()),
+					GasLimit:  100_000,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    big.NewInt(1),
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg := types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				ethMsg.Sign(msgSigner, suite.signer)
+
+				var err error
+				msg, err = ethMsg.AsMessage(msgSigner, nil)
+				suite.Require().NoError(err)
+			},
+			expErr:         true,
+			expErrContains: "failed to commit stateDB",
+		},
+	}
+
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			suite.SetupTest()
+
+			suite.Require().NoError(err)
+
+			suite.ctx = suite.ctx.WithGasMeter(sdk.NewGasMeter(1_000_000_000)) // avoid using infinity gas meter
+
+			keeperParams = suite.app.EvmKeeper.GetParams(suite.ctx)
+			chainCfg = keeperParams.ChainConfig.EthereumConfig(suite.app.EvmKeeper.ChainID())
+			signer = ethtypes.LatestSignerForChainID(suite.app.EvmKeeper.ChainID())
+
+			if tc.simulateCommitDbError {
+				suite.StateDB().ToggleStateDBPreventCommit(true)
+				defer suite.StateDB().ToggleStateDBPreventCommit(false)
+			}
+
+			tc.malleate()
+			res, err := suite.app.EvmKeeper.ApplyMessage(suite.ctx, msg, nil, true)
+
+			if tc.expErr {
+				if res != nil {
+					fmt.Println("VM Err:", res.VmError)
+				}
+				suite.Require().Error(err)
+				if len(tc.expErrContains) == 0 {
+					fmt.Println("error message:", err.Error())
+					suite.FailNow("bad setup testcase")
+				}
+				suite.Contains(err.Error(), tc.expErrContains)
+				return
+			}
+
+			suite.Require().NoError(err)
+			if !suite.False(res.Failed()) {
+				fmt.Println(res)
+			}
+			suite.Empty(res.VmError)
+
+			suite.Equal(tc.expGasUsed, res.GasUsed)
+		})
+	}
+}
+
 func (suite *KeeperTestSuite) createContractGethMsg(nonce uint64, signer ethtypes.Signer, cfg *params.ChainConfig, gasPrice *big.Int) (core.Message, error) {
 	ethMsg, err := suite.createContractMsgTx(nonce, signer, gasPrice)
 	if err != nil {
