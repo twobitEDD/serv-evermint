@@ -3,15 +3,15 @@ package keeper_test
 import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
-	"math"
-	"math/big"
-
+	"github.com/EscanBE/evermint/v12/testutil"
 	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
+	cointypes "github.com/EscanBE/evermint/v12/types"
 	"github.com/EscanBE/evermint/v12/x/evm/keeper"
 	"github.com/EscanBE/evermint/v12/x/evm/statedb"
 	"github.com/EscanBE/evermint/v12/x/evm/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
@@ -20,6 +20,8 @@ import (
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
+	"math"
+	"math/big"
 )
 
 func (suite *KeeperTestSuite) TestGetHashFn() {
@@ -532,6 +534,186 @@ func (suite *KeeperTestSuite) TestContractDeployment() {
 	contractAddress := suite.DeployTestContract(suite.T(), suite.address, big.NewInt(10000000000000))
 	db := suite.StateDB()
 	suite.Require().Greater(db.GetCodeSize(contractAddress), 0)
+}
+
+func (suite *KeeperTestSuite) TestApplyTransaction() {
+	var (
+		err          error
+		ethMsg       *types.MsgEthereumTx
+		keeperParams types.Params
+		chainCfg     *params.ChainConfig
+	)
+
+	testCases := []struct {
+		name                  string
+		malleate              func()
+		simulateCommitDbError bool
+		expErr                bool
+		expErrContains        string
+		expGasUsed            uint64
+		expGasRemaining       uint64
+	}{
+		{
+			name: "message applied ok",
+			malleate: func() {
+				txSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg, _, err = newEthMsgTx(getNonce(suite.address.Bytes()), suite.address, suite.signer, txSigner, ethtypes.AccessListTxType, nil, nil)
+				suite.Require().NoError(err)
+
+				ethMsg.From = suite.address.Hex()
+				err = ethMsg.Sign(txSigner, suite.signer)
+				suite.Require().NoError(err)
+			},
+			expErr:     false,
+			expGasUsed: params.TxGas,
+		},
+		{
+			name: "tx transfer success, excess gas should be refunded",
+			malleate: func() {
+				err = testutil.FundModuleAccount(
+					suite.ctx,
+					suite.app.BankKeeper,
+					authtypes.FeeCollectorName,
+					sdk.NewCoins(cointypes.NewBaseCoinInt64(1_000_000)),
+				)
+				suite.Require().NoError(err)
+
+				suite.FundDefaultAddress(1_000_000)
+
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     getNonce(suite.address.Bytes()),
+					GasLimit:  100_000,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    big.NewInt(1),
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg = types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				err = ethMsg.Sign(msgSigner, suite.signer)
+				suite.Require().NoError(err)
+			},
+			expErr:     false,
+			expGasUsed: 50_000, // consume at least half of gas limit
+		},
+		{
+			name: "fail intrinsic gas check, consume all remaining gas",
+			malleate: func() {
+				suite.ctx = suite.ctx.WithGasMeter(sdk.NewGasMeter(100_000)) // avoid using infinity gas meter
+
+				suite.FundDefaultAddress(1_000_000)
+
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     getNonce(suite.address.Bytes()),
+					GasLimit:  params.TxGas / 2,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    big.NewInt(1),
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg = types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				err = ethMsg.Sign(msgSigner, suite.signer)
+				suite.Require().NoError(err)
+			},
+			expErr:         true,
+			expErrContains: core.ErrIntrinsicGas.Error(),
+		},
+		{
+			name:                  "failed to commit state DB, consume all remaining gas",
+			simulateCommitDbError: true,
+			malleate: func() {
+				suite.ctx = suite.ctx.WithGasMeter(sdk.NewGasMeter(100_000)) // avoid using infinity gas meter
+
+				suite.FundDefaultAddress(1_000_000)
+
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     getNonce(suite.address.Bytes()),
+					GasLimit:  100_000,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    big.NewInt(1),
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg = types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				err = ethMsg.Sign(msgSigner, suite.signer)
+				suite.Require().NoError(err)
+			},
+			expErr:         true,
+			expErrContains: "failed to apply ethereum core message",
+		},
+	}
+
+	for _, tc := range testCases {
+		suite.Run(tc.name, func() {
+			suite.SetupTest()
+
+			suite.Require().NoError(err)
+
+			keeperParams = suite.app.EvmKeeper.GetParams(suite.ctx)
+			chainCfg = keeperParams.ChainConfig.EthereumConfig(suite.app.EvmKeeper.ChainID())
+
+			tc.malleate()
+
+			if tc.simulateCommitDbError {
+				suite.StateDB().ToggleStateDBPreventCommit(true)
+				defer suite.StateDB().ToggleStateDBPreventCommit(false)
+			}
+
+			res, err := suite.app.EvmKeeper.ApplyTransaction(suite.ctx, ethMsg.AsTransaction())
+
+			if tc.expErr {
+				if res != nil {
+					fmt.Println("VM Err:", res.VmError)
+				}
+				suite.Require().Error(err)
+				if len(tc.expErrContains) == 0 {
+					fmt.Println("error message:", err.Error())
+					suite.FailNow("bad setup testcase")
+				}
+				suite.Contains(err.Error(), tc.expErrContains)
+				suite.Zerof(suite.ctx.GasMeter().GasRemaining(), "gas should be consumed to zero upon error, consumed %d", suite.ctx.GasMeter().GasConsumed())
+				return
+			}
+
+			suite.Require().NoError(err)
+			if !suite.False(res.Failed()) {
+				fmt.Println(res)
+			}
+			suite.Empty(res.VmError)
+
+			suite.Equal(tc.expGasUsed, res.GasUsed)
+		})
+	}
 }
 
 func (suite *KeeperTestSuite) TestApplyMessage() {
