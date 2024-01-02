@@ -163,6 +163,12 @@ func (k *Keeper) ApplyTransaction(ctx sdk.Context, tx *ethtypes.Transaction) (*t
 	// pass true to commit the StateDB
 	res, err := k.ApplyMessageWithConfig(tmpCtx, msg, nil, true, cfg, txConfig)
 	if err != nil {
+		// Refer to EIP-140 https://eips.ethereum.org/EIPS/eip-140
+		// Opcode REVERT provides a way to stop execution and revert state changes, without consuming all provided gas.
+		// Thus, all the other failure will consume all gas.
+		// That why we are going to consume all gas here because this is not caused-by-REVERT-opcode.
+		k.ResetGasMeterAndConsumeGas(ctx, ctx.GasMeter().Limit())
+
 		return nil, errorsmod.Wrap(err, "failed to apply ethereum core message")
 	}
 

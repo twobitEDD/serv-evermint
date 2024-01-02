@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"encoding/json"
+	cointypes "github.com/EscanBE/evermint/v12/types"
 	"math/big"
 	"time"
 
@@ -194,4 +195,15 @@ func (suite *KeeperTestSuite) DeployTestMessageCall(t require.TestingT) common.A
 	require.NoError(t, err)
 	require.Empty(t, rsp.VmError)
 	return crypto.CreateAddress(suite.address, nonce)
+}
+
+// FundDefaultAddress is a helper function to fund the default address with some tokens
+func (suite *KeeperTestSuite) FundDefaultAddress(amount int64) {
+	err := testutil.FundAccount(
+		suite.ctx,
+		suite.app.BankKeeper,
+		sdk.AccAddress(suite.address.Bytes()),
+		sdk.NewCoins(cointypes.NewBaseCoinInt64(amount)),
+	)
+	suite.Require().NoError(err)
 }
