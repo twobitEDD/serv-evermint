@@ -569,7 +569,45 @@ func (suite *KeeperTestSuite) TestApplyTransaction() {
 			expGasUsed: params.TxGas,
 		},
 		{
-			name: "tx transfer success, excess gas should be refunded",
+			name: "tx transfer success, exact 21000 gas used for transfer",
+			malleate: func() {
+				err = testutil.FundModuleAccount(
+					suite.ctx,
+					suite.app.BankKeeper,
+					authtypes.FeeCollectorName,
+					sdk.NewCoins(cointypes.NewBaseCoinInt64(1_000_000)),
+				)
+				suite.Require().NoError(err)
+
+				suite.FundDefaultAddress(1_000_000)
+
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     getNonce(suite.address.Bytes()),
+					GasLimit:  21000,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    big.NewInt(1),
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg = types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				err = ethMsg.Sign(msgSigner, suite.signer)
+				suite.Require().NoError(err)
+			},
+			expErr:     false,
+			expGasUsed: 21000,
+		},
+		{
+			name: "tx transfer success, consume at least 50% gas limit, the rest are refunded",
 			malleate: func() {
 				err = testutil.FundModuleAccount(
 					suite.ctx,
@@ -609,8 +647,6 @@ func (suite *KeeperTestSuite) TestApplyTransaction() {
 		{
 			name: "fail intrinsic gas check, consume all remaining gas",
 			malleate: func() {
-				suite.ctx = suite.ctx.WithGasMeter(sdk.NewGasMeter(100_000)) // avoid using infinity gas meter
-
 				suite.FundDefaultAddress(1_000_000)
 
 				randomAddr, _ := utiltx.NewAddrKey()
@@ -642,8 +678,6 @@ func (suite *KeeperTestSuite) TestApplyTransaction() {
 			name:                  "failed to commit state DB, consume all remaining gas",
 			simulateCommitDbError: true,
 			malleate: func() {
-				suite.ctx = suite.ctx.WithGasMeter(sdk.NewGasMeter(100_000)) // avoid using infinity gas meter
-
 				suite.FundDefaultAddress(1_000_000)
 
 				randomAddr, _ := utiltx.NewAddrKey()
@@ -684,6 +718,8 @@ func (suite *KeeperTestSuite) TestApplyTransaction() {
 
 			tc.malleate()
 
+			suite.ctx = suite.ctx.WithGasMeter(cointypes.NewInfiniteGasMeterWithLimit(ethMsg.GetGas()))
+
 			if tc.simulateCommitDbError {
 				suite.StateDB().ToggleStateDBPreventCommit(true)
 				defer suite.StateDB().ToggleStateDBPreventCommit(false)
@@ -701,7 +737,12 @@ func (suite *KeeperTestSuite) TestApplyTransaction() {
 					suite.FailNow("bad setup testcase")
 				}
 				suite.Contains(err.Error(), tc.expErrContains)
-				suite.Zerof(suite.ctx.GasMeter().GasRemaining(), "gas should be consumed to zero upon error, consumed %d", suite.ctx.GasMeter().GasConsumed())
+				suite.Equal(ethMsg.GetGas(), suite.ctx.GasMeter().GasConsumed(), "gas consumed should be equals to tx gas limit")
+
+				// due to this project use a custom infiniteGasMeterWithLimit so this is the correct way to calculate the remaining gas
+				actualRemainingGas := suite.ctx.GasMeter().Limit() - suite.ctx.GasMeter().GasConsumed()
+				suite.Zero(actualRemainingGas, "remaining gas should be zero")
+
 				return
 			}
 
@@ -755,6 +796,39 @@ func (suite *KeeperTestSuite) TestApplyMessage() {
 		},
 		{
 			name: "transfer message success",
+			malleate: func() {
+				suite.FundDefaultAddress(1_000_000)
+
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     getNonce(suite.address.Bytes()),
+					GasLimit:  21000,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    big.NewInt(1),
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg := types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				ethMsg.Sign(msgSigner, suite.signer)
+
+				var err error
+				msg, err = ethMsg.AsMessage(msgSigner, nil)
+				suite.Require().NoError(err)
+			},
+			expErr:     false,
+			expGasUsed: 21000,
+		},
+		{
+			name: "transfer message success, consume at least 50% gas limit",
 			malleate: func() {
 				suite.FundDefaultAddress(1_000_000)
 
@@ -860,18 +934,18 @@ func (suite *KeeperTestSuite) TestApplyMessage() {
 		suite.Run(tc.name, func() {
 			suite.SetupTest()
 
-			suite.ctx = suite.ctx.WithGasMeter(sdk.NewGasMeter(40_000_000)) // avoid using infinity gas meter
-
 			keeperParams = suite.app.EvmKeeper.GetParams(suite.ctx)
 			chainCfg = keeperParams.ChainConfig.EthereumConfig(suite.app.EvmKeeper.ChainID())
 			signer = ethtypes.LatestSignerForChainID(suite.app.EvmKeeper.ChainID())
+
+			tc.malleate()
+			suite.ctx = suite.ctx.WithGasMeter(cointypes.NewInfiniteGasMeterWithLimit(msg.Gas()))
 
 			if tc.simulateCommitDbError {
 				suite.StateDB().ToggleStateDBPreventCommit(true)
 				defer suite.StateDB().ToggleStateDBPreventCommit(false)
 			}
 
-			tc.malleate()
 			res, err := suite.app.EvmKeeper.ApplyMessage(suite.ctx, msg, nil, true)
 
 			if tc.expErr {
@@ -968,6 +1042,39 @@ func (suite *KeeperTestSuite) TestApplyMessageWithConfig() {
 		},
 		{
 			name: "transfer message success",
+			malleate: func() {
+				suite.FundDefaultAddress(1_000_000)
+
+				randomAddr, _ := utiltx.NewAddrKey()
+
+				ethTxParams := types.EvmTxArgs{
+					Nonce:     getNonce(suite.address.Bytes()),
+					GasLimit:  21000,
+					Input:     nil,
+					GasFeeCap: nil,
+					GasPrice:  big.NewInt(10),
+					ChainID:   chainCfg.ChainID,
+					Amount:    big.NewInt(1),
+					GasTipCap: nil,
+					To:        &randomAddr,
+					Accesses:  nil,
+				}
+
+				msgSigner := ethtypes.MakeSigner(chainCfg, big.NewInt(suite.ctx.BlockHeight()))
+
+				ethMsg := types.NewTx(&ethTxParams)
+				ethMsg.From = suite.address.Hex()
+				ethMsg.Sign(msgSigner, suite.signer)
+
+				var err error
+				msg, err = ethMsg.AsMessage(msgSigner, nil)
+				suite.Require().NoError(err)
+			},
+			expErr:     false,
+			expGasUsed: 21000,
+		},
+		{
+			name: "transfer message success, consume at least 50% gas limit",
 			malleate: func() {
 				suite.FundDefaultAddress(1_000_000)
 
@@ -1072,8 +1179,6 @@ func (suite *KeeperTestSuite) TestApplyMessageWithConfig() {
 		suite.Run(tc.name, func() {
 			suite.SetupTest()
 
-			suite.ctx = suite.ctx.WithGasMeter(sdk.NewGasMeter(40_000_000)) // avoid using infinity gas meter
-
 			proposerAddress := suite.ctx.BlockHeader().ProposerAddress
 			config, err = suite.app.EvmKeeper.EVMConfig(suite.ctx, proposerAddress, big.NewInt(constants.TestnetEIP155ChainId))
 			suite.Require().NoError(err)
@@ -1083,12 +1188,14 @@ func (suite *KeeperTestSuite) TestApplyMessageWithConfig() {
 			signer = ethtypes.LatestSignerForChainID(suite.app.EvmKeeper.ChainID())
 			txConfig = suite.app.EvmKeeper.TxConfig(suite.ctx, common.Hash{})
 
+			tc.malleate()
+			suite.ctx = suite.ctx.WithGasMeter(cointypes.NewInfiniteGasMeterWithLimit(msg.Gas()))
+
 			if tc.simulateCommitDbError {
 				suite.StateDB().ToggleStateDBPreventCommit(true)
 				defer suite.StateDB().ToggleStateDBPreventCommit(false)
 			}
 
-			tc.malleate()
 			res, err := suite.app.EvmKeeper.ApplyMessageWithConfig(suite.ctx, msg, nil, true, config, txConfig)
 
 			if tc.expErr {
