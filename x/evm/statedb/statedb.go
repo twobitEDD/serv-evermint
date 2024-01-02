@@ -2,6 +2,7 @@ package statedb
 
 import (
 	"fmt"
+	"github.com/EscanBE/evermint/v12/utils"
 	"math/big"
 	"sort"
 
@@ -22,6 +23,10 @@ type revision struct {
 }
 
 var _ vm.StateDB = &StateDB{}
+
+// preventCommit is a flag to prevent committing state changes to the underlying storage.
+// This is used for testing purposes to simulate cases where Commit() is failed.
+var preventCommit bool
 
 // StateDB structs within the ethereum protocol are used to store anything
 // within the merkle trie. StateDBs take care of caching and storing
@@ -441,6 +446,9 @@ func (s *StateDB) RevertToSnapshot(revid int) {
 // Commit writes the dirty states to keeper
 // the StateDB object should be discarded after committed.
 func (s *StateDB) Commit() error {
+	if preventCommit {
+		return fmt.Errorf("failed to commit state changes")
+	}
 	for _, addr := range s.journal.sortedDirties() {
 		obj := s.stateObjects[addr]
 		if obj.suicided {
@@ -465,4 +473,13 @@ func (s *StateDB) Commit() error {
 		}
 	}
 	return nil
+}
+
+// ToggleStateDBPreventCommit toggles the flag to prevent committing state changes to the underlying storage.
+// This is used for testing purposes to simulate cases where Commit() is failed.
+func (s *StateDB) ToggleStateDBPreventCommit(prevent bool) {
+	if !utils.IsTestnet(s.ctx.ChainID()) {
+		panic("can only be called during testing")
+	}
+	preventCommit = prevent
 }
