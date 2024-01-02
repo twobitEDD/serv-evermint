@@ -130,5 +130,4 @@ sed -i 's/127.0.0.1/0.0.0.0/g' "$APP_TOML"
   --minimum-gas-prices="0.0001$MIN_DENOM" \
   --json-rpc.api eth,txpool,personal,net,debug,web3 \
   --api.enable \
-  --grpc.enable true \
-  --chain-id "$CHAINID"
+  --grpc.enable true
