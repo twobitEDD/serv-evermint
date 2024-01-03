@@ -1,8 +1,18 @@
 #!/bin/bash
 
-KEYS[0]="dev0"
+KEYS[0]="validator"
 KEYS[1]="dev1"
 KEYS[2]="dev2"
+KEYS[3]="dev3"
+# 0xc032bfb0a7f4d79f8bd0d4d6c6169f58e702817a
+MNEMONICS[0]="camera foster skate whisper faith opera axis false van urban clean pet shove census surface injury phone alley cup school pet edge trial pony"
+# 0x89760f514DCfCCCf1E4c5eDC6Bf6041931c4c183
+MNEMONICS[1]="curtain hat remain song receive tower stereo hope frog cheap brown plate raccoon post reflect wool sail salmon game salon group glimpse adult shift"
+# 0x21b661c8A270ed83D2826aD49b1E3B78F515E25C
+MNEMONICS[2]="coral drink glow assist canyon ankle hole buffalo vendor foster void clip welcome slush cherry omit member legal account lunar often hen winter culture"
+# 0x6479D25261A74B1b058778d3F69Ad7cC557341A8
+MNEMONICS[3]="depth skull anxiety weasel pulp interest seek junk trumpet orbit glance drink comfort much alarm during lady strong matrix enable write pledge alcohol buzz"
+
 CHAINID="evermint_70707-1" # devnet
 MONIKER="localtestnet"
 BINARY="evmd"
@@ -56,10 +66,11 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 	"$BINARY" config keyring-backend $KEYRING --home "$HOMEDIR"
 	"$BINARY" config chain-id $CHAINID --home "$HOMEDIR"
 
-	# If keys exist they should be deleted
-	for KEY in "${KEYS[@]}"; do
-		"$BINARY" keys add "$KEY" --keyring-backend $KEYRING --algo $KEYALGO --home "$HOMEDIR"
-	done
+	# Recover keys from mnemonics
+  echo "${MNEMONICS[0]}" | "$BINARY" keys add "${KEYS[0]}" --recover --keyring-backend $KEYRING --algo $KEYALGO --home "$HOMEDIR"
+  echo "${MNEMONICS[1]}" | "$BINARY" keys add "${KEYS[1]}" --recover --keyring-backend $KEYRING --algo $KEYALGO --home "$HOMEDIR"
+  echo "${MNEMONICS[2]}" | "$BINARY" keys add "${KEYS[2]}" --recover --keyring-backend $KEYRING --algo $KEYALGO --home "$HOMEDIR"
+  echo "${MNEMONICS[3]}" | "$BINARY" keys add "${KEYS[3]}" --recover --keyring-backend $KEYRING --algo $KEYALGO --home "$HOMEDIR"
 
 	# Set moniker for the node
 	"$BINARY" init $MONIKER -o --chain-id $CHAINID --home "$HOMEDIR"
@@ -135,12 +146,14 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 	sed -i.bak 's/pruning-interval = "0"/pruning-interval = "10"/g' "$APP_TOML"
 
 	# Allocate genesis accounts (cosmos formatted addresses)
-	for KEY in "${KEYS[@]}"; do
-		"$BINARY" add-genesis-account "$KEY" "100000000000000000000000000$MIN_DENOM" --keyring-backend $KEYRING --home "$HOMEDIR"
-	done
+	GENESIS_BALANCE="100000000000000000000000000"
+  "$BINARY" add-genesis-account "${KEYS[0]}" "$GENESIS_BALANCE$MIN_DENOM" --keyring-backend $KEYRING --home "$HOMEDIR"
+  "$BINARY" add-genesis-account "${KEYS[1]}" "$GENESIS_BALANCE$MIN_DENOM" --keyring-backend $KEYRING --home "$HOMEDIR"
+  "$BINARY" add-genesis-account "${KEYS[2]}" "$GENESIS_BALANCE$MIN_DENOM" --keyring-backend $KEYRING --home "$HOMEDIR"
+  "$BINARY" add-genesis-account "${KEYS[3]}" "$GENESIS_BALANCE$MIN_DENOM" --keyring-backend $KEYRING --home "$HOMEDIR"
 
 	# bc is required to add these big numbers
-	total_supply=$(echo "${#KEYS[@]} * 100000000000000000000000000 + $amount_to_claim" | bc)
+	total_supply=$(echo "${#KEYS[@]} * $GENESIS_BALANCE + $amount_to_claim" | bc)
 	jq -r --arg total_supply "$total_supply" '.app_state["bank"]["supply"][0]["amount"]=$total_supply' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 	# Sign genesis transaction

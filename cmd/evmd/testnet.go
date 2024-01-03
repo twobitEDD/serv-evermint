@@ -4,6 +4,7 @@ package main
 
 import (
 	"bufio"
+	"cosmossdk.io/errors"
 	"encoding/json"
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
@@ -232,6 +233,29 @@ func initTestnetFiles(
 		genFiles    []string
 	)
 
+	var validatorMnemonics = map[int]string{
+		0: "camera foster skate whisper faith opera axis false van urban clean pet shove census surface injury phone alley cup school pet edge trial pony",
+		1: "explain captain crucial fault symptom degree divorce beyond path security jewel alien beach finish bridge decide toast scene pelican sorry achieve off denial wall",
+		2: "worth talent fire announce file skull acquire ethics injury yard home list clap guard busy describe bag front grass noise index vacuum govern number",
+		3: "question joke action slice mistake carbon virtual still culture push estate inhale true endless market flip hammer word lecture pen toddler lyrics creek regular",
+		4: "tornado fuel drill critic indicate pool few wheat omit sight stage focus mountain amused neck surge post giant vague nut marine spoon fragile outdoor",
+	}
+
+	var normalAccountMnemonics = []string{
+		// 0x89760f514DCfCCCf1E4c5eDC6Bf6041931c4c183
+		"curtain hat remain song receive tower stereo hope frog cheap brown plate raccoon post reflect wool sail salmon game salon group glimpse adult shift",
+		// 0x21b661c8A270ed83D2826aD49b1E3B78F515E25C
+		"coral drink glow assist canyon ankle hole buffalo vendor foster void clip welcome slush cherry omit member legal account lunar often hen winter culture",
+		// 0x6479D25261A74B1b058778d3F69Ad7cC557341A8
+		"depth skull anxiety weasel pulp interest seek junk trumpet orbit glance drink comfort much alarm during lady strong matrix enable write pledge alcohol buzz",
+		// 0x141B22B20ead6d6AE93B9DBBeB7b50DC3A645F41
+		"author humble raise whisper allow appear typical release fossil address spy jazz damage runway spy gossip add embark wrap frost toe advice matrix laundry",
+		// 0x3E958191BC1AB01939DAD36e91630Ad111F60f10
+		"museum stumble kingdom impulse replace angle exercise trial spring sphere cube brief foil bridge dish earn practice surprise quantum hunt scale solve october scout",
+	}
+
+	var normalAccountAddresses = make(map[string]sdk.AccAddress)
+
 	inBuf := bufio.NewReader(cmd.InOrStdin())
 	// generate private keys, node IDs, and initial transactions
 	for i := 0; i < args.numValidators; i++ {
@@ -275,10 +299,20 @@ func initTestnetFiles(
 			return err
 		}
 
-		addr, secret, err := testutil.GenerateSaveCoinKey(kb, nodeDirName, "", true, algo)
+		mnemonic, _ := validatorMnemonics[i]
+		addr, secret, err := testutil.GenerateSaveCoinKey(kb, nodeDirName, mnemonic, true, algo)
 		if err != nil {
 			_ = os.RemoveAll(args.outputDir)
 			return err
+		}
+
+		for ai, normalAccountMnemonic := range normalAccountMnemonics {
+			normalAccountAddr, _, _ := testutil.GenerateSaveCoinKey(kb, fmt.Sprintf("wal%d", ai+1), normalAccountMnemonic, true, algo)
+			if err != nil {
+				_ = os.RemoveAll(args.outputDir)
+				return errors.Wrap(err, fmt.Sprintf("failed to import normal account idx %d", ai))
+			}
+			normalAccountAddresses[normalAccountAddr.String()] = normalAccountAddr
 		}
 
 		info := map[string]string{"secret": secret}
@@ -353,6 +387,17 @@ func initTestnetFiles(
 		}
 
 		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config/app.toml"), appConfig)
+	}
+
+	for _, normalAccountAddr := range normalAccountAddresses {
+		coins := sdk.Coins{
+			sdk.NewCoin(constants.BaseDenom, sdk.TokensFromConsensusPower(1000, evertypes.PowerReduction)),
+		}
+		genBalances = append(genBalances, banktypes.Balance{Address: normalAccountAddr.String(), Coins: coins.Sort()})
+		genAccounts = append(genAccounts, &evertypes.EthAccount{
+			BaseAccount: authtypes.NewBaseAccount(normalAccountAddr, nil, 0, 0),
+			CodeHash:    common.BytesToHash(evmtypes.EmptyCodeHash).Hex(),
+		})
 	}
 
 	if err := initGenFiles(clientCtx, mbm, args.chainID, constants.BaseDenom, genAccounts, genBalances, genFiles, args.numValidators); err != nil {
