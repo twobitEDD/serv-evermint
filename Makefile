@@ -471,8 +471,11 @@ proto-download-deps:
 localnet-build:
 	@$(MAKE) -C networks/local
 
-# Start a 4-node testnet locally
-localnet-start: localnet-stop localnet-build
+# Rebuild docker image then restart testnet
+localnet-remake: localnet-stop localnet-build localnet-start
+
+# Start testnet with 4 nodes
+localnet-start: localnet-stop
 	@if ! [ -f build/node0/$(APP_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/evermint:Z evermint/node "./evmd testnet init-files --v 4 -o /evermint --keyring-backend=test --starting-ip-address 192.167.10.2"; fi
 	docker-compose up -d
 
