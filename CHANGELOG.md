@@ -33,7 +33,9 @@ Types of changes (Stanzas):
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
-# Unreleased
+# Evermint changelog
+
+## [v12.2.2] - 2024-01-03
 
 ### Improvements
 
@@ -55,8 +57,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 - (evm) [#26](https://github.com/EscanBE/evermint/pull/26) Enable [EIP-3855](https://eips.ethereum.org/EIPS/eip-3855) by default (backport #25)
 - (evm) [#40](https://github.com/EscanBE/evermint/pull/40) Consume all gas upon `ApplyTransaction` failure without VM error (backport #39)
-
-# Evermint changelog
 
 ## [v12.2.1] - 2024-01-01
 
