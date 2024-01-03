@@ -307,7 +307,7 @@ func initTestnetFiles(
 		}
 
 		for ai, normalAccountMnemonic := range normalAccountMnemonics {
-			normalAccountAddr, _, _ := testutil.GenerateSaveCoinKey(kb, nodeDirName, normalAccountMnemonic, true, algo)
+			normalAccountAddr, _, _ := testutil.GenerateSaveCoinKey(kb, fmt.Sprintf("wal%d", ai+1), normalAccountMnemonic, true, algo)
 			if err != nil {
 				_ = os.RemoveAll(args.outputDir)
 				return errors.Wrap(err, fmt.Sprintf("failed to import normal account idx %d", ai))
