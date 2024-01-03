@@ -70,6 +70,44 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Evermint changelog
 
+## [v12.2.2] - 2024-01-03
+
+### Improvements
+
+- (flags) [#23](https://github.com/EscanBE/evermint/pull/23) ~~Change default gas adjustment to 1.2 and~~ update default value of some flags (backport #22), partially reverted by [#27](https://github.com/EscanBE/evermint/pull/27)
+- (fee) [#38](https://github.com/EscanBE/evermint/pull/38) Reject cosmos txs that fee denom is not evm denom (backport #37)
+- (test) [#47](https://github.com/EscanBE/evermint/pull/47) Use static mnemonic for scripts init nodes and `evmd testnet init-files` (backport #46)
+
+### Bug Fixes
+
+- (gas) [#29](https://github.com/EscanBE/evermint/pull/29) Adjust max-gas computation logic to prevent potential out of gas issue (backport #28)
+- (fee) [#31](https://github.com/EscanBE/evermint/pull/31) Handle deduct zero fee of zero fee tx when x/feemarket disabled and min gas price is zero (backport #30)
+- (rpc+store) [#33](https://github.com/EscanBE/evermint/pull/33) Fix some concurrency issue in rpc and iavl (partially backport #32)
+
+### API Breaking
+
+- (proto+docs) [#44](https://github.com/EscanBE/evermint/pull/44) Fix proto dependencies + rebuild proto + rebuild swagger (partially backport #43)
+
+### State Machine Breaking
+
+- (evm) [#26](https://github.com/EscanBE/evermint/pull/26) Enable [EIP-3855](https://eips.ethereum.org/EIPS/eip-3855) by default (backport #25)
+- (evm) [#40](https://github.com/EscanBE/evermint/pull/40) Consume all gas upon `ApplyTransaction` failure without VM error (backport #39)
+
+## [v12.2.1] - 2024-01-01
+
+### Features
+
+- (store) [#13](https://github.com/EscanBE/evermint/pull/13) Add local `snapshots` management commands (backport #12)
+- (store) [#15](https://github.com/EscanBE/evermint/pull/15) Add `inspect` command and sub-commands (backport #14)
+
+### Improvement
+
+- (test) [#11](https://github.com/EscanBE/evermint/pull/11) Use Testnet chain-id instead of Mainnet chain-id for tests (backport #10)
+
+### Bug Fixes
+
+- (rename-chain) [#19](https://github.com/EscanBE/evermint/pull/19) Check network chain-id string must contain EVM chain-id (backport #18)
+
 ## [v12.2.0] - 2023-12-31
 
 **This is the first release of Evermint**
