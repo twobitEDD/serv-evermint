@@ -119,6 +119,10 @@ var _ = Describe("Distribution", Ordered, func() {
 				s.CommitAfter(time.Hour*7*24 - time.Hour) // Before End Epoch
 			})
 			It("should allocate mint tokens to the usage incentives module", func() {
+
+				Skip("this test broken due to removal of x/inflation, this module x/incentives is going to be removed as well so this test will not be fixed")
+				// https://github.com/EscanBE/evermint/issues/41
+
 				balance := s.app.BankKeeper.GetBalance(s.ctx, moduleAcc, denomMint)
 				Expect(balance.IsZero()).ToNot(BeTrue())
 			})
@@ -138,6 +142,10 @@ var _ = Describe("Distribution", Ordered, func() {
 				s.CommitAfter(time.Hour * 24 * 7) // End Epoch
 			})
 			It("should allocate some mint tokens from the usage incentives module", func() {
+
+				Skip("this test broken due to removal of x/inflation, this module x/incentives is going to be removed as well so this test will not be fixed")
+				// https://github.com/EscanBE/evermint/issues/41
+
 				balance := s.app.BankKeeper.GetBalance(s.ctx, moduleAcc, denomMint)
 				Expect(balance.IsZero()).ToNot(BeTrue())
 			})
@@ -146,6 +154,10 @@ var _ = Describe("Distribution", Ordered, func() {
 				Expect(gm).To(BeZero())
 			})
 			It("should distribute usage incentives to the participant", func() {
+
+				Skip("this test broken due to removal of x/inflation, this module x/incentives is going to be removed as well so this test will not be fixed")
+				// https://github.com/EscanBE/evermint/issues/41
+
 				actual := s.app.BankKeeper.GetBalance(s.ctx, participantAcc, denomMint)
 				Expect(actual).ToNot(Equal(balanceBefore))
 			})
