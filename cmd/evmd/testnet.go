@@ -8,12 +8,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/spf13/viper"
 	"net"
 	"os"
 	"path/filepath"
+	"strings"
 
+	clientconfig "github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/ethereum/go-ethereum/common"
-
 	"github.com/spf13/cobra"
 	tmconfig "github.com/tendermint/tendermint/config"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
@@ -387,6 +389,23 @@ func initTestnetFiles(
 		}
 
 		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config/app.toml"), appConfig)
+
+		// set chain-id into client.toml
+		tmpClientCtx := client.Context{
+			HomeDir: nodeDir,
+			Viper:   viper.New(),
+		}
+		_, _ = clientconfig.ReadFromClientConfig(tmpClientCtx) // this action will create the client.toml file if not exists
+		clientConfigFilePath := filepath.Join(nodeDir, "config", "client.toml")
+		bzClientToml, err := os.ReadFile(clientConfigFilePath)
+		if err != nil {
+			return errors.Wrap(err, "failed to read client.toml")
+		}
+		bzClientToml = []byte(strings.Replace(string(bzClientToml), "chain-id", fmt.Sprintf("chain-id = \"%s\" # ", args.chainID), 1))
+		err = os.WriteFile(clientConfigFilePath, bzClientToml, 0o644)
+		if err != nil {
+			return errors.Wrap(err, "failed to write client.toml")
+		}
 	}
 
 	for _, normalAccountAddr := range normalAccountAddresses {
