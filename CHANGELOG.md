@@ -41,6 +41,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Evermint changelog
 
+#### Note: Evermint was born for development and research purpose so maintainers do not support migration for new upgrade/breaking changes.
+
 ## [v12.2.2] - 2024-01-03
 
 ### Improvements
