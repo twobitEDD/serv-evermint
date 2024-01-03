@@ -33,6 +33,12 @@ Types of changes (Stanzas):
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
+# Unreleased
+
+### Improvements
+
+- (test) [#51](https://github.com/EscanBE/evermint/pull/51) Set chain-id into client.toml during init testnet
+
 # Evermint changelog
 
 ## [v12.2.2] - 2024-01-03
