@@ -26,6 +26,8 @@ parent:
 
 Evermint is a fork of open source Evmos v12.1.6, maintained by Escan team with bug fixes, customization and enable developers to fork and transform to their chain, fully customized, in just 2 steps.
 
+_Important Note: Evermint was born for development and research purpose so maintainers do not support migration for new upgrade/breaking changes._
+
 ### About Evmos
 
 Evmos is a scalable, high-throughput Proof-of-Stake blockchain
