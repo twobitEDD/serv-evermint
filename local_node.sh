@@ -81,7 +81,7 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 	jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # legacy gov
 	jq '.app_state["gov"]["params"]["min_deposit"][0]["denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # v0.47
 	jq '.app_state["evm"]["params"]["evm_denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-	jq '.app_state["inflation"]["params"]["mint_denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+	jq '.app_state["mint"]["params"]["mint_denom"]="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 	# Set gas limit in genesis
 	jq '.consensus_params["block"]["max_gas"]="10000000"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
