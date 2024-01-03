@@ -34,15 +34,6 @@
       }
     },
     {
-      "url": "./tmp-swagger-gen/evmos/inflation/v1/query.swagger.json",
-      "operationIds": {
-        "rename": {
-          "Params": "InflationParams",
-          "TotalSupply": "InflationTotalSupply"
-        }
-      }
-    },
-    {
       "url": "./tmp-swagger-gen/evmos/vesting/v1/query.swagger.json"
     },
     {
@@ -174,6 +165,14 @@
       "operationIds": {
         "rename": {
           "Params": "StakingParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/mint/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "MintParams"
         }
       }
     },
