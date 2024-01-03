@@ -7,7 +7,6 @@ import (
 	"github.com/EscanBE/evermint/v12/app"
 	ibctesting "github.com/EscanBE/evermint/v12/ibc/testing"
 	claimstypes "github.com/EscanBE/evermint/v12/x/claims/types"
-	inflationtypes "github.com/EscanBE/evermint/v12/x/inflation/types"
 	"github.com/EscanBE/evermint/v12/x/recovery/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -51,18 +50,18 @@ func (suite *IBCTestingSuite) SetupTest() {
 	suite.Require().True(ok)
 	nativeCoin := sdk.NewCoin(constants.BaseDenom, amt)
 	coins := sdk.NewCoins(nativeCoin)
-	err := suite.EvermintChain.App.(*app.Evermint).BankKeeper.MintCoins(suite.EvermintChain.GetContext(), inflationtypes.ModuleName, coins)
+	err := suite.EvermintChain.App.(*app.Evermint).BankKeeper.MintCoins(suite.EvermintChain.GetContext(), minttypes.ModuleName, coins)
 	suite.Require().NoError(err)
 
 	// Fund sender address to pay fees
-	err = suite.EvermintChain.App.(*app.Evermint).BankKeeper.SendCoinsFromModuleToAccount(suite.EvermintChain.GetContext(), inflationtypes.ModuleName, suite.EvermintChain.SenderAccount.GetAddress(), coins)
+	err = suite.EvermintChain.App.(*app.Evermint).BankKeeper.SendCoinsFromModuleToAccount(suite.EvermintChain.GetContext(), minttypes.ModuleName, suite.EvermintChain.SenderAccount.GetAddress(), coins)
 	suite.Require().NoError(err)
 
 	nativeCoin = sdk.NewCoin(constants.BaseDenom, sdk.NewInt(10000))
 	coins = sdk.NewCoins(nativeCoin)
-	err = suite.EvermintChain.App.(*app.Evermint).BankKeeper.MintCoins(suite.EvermintChain.GetContext(), inflationtypes.ModuleName, coins)
+	err = suite.EvermintChain.App.(*app.Evermint).BankKeeper.MintCoins(suite.EvermintChain.GetContext(), minttypes.ModuleName, coins)
 	suite.Require().NoError(err)
-	err = suite.EvermintChain.App.(*app.Evermint).BankKeeper.SendCoinsFromModuleToAccount(suite.EvermintChain.GetContext(), inflationtypes.ModuleName, suite.IBCOsmosisChain.SenderAccount.GetAddress(), coins)
+	err = suite.EvermintChain.App.(*app.Evermint).BankKeeper.SendCoinsFromModuleToAccount(suite.EvermintChain.GetContext(), minttypes.ModuleName, suite.IBCOsmosisChain.SenderAccount.GetAddress(), coins)
 	suite.Require().NoError(err)
 
 	// Mint coins on the osmosis side which we'll use to unlock our native coin
