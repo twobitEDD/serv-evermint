@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
 	"github.com/EscanBE/evermint/v12/rename_chain/marker"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -19,7 +20,6 @@ import (
 	"github.com/EscanBE/evermint/v12/testutil"
 	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
 	"github.com/EscanBE/evermint/v12/x/claims/types"
-	inflationtypes "github.com/EscanBE/evermint/v12/x/inflation/types"
 )
 
 type IBCTestingSuite struct {
@@ -54,14 +54,14 @@ func (suite *IBCTestingSuite) SetupTest() {
 	nativeCoin := sdk.NewCoin(constants.BaseDenom, amt)
 	coins := sdk.NewCoins(nativeCoin)
 
-	err := evermintChainA.BankKeeper.MintCoins(suite.chainA.GetContext(), inflationtypes.ModuleName, coins)
+	err := evermintChainA.BankKeeper.MintCoins(suite.chainA.GetContext(), minttypes.ModuleName, coins)
 	suite.Require().NoError(err)
-	err = evermintChainA.BankKeeper.SendCoinsFromModuleToAccount(suite.chainA.GetContext(), inflationtypes.ModuleName, suite.chainA.SenderAccount.GetAddress(), coins)
+	err = evermintChainA.BankKeeper.SendCoinsFromModuleToAccount(suite.chainA.GetContext(), minttypes.ModuleName, suite.chainA.SenderAccount.GetAddress(), coins)
 	suite.Require().NoError(err)
 
-	err = evermintChainB.BankKeeper.MintCoins(suite.chainB.GetContext(), inflationtypes.ModuleName, coins)
+	err = evermintChainB.BankKeeper.MintCoins(suite.chainB.GetContext(), minttypes.ModuleName, coins)
 	suite.Require().NoError(err)
-	err = evermintChainB.BankKeeper.SendCoinsFromModuleToAccount(suite.chainB.GetContext(), inflationtypes.ModuleName, suite.chainB.SenderAccount.GetAddress(), coins)
+	err = evermintChainB.BankKeeper.SendCoinsFromModuleToAccount(suite.chainB.GetContext(), minttypes.ModuleName, suite.chainB.SenderAccount.GetAddress(), coins)
 	suite.Require().NoError(err)
 
 	evmParams := evermintChainA.EvmKeeper.GetParams(suite.chainA.GetContext())

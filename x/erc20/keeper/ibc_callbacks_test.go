@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
 	"github.com/EscanBE/evermint/v12/rename_chain/marker"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"math/big"
 
 	"github.com/EscanBE/evermint/v12/x/erc20/keeper"
@@ -28,7 +29,6 @@ import (
 	"github.com/EscanBE/evermint/v12/contracts"
 	claimstypes "github.com/EscanBE/evermint/v12/x/claims/types"
 	"github.com/EscanBE/evermint/v12/x/erc20/types"
-	inflationtypes "github.com/EscanBE/evermint/v12/x/inflation/types"
 	vestingtypes "github.com/EscanBE/evermint/v12/x/vesting/types"
 )
 
@@ -449,9 +449,9 @@ func (suite *KeeperTestSuite) TestConvertCoinToERC20FromPacket() {
 				// Mint coins on account to simulate receiving ibc transfer
 				nativeCoin := sdk.NewCoin(pair.Denom, sdk.NewInt(10))
 				coins := sdk.NewCoins(nativeCoin)
-				err := suite.app.BankKeeper.MintCoins(suite.ctx, inflationtypes.ModuleName, coins)
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, coins)
 				suite.Require().NoError(err)
-				err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, inflationtypes.ModuleName, sender, coins)
+				err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, minttypes.ModuleName, sender, coins)
 				suite.Require().NoError(err)
 
 				return transfertypes.NewFungibleTokenPacketData(pair.Denom, "10", senderAddr, "", "")
@@ -644,9 +644,9 @@ func (suite *KeeperTestSuite) TestOnTimeoutPacket() {
 				// Mint coins on account to simulate receiving ibc transfer
 				nativeCoin := sdk.NewCoin(pair.Denom, sdk.NewInt(10))
 				coins := sdk.NewCoins(nativeCoin)
-				err := suite.app.BankKeeper.MintCoins(suite.ctx, inflationtypes.ModuleName, coins)
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, coins)
 				suite.Require().NoError(err)
-				err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, inflationtypes.ModuleName, sender, coins)
+				err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, minttypes.ModuleName, sender, coins)
 				suite.Require().NoError(err)
 
 				return transfertypes.NewFungibleTokenPacketData(pair.Denom, "10", senderAddr, "", "")

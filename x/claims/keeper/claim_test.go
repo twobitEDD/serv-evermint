@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/rename_chain/marker"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"time"
 
 	"cosmossdk.io/math"
@@ -10,7 +11,6 @@ import (
 	"github.com/EscanBE/evermint/v12/testutil"
 	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
 	evertypes "github.com/EscanBE/evermint/v12/types"
-	inflationtypes "github.com/EscanBE/evermint/v12/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -253,7 +253,7 @@ func (suite *KeeperTestSuite) TestClaimCoinsForAction() {
 				// drain the module account funds to test error
 				addr := suite.app.ClaimsKeeper.GetModuleAccountAddress()
 				coins := suite.app.BankKeeper.GetAllBalances(suite.ctx, addr)
-				err := suite.app.BankKeeper.SendCoinsFromModuleToModule(suite.ctx, types.ModuleName, inflationtypes.ModuleName, coins)
+				err := suite.app.BankKeeper.SendCoinsFromModuleToModule(suite.ctx, types.ModuleName, minttypes.ModuleName, coins)
 				suite.Require().NoError(err)
 			},
 			types.NewClaimsRecord(sdk.NewInt(200)),

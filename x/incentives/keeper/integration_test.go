@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"math/big"
 	"time"
 
@@ -63,10 +64,11 @@ var _ = Describe("Distribution", Ordered, func() {
 
 		initialBalance := s.app.BankKeeper.GetBalance(s.ctx, s.address.Bytes(), denomMint)
 
-		// Enable Inflation
-		params := s.app.InflationKeeper.GetParams(s.ctx)
-		params.EnableInflation = true
-		err := s.app.InflationKeeper.SetParams(s.ctx, params)
+		// Maximum Mint
+		mintParams := s.app.MintKeeper.GetParams(s.ctx)
+		mintParams.InflationMax = sdkmath.LegacyOneDec()
+		mintParams.InflationMin = sdkmath.LegacyOneDec()
+		err := s.app.MintKeeper.SetParams(s.ctx, mintParams)
 		s.Require().NoError(err)
 
 		// set a EOA account for the address
