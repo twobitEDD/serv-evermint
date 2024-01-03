@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 )
@@ -72,4 +73,9 @@ func TestCodeHash_Bytes(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCodeHash_ProveEmptyCodeHashWastesStore(t *testing.T) {
+	require.NotEmpty(t, EmptyCodeHash)
+	require.Len(t, EmptyCodeHash, 32)
 }
