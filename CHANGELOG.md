@@ -38,6 +38,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 - (test) [#51](https://github.com/EscanBE/evermint/pull/51) Set chain-id into client.toml during init testnet
+- (ante) [#63](https://github.com/EscanBE/evermint/pull/63) Disable more authz msgs + refactor optimize AuthzLimiterDecorator (backport #62)
 
 ### Bug Fixes
 
