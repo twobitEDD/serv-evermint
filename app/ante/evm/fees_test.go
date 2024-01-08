@@ -2,6 +2,7 @@ package evm_test
 
 import (
 	"github.com/EscanBE/evermint/v12/rename_chain/marker"
+	"math"
 	"math/big"
 
 	sdkmath "cosmossdk.io/math"
@@ -227,6 +228,53 @@ func (suite *AnteTestSuite) TestEthMinGasPriceDecorator() {
 			},
 			true,
 			"",
+		},
+		{
+			name: "do not panic when tx fee overflow of int64",
+			malleate: func() sdk.Tx {
+				params := suite.app.FeeMarketKeeper.GetParams(suite.ctx)
+				params.MinGasPrice = sdk.NewDec(math.MaxInt64).MulInt64(2)
+				err := suite.app.FeeMarketKeeper.SetParams(suite.ctx, params)
+				suite.Require().NoError(err)
+
+				gasFeeOverflowInt64 := new(big.Int).Add(big.NewInt(math.MaxInt64), big.NewInt(1))
+				msg := suite.BuildTestEthTx(
+					from,                // from
+					to,                  // to
+					nil,                 // amount
+					make([]byte, 0),     // input
+					nil,                 // gas price
+					gasFeeOverflowInt64, // gas fee cap
+					gasFeeOverflowInt64, // gas tip cap
+					&emptyAccessList,    // access list
+				)
+				return suite.CreateTestTx(msg, privKey, 1, false)
+			},
+			expPass: false,
+			errMsg:  "provided fee < minimum global fee",
+		},
+		{
+			name: "do not panic when required fee (minimum global fee) overflow of int64",
+			malleate: func() sdk.Tx {
+				params := suite.app.FeeMarketKeeper.GetParams(suite.ctx)
+				params.MinGasPrice = sdk.NewDec(math.MaxInt64).MulInt64(2)
+				err := suite.app.FeeMarketKeeper.SetParams(suite.ctx, params)
+				suite.Require().NoError(err)
+
+				msg := suite.BuildTestEthTx(
+					from,                // from
+					to,                  // to
+					nil,                 // amount
+					make([]byte, 0),     // input
+					nil,                 // gas price
+					big.NewInt(100_000), // gas fee cap
+					big.NewInt(100),     // gas tip cap
+					&emptyAccessList,    // access list
+				)
+				return suite.CreateTestTx(msg, privKey, 1, false)
+			},
+			expPass: false,
+			errMsg:  "provided fee < minimum global fee",
 		},
 	}
 
