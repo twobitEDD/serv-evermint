@@ -68,6 +68,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (evm) [#25](https://github.com/EscanBE/evermint/pull/25) Enable [EIP-3855](https://eips.ethereum.org/EIPS/eip-3855) by default
 - (deps) [#36](https://github.com/EscanBE/evermint/pull/36) Bump CometBFT to v0.37.4
 - (evm) [#39](https://github.com/EscanBE/evermint/pull/39) Consume all gas upon `ApplyTransaction` failure without VM error
+- (deps) [#57](https://github.com/EscanBE/evermint/pull/57) Use vanilla Cosmos-SDK v0.47.5
 
 # Evermint changelog
 

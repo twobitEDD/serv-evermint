@@ -3,6 +3,8 @@ package main_test
 import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/spf13/cobra"
+	"strings"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -38,4 +40,40 @@ func TestAddKeyLedgerCmd(t *testing.T) {
 
 	err := svrcmd.Execute(rootCmd, constants.ApplicationBinaryName, app.DefaultNodeHome)
 	require.Error(t, err)
+}
+
+func TestFlagGasAdjustment(t *testing.T) {
+	tests := []struct {
+		args []string
+	}{
+		{
+			args: []string{"ca", "0x830bb7a3c4c664e1c611d16dba1ef4067c697bd7"},
+		},
+		{
+			args: []string{"tx", "bank", "send", "dev0", "dev1", "1" + constants.BaseDenom},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
+			rootCmd, _ := main.NewRootCmd()
+			rootCmd.SetArgs(tt.args)
+
+			var run bool
+
+			rootCmd.PersistentPreRun = nil // ignore if any
+			rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+				gasAdjustment, err := cmd.Flags().GetFloat64(flags.FlagGasAdjustment)
+				require.NoError(t, err)
+				require.Equal(t, 1.2, gasAdjustment, "gas adjustment should be 1.2")
+
+				run = true
+
+				return nil
+			}
+
+			_ = svrcmd.Execute(rootCmd, constants.ApplicationBinaryName, app.DefaultNodeHome)
+			
+			require.True(t, run, "test should be triggered regardless of error")
+		})
+	}
 }
