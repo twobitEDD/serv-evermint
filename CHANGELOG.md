@@ -57,6 +57,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (fee) [#30](https://github.com/EscanBE/evermint/pull/30) Handle deduct zero fee of zero fee tx when x/feemarket disabled and min gas price is zero
 - (rpc+store) [#32](https://github.com/EscanBE/evermint/pull/32) Fix some concurrency issue in rpc and correct iavl tag
 - (test) [#50](https://github.com/EscanBE/evermint/pull/50) Set chain-id into client.toml during init testnet
+- (ante) [#59](https://github.com/EscanBE/evermint/pull/59) Prevent panic when building error message of fee which overflow int64
 
 ### Client Breaking
 
