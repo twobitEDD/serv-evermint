@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/EscanBE/evermint/v12/cmd/evmd/inspect"
+	cmdutils "github.com/EscanBE/evermint/v12/cmd/evmd/utils"
 	"github.com/EscanBE/evermint/v12/constants"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
@@ -175,7 +176,7 @@ You gonna get "data/application.db" unpacked
 		addModuleInitFlags,
 	)
 
-	// add keybase, auxiliary RPC, query, and tx child commands
+	// add basic commands: auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		queryCommand(),
@@ -189,6 +190,13 @@ You gonna get "data/application.db" unpacked
 
 	// add rosetta
 	rootCmd.AddCommand(rosettaCmd.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Codec))
+
+	const minimumDefaultGasAdjustment = 1.2
+	if //goland:noinspection GoBoolExpressions
+	flags.DefaultGasAdjustment < minimumDefaultGasAdjustment {
+		// visit all flags to change the default gas adjustment
+		cmdutils.UpdateRegisteredGasAdjustmentFlags(rootCmd, minimumDefaultGasAdjustment)
+	}
 
 	return rootCmd, encodingConfig
 }
@@ -388,8 +396,4 @@ func initTendermintConfig() *tmcfg.Config {
 	// cfg.P2P.MaxNumOutboundPeers = 40
 
 	return cfg
-}
-
-func init() {
-	flags.DefaultGasAdjustment = 1.2
 }
