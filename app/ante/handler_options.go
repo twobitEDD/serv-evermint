@@ -38,6 +38,18 @@ type HandlerOptions struct {
 	SigGasConsumer         func(meter sdk.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
 	MaxTxGasWanted         uint64
 	TxFeeChecker           anteutils.TxFeeChecker
+	DisabledAuthzMsgs      map[string]bool
+}
+
+func (options HandlerOptions) WithDefaultDisabledAuthzMsgs() HandlerOptions {
+	options.DisabledAuthzMsgs = map[string]bool{
+		sdk.MsgTypeURL(&evmtypes.MsgEthereumTx{}):                     true,
+		sdk.MsgTypeURL(&sdkvesting.MsgCreateVestingAccount{}):         true,
+		sdk.MsgTypeURL(&sdkvesting.MsgCreatePeriodicVestingAccount{}): true,
+		sdk.MsgTypeURL(&sdkvesting.MsgCreatePermanentLockedAccount{}): true,
+	}
+
+	return options
 }
 
 // Validate checks if the keepers are defined
@@ -75,6 +87,9 @@ func (options HandlerOptions) Validate() error {
 	if options.TxFeeChecker == nil {
 		return errorsmod.Wrap(errortypes.ErrLogic, "tx fee checker is required for AnteHandler")
 	}
+	if len(options.DisabledAuthzMsgs) < 1 {
+		return errorsmod.Wrap(errortypes.ErrLogic, "disabled authz msgs is required for AnteHandler")
+	}
 	return nil
 }
 
@@ -105,8 +120,7 @@ func newCosmosAnteHandler(options HandlerOptions) sdk.AnteHandler {
 	return sdk.ChainAnteDecorators(
 		cosmosante.RejectMessagesDecorator{}, // reject MsgEthereumTxs
 		cosmosante.NewAuthzLimiterDecorator( // disable the Msg types that cannot be included on an authz.MsgExec msgs field
-			sdk.MsgTypeURL(&evmtypes.MsgEthereumTx{}),
-			sdk.MsgTypeURL(&sdkvesting.MsgCreateVestingAccount{}),
+			options.DisabledAuthzMsgs,
 		),
 		ante.NewSetUpContextDecorator(),
 		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
@@ -133,8 +147,7 @@ func newLegacyCosmosAnteHandlerEip712(options HandlerOptions) sdk.AnteHandler {
 	return sdk.ChainAnteDecorators(
 		cosmosante.RejectMessagesDecorator{}, // reject MsgEthereumTxs
 		cosmosante.NewAuthzLimiterDecorator( // disable the Msg types that cannot be included on an authz.MsgExec msgs field
-			sdk.MsgTypeURL(&evmtypes.MsgEthereumTx{}),
-			sdk.MsgTypeURL(&sdkvesting.MsgCreateVestingAccount{}),
+			options.DisabledAuthzMsgs,
 		),
 		ante.NewSetUpContextDecorator(),
 		ante.NewValidateBasicDecorator(),

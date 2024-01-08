@@ -48,6 +48,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (flags) [#22](https://github.com/EscanBE/evermint/pull/22) Change default gas adjustment to 1.2 and update default value of some flags
 - (fee) [#37](https://github.com/EscanBE/evermint/pull/37) Reject cosmos txs that fee denom is not evm denom
 - (test) [#46](https://github.com/EscanBE/evermint/pull/46) Use static mnemonic for scripts init nodes and `evmd testnet init-files`
+- (ante) [#62](https://github.com/EscanBE/evermint/pull/62) Disable more authz msgs + refactor optimize AuthzLimiterDecorator
 
 ### Bug Fixes
 

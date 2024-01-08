@@ -4,10 +4,19 @@ import (
 	ethante "github.com/EscanBE/evermint/v12/app/ante/evm"
 	"github.com/EscanBE/evermint/v12/encoding"
 	"github.com/EscanBE/evermint/v12/types"
+	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/EscanBE/evermint/v12/app"
 	"github.com/EscanBE/evermint/v12/app/ante"
 )
+
+func (suite *AnteTestSuite) TestDefaultDisabledAuthzMsgs() {
+	optionsWithdDefaultDisabledAuthzMsgs := ante.HandlerOptions{}.WithDefaultDisabledAuthzMsgs()
+	suite.Require().NotEmpty(optionsWithdDefaultDisabledAuthzMsgs.DisabledAuthzMsgs)
+	_, foundMsgEthereum := optionsWithdDefaultDisabledAuthzMsgs.DisabledAuthzMsgs[sdk.MsgTypeURL(&evmtypes.MsgEthereumTx{})]
+	suite.Require().True(foundMsgEthereum, "MsgEthereumTx should be disabled by default")
+}
 
 func (suite *AnteTestSuite) TestValidateHandlerOptions() {
 	cases := []struct {
@@ -151,7 +160,7 @@ func (suite *AnteTestSuite) TestValidateHandlerOptions() {
 			false,
 		},
 		{
-			"success - default app options",
+			"fail - empty disabled authz msgs",
 			ante.HandlerOptions{
 				Cdc:                    suite.app.AppCodec(),
 				AccountKeeper:          suite.app.AccountKeeper,
@@ -168,6 +177,26 @@ func (suite *AnteTestSuite) TestValidateHandlerOptions() {
 				MaxTxGasWanted:         40000000,
 				TxFeeChecker:           ethante.NewDynamicFeeChecker(suite.app.EvmKeeper),
 			},
+			false,
+		},
+		{
+			"success - default app options",
+			ante.HandlerOptions{
+				Cdc:                    suite.app.AppCodec(),
+				AccountKeeper:          suite.app.AccountKeeper,
+				BankKeeper:             suite.app.BankKeeper,
+				DistributionKeeper:     suite.app.DistrKeeper,
+				ExtensionOptionChecker: types.HasDynamicFeeExtensionOption,
+				EvmKeeper:              suite.app.EvmKeeper,
+				StakingKeeper:          suite.app.StakingKeeper,
+				FeegrantKeeper:         suite.app.FeeGrantKeeper,
+				IBCKeeper:              suite.app.IBCKeeper,
+				FeeMarketKeeper:        suite.app.FeeMarketKeeper,
+				SignModeHandler:        encoding.MakeConfig(app.ModuleBasics).TxConfig.SignModeHandler(),
+				SigGasConsumer:         ante.SigVerificationGasConsumer,
+				MaxTxGasWanted:         40000000,
+				TxFeeChecker:           ethante.NewDynamicFeeChecker(suite.app.EvmKeeper),
+			}.WithDefaultDisabledAuthzMsgs(),
 			true,
 		},
 	}

@@ -2,6 +2,7 @@ package cosmos_test
 
 import (
 	"fmt"
+	"github.com/EscanBE/evermint/v12/app/ante"
 	"github.com/EscanBE/evermint/v12/constants"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"math/big"
@@ -37,10 +38,9 @@ func TestAuthzLimiterDecorator(t *testing.T) {
 	stakingAuthUndelegate, err := stakingtypes.NewStakeAuthorization([]sdk.ValAddress{validator}, nil, stakingtypes.AuthorizationType_AUTHORIZATION_TYPE_UNDELEGATE, nil)
 	require.NoError(t, err)
 
-	decorator := cosmosante.NewAuthzLimiterDecorator(
-		sdk.MsgTypeURL(&evmtypes.MsgEthereumTx{}),
-		sdk.MsgTypeURL(&stakingtypes.MsgUndelegate{}),
-	)
+	disabledAuthzMsgs := ante.HandlerOptions{}.WithDefaultDisabledAuthzMsgs().DisabledAuthzMsgs
+	disabledAuthzMsgs[sdk.MsgTypeURL(&stakingtypes.MsgUndelegate{})] = true
+	decorator := cosmosante.NewAuthzLimiterDecorator(disabledAuthzMsgs)
 
 	testCases := []struct {
 		name        string
@@ -122,6 +122,19 @@ func TestAuthzLimiterDecorator(t *testing.T) {
 					testAddresses[0],
 					testAddresses[1],
 					stakingAuthUndelegate,
+					&distantFuture,
+				),
+			},
+			false,
+			sdkerrors.ErrUnauthorized,
+		},
+		{
+			"disabled msg - MsgGrant contains a blocked msg",
+			[]sdk.Msg{
+				newMsgGrant(
+					testAddresses[0],
+					testAddresses[1],
+					authz.NewGenericAuthorization(sdk.MsgTypeURL(&sdkvesting.MsgCreateVestingAccount{})),
 					&distantFuture,
 				),
 			},
