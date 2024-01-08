@@ -845,7 +845,7 @@ func (app *Evermint) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint6
 		SigGasConsumer:         ante.SigVerificationGasConsumer,
 		MaxTxGasWanted:         maxGasWanted,
 		TxFeeChecker:           ethante.NewDynamicFeeChecker(app.EvmKeeper),
-	}
+	}.WithDefaultDisabledAuthzMsgs()
 
 	if err := options.Validate(); err != nil {
 		panic(err)

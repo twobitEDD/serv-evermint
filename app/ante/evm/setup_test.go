@@ -107,7 +107,7 @@ func (suite *AnteTestSuite) SetupTest() {
 		FeeMarketKeeper:    suite.app.FeeMarketKeeper,
 		SignModeHandler:    encodingConfig.TxConfig.SignModeHandler(),
 		SigGasConsumer:     ante.SigVerificationGasConsumer,
-	})
+	}.WithDefaultDisabledAuthzMsgs())
 
 	suite.anteHandler = anteHandler
 	suite.ethSigner = types.LatestSignerForChainID(suite.app.EvmKeeper.ChainID())

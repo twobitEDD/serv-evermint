@@ -16,11 +16,11 @@ const maxNestedMsgs = 7
 // within the authorization module.
 type AuthzLimiterDecorator struct {
 	// disabledMsgTypes is the type urls of the msgs to block.
-	disabledMsgTypes []string
+	disabledMsgTypes map[string]bool
 }
 
 // NewAuthzLimiterDecorator creates a decorator to block certain msg types from being granted or executed within authz.
-func NewAuthzLimiterDecorator(disabledMsgTypes ...string) AuthzLimiterDecorator {
+func NewAuthzLimiterDecorator(disabledMsgTypes map[string]bool) AuthzLimiterDecorator {
 	return AuthzLimiterDecorator{
 		disabledMsgTypes: disabledMsgTypes,
 	}
@@ -78,11 +78,10 @@ func (ald AuthzLimiterDecorator) checkDisabledMsgs(msgs []sdk.Msg, isAuthzInnerM
 // isDisabledMsg returns true if the given message is in the list of restricted
 // messages from the AnteHandler.
 func (ald AuthzLimiterDecorator) isDisabledMsg(msgTypeURL string) bool {
-	for _, disabledType := range ald.disabledMsgTypes {
-		if msgTypeURL == disabledType {
-			return true
-		}
+	if ald.disabledMsgTypes == nil {
+		return false
 	}
 
-	return false
+	isDisabled, isFound := ald.disabledMsgTypes[msgTypeURL]
+	return isFound && isDisabled
 }
