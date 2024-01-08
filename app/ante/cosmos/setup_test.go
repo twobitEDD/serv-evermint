@@ -121,7 +121,7 @@ func (suite *AnteTestSuite) SetupTest() {
 		SigGasConsumer:         ante.SigVerificationGasConsumer,
 		ExtensionOptionChecker: types.HasDynamicFeeExtensionOption,
 		TxFeeChecker:           evmante.NewDynamicFeeChecker(suite.app.EvmKeeper),
-	})
+	}.WithDefaultDisabledAuthzMsgs())
 
 	suite.anteHandler = anteHandler
 	suite.ethSigner = ethtypes.LatestSignerForChainID(suite.app.EvmKeeper.ChainID())
