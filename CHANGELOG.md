@@ -39,6 +39,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 - (test) [#51](https://github.com/EscanBE/evermint/pull/51) Set chain-id into client.toml during init testnet
 
+### Bug Fixes
+
+- (ante) [#60](https://github.com/EscanBE/evermint/pull/60) Prevent panic when building error message of fee which overflow int64 (backport #59)
+
 # Evermint changelog
 
 #### Note: Evermint was born for development and research purpose so maintainers do not support migration for new upgrade/breaking changes.
