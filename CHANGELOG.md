@@ -69,6 +69,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (deps) [#36](https://github.com/EscanBE/evermint/pull/36) Bump CometBFT to v0.37.4
 - (evm) [#39](https://github.com/EscanBE/evermint/pull/39) Consume all gas upon `ApplyTransaction` failure without VM error
 - (deps) [#57](https://github.com/EscanBE/evermint/pull/57) Use vanilla Cosmos-SDK v0.47.5
+- (deps) [#58](https://github.com/EscanBE/evermint/pull/58) Bump Cosmos-SDK from v0.47.5 to v0.47.7
 
 # Evermint changelog
 
