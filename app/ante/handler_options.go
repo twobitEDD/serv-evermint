@@ -43,8 +43,10 @@ type HandlerOptions struct {
 
 func (options HandlerOptions) WithDefaultDisabledAuthzMsgs() HandlerOptions {
 	options.DisabledAuthzMsgs = map[string]bool{
-		sdk.MsgTypeURL(&evmtypes.MsgEthereumTx{}):             true,
-		sdk.MsgTypeURL(&sdkvesting.MsgCreateVestingAccount{}): true,
+		sdk.MsgTypeURL(&evmtypes.MsgEthereumTx{}):                     true,
+		sdk.MsgTypeURL(&sdkvesting.MsgCreateVestingAccount{}):         true,
+		sdk.MsgTypeURL(&sdkvesting.MsgCreatePeriodicVestingAccount{}): true,
+		sdk.MsgTypeURL(&sdkvesting.MsgCreatePermanentLockedAccount{}): true,
 	}
 
 	return options
