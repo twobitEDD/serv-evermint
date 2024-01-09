@@ -21,7 +21,6 @@ import (
 	"github.com/EscanBE/evermint/v12/x/evm/statedb"
 	evm "github.com/EscanBE/evermint/v12/x/evm/types"
 	feemarkettypes "github.com/EscanBE/evermint/v12/x/feemarket/types"
-	inflationtypes "github.com/EscanBE/evermint/v12/x/inflation/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -168,9 +167,9 @@ func (suite *KeeperTestSuite) SetupIBCTest() {
 	suite.Require().True(ok)
 	nativeCoin := sdk.NewCoin(constants.BaseDenom, amt)
 	coins := sdk.NewCoins(nativeCoin)
-	err = s.app.BankKeeper.MintCoins(suite.EvermintChain.GetContext(), inflationtypes.ModuleName, coins)
+	err = s.app.BankKeeper.MintCoins(suite.EvermintChain.GetContext(), minttypes.ModuleName, coins)
 	suite.Require().NoError(err)
-	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(suite.EvermintChain.GetContext(), inflationtypes.ModuleName, suite.EvermintChain.SenderAccount.GetAddress(), coins)
+	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(suite.EvermintChain.GetContext(), minttypes.ModuleName, suite.EvermintChain.SenderAccount.GetAddress(), coins)
 	suite.Require().NoError(err)
 
 	// we need some coins in the bankkeeper to be able to register the coins later

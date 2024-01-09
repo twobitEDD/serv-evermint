@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/cosmos/cosmos-sdk/x/mint"
 	"io"
 	"net/http"
 	"os"
@@ -142,9 +143,6 @@ import (
 	incentivesclient "github.com/EscanBE/evermint/v12/x/incentives/client"
 	incentiveskeeper "github.com/EscanBE/evermint/v12/x/incentives/keeper"
 	incentivestypes "github.com/EscanBE/evermint/v12/x/incentives/types"
-	"github.com/EscanBE/evermint/v12/x/inflation"
-	inflationkeeper "github.com/EscanBE/evermint/v12/x/inflation/keeper"
-	inflationtypes "github.com/EscanBE/evermint/v12/x/inflation/types"
 	"github.com/EscanBE/evermint/v12/x/recovery"
 	recoverykeeper "github.com/EscanBE/evermint/v12/x/recovery/keeper"
 	recoverytypes "github.com/EscanBE/evermint/v12/x/recovery/types"
@@ -154,6 +152,8 @@ import (
 	"github.com/EscanBE/evermint/v12/x/vesting"
 	vestingkeeper "github.com/EscanBE/evermint/v12/x/vesting/keeper"
 	vestingtypes "github.com/EscanBE/evermint/v12/x/vesting/types"
+	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
 	// NOTE: override ICS20 keeper to support IBC transfers of ERC20 tokens
 	"github.com/EscanBE/evermint/v12/x/ibc/transfer"
@@ -205,6 +205,7 @@ var (
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
+		mint.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
@@ -217,7 +218,6 @@ var (
 		vesting.AppModuleBasic{},
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
-		inflation.AppModuleBasic{},
 		erc20.AppModuleBasic{},
 		incentives.AppModuleBasic{},
 		epochs.AppModuleBasic{},
@@ -234,10 +234,10 @@ var (
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
+		minttypes.ModuleName:           {authtypes.Minter},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
-		inflationtypes.ModuleName:      {authtypes.Minter},
 		erc20types.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		claimstypes.ModuleName:         nil,
 		incentivestypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
@@ -290,6 +290,7 @@ type Evermint struct {
 	EvidenceKeeper        evidencekeeper.Keeper
 	TransferKeeper        transferkeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
+	MintKeeper            mintkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -300,7 +301,6 @@ type Evermint struct {
 	FeeMarketKeeper feemarketkeeper.Keeper
 
 	// Evermint keepers
-	InflationKeeper  inflationkeeper.Keeper
 	ClaimsKeeper     *claimskeeper.Keeper
 	Erc20Keeper      erc20keeper.Keeper
 	IncentivesKeeper incentiveskeeper.Keeper
@@ -355,7 +355,7 @@ func NewEvermint(
 		distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, capabilitytypes.StoreKey, consensusparamtypes.StoreKey,
-		feegrant.StoreKey, authzkeeper.StoreKey, crisistypes.StoreKey,
+		feegrant.StoreKey, authzkeeper.StoreKey, crisistypes.StoreKey, minttypes.StoreKey,
 		// ibc keys
 		ibcexported.StoreKey, ibctransfertypes.StoreKey,
 		// ica keys
@@ -363,7 +363,7 @@ func NewEvermint(
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
 		// evermint module keys
-		inflationtypes.StoreKey, erc20types.StoreKey, incentivestypes.StoreKey,
+		erc20types.StoreKey, incentivestypes.StoreKey,
 		epochstypes.StoreKey, claimstypes.StoreKey, vestingtypes.StoreKey,
 		revenuetypes.StoreKey, recoverytypes.StoreKey,
 	)
@@ -435,6 +435,10 @@ func NewEvermint(
 
 	chainApp.AuthzKeeper = authzkeeper.NewKeeper(keys[authzkeeper.StoreKey], appCodec, chainApp.MsgServiceRouter(), chainApp.AccountKeeper)
 
+	chainApp.MintKeeper = mintkeeper.NewKeeper(
+		appCodec, keys[minttypes.StoreKey], stakingKeeper, chainApp.AccountKeeper, chainApp.BankKeeper, authtypes.FeeCollectorName, authAddr,
+	)
+
 	tracer := cast.ToString(appOpts.Get(srvflags.EVMTracer))
 
 	// Create Ethermint keepers
@@ -476,11 +480,6 @@ func NewEvermint(
 	govKeeper.SetLegacyRouter(govRouter)
 
 	// Evermint Keeper
-	chainApp.InflationKeeper = inflationkeeper.NewKeeper(
-		keys[inflationtypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
-		chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.DistrKeeper, stakingKeeper,
-		authtypes.FeeCollectorName,
-	)
 
 	chainApp.ClaimsKeeper = claimskeeper.NewKeeper(
 		appCodec, keys[claimstypes.StoreKey], authtypes.NewModuleAddress(govtypes.ModuleName),
@@ -512,7 +511,7 @@ func NewEvermint(
 
 	chainApp.IncentivesKeeper = incentiveskeeper.NewKeeper(
 		keys[incentivestypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
-		chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.InflationKeeper, chainApp.StakingKeeper, chainApp.EvmKeeper,
+		chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.MintKeeper, chainApp.StakingKeeper, chainApp.EvmKeeper,
 	)
 
 	chainApp.RevenueKeeper = revenuekeeper.NewKeeper(
@@ -526,7 +525,6 @@ func NewEvermint(
 		epochskeeper.NewMultiEpochHooks(
 			// insert epoch hooks receivers here
 			chainApp.IncentivesKeeper.Hooks(),
-			chainApp.InflationKeeper.Hooks(),
 		),
 	)
 
@@ -655,6 +653,7 @@ func NewEvermint(
 		feegrantmodule.NewAppModule(appCodec, chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.FeeGrantKeeper, chainApp.interfaceRegistry),
 		authzmodule.NewAppModule(appCodec, chainApp.AuthzKeeper, chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.interfaceRegistry),
 		consensus.NewAppModule(appCodec, chainApp.ConsensusParamsKeeper),
+		mint.NewAppModule(appCodec, chainApp.MintKeeper, chainApp.AccountKeeper, nil, chainApp.GetSubspace(minttypes.ModuleName)),
 
 		// ibc modules
 		ibc.NewAppModule(chainApp.IBCKeeper),
@@ -664,8 +663,6 @@ func NewEvermint(
 		evm.NewAppModule(chainApp.EvmKeeper, chainApp.AccountKeeper, chainApp.GetSubspace(evmtypes.ModuleName)),
 		feemarket.NewAppModule(chainApp.FeeMarketKeeper, chainApp.GetSubspace(feemarkettypes.ModuleName)),
 		// Evermint app modules
-		inflation.NewAppModule(chainApp.InflationKeeper, chainApp.AccountKeeper, *chainApp.StakingKeeper,
-			chainApp.GetSubspace(inflationtypes.ModuleName)),
 		erc20.NewAppModule(chainApp.Erc20Keeper, chainApp.AccountKeeper,
 			chainApp.GetSubspace(erc20types.ModuleName)),
 		incentives.NewAppModule(chainApp.IncentivesKeeper, chainApp.AccountKeeper,
@@ -691,6 +688,7 @@ func NewEvermint(
 		capabilitytypes.ModuleName,
 		// Note: epochs' begin should be "real" start of epochs, we keep epochs beginblock at the beginning
 		epochstypes.ModuleName,
+		minttypes.ModuleName,
 		feemarkettypes.ModuleName,
 		evmtypes.ModuleName,
 		distrtypes.ModuleName,
@@ -710,7 +708,6 @@ func NewEvermint(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		inflationtypes.ModuleName,
 		erc20types.ModuleName,
 		claimstypes.ModuleName,
 		incentivestypes.ModuleName,
@@ -738,6 +735,7 @@ func NewEvermint(
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
+		minttypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
@@ -746,7 +744,6 @@ func NewEvermint(
 		upgradetypes.ModuleName,
 		// Evermint modules
 		vestingtypes.ModuleName,
-		inflationtypes.ModuleName,
 		erc20types.ModuleName,
 		incentivestypes.ModuleName,
 		recoverytypes.ModuleName,
@@ -769,6 +766,7 @@ func NewEvermint(
 		claimstypes.ModuleName,
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
+		minttypes.ModuleName,
 		govtypes.ModuleName,
 		ibcexported.ModuleName,
 		// Ethermint modules
@@ -787,7 +785,6 @@ func NewEvermint(
 		upgradetypes.ModuleName,
 		// Evermint modules
 		vestingtypes.ModuleName,
-		inflationtypes.ModuleName,
 		erc20types.ModuleName,
 		incentivestypes.ModuleName,
 		epochstypes.ModuleName,
@@ -1117,6 +1114,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
+	paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
@@ -1126,7 +1124,6 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(evmtypes.ModuleName).WithKeyTable(evmtypes.ParamKeyTable()) //nolint: staticcheck
 	paramsKeeper.Subspace(feemarkettypes.ModuleName).WithKeyTable(feemarkettypes.ParamKeyTable())
 	// evermint subspaces
-	paramsKeeper.Subspace(inflationtypes.ModuleName)
 	paramsKeeper.Subspace(erc20types.ModuleName)
 	paramsKeeper.Subspace(claimstypes.ModuleName)
 	paramsKeeper.Subspace(incentivestypes.ModuleName)
