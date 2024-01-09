@@ -78,6 +78,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (incentives) [#67](https://github.com/EscanBE/evermint/pull/67) Remove `x/incentives` module
 - (revenue) [#68](https://github.com/EscanBE/evermint/pull/68) Remove `x/revenue` module
 - (recovery) [#69](https://github.com/EscanBE/evermint/pull/69) Remove `x/recovery` module
+- (epochs) [#70](https://github.com/EscanBE/evermint/pull/70) Remove `x/epochs` module
 
 # Evermint changelog
 
