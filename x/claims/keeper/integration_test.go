@@ -21,6 +21,9 @@ import (
 )
 
 var _ = Describe("Claiming", Ordered, func() {
+	Skip("this test broken due to removal of x/incentives, this module x/claims is going to be removed as well so this test will not be fixed")
+	// https://github.com/EscanBE/evermint/issues/41
+
 	claimsAddr := s.app.AccountKeeper.GetModuleAddress(types.ModuleName)
 	distrAddr := s.app.AccountKeeper.GetModuleAddress(distrtypes.ModuleName)
 	stakeDenom := stakingtypes.DefaultParams().BondDenom
