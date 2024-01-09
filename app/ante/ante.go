@@ -2,6 +2,7 @@ package ante
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	"github.com/EscanBE/evermint/v12/constants"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -22,13 +23,13 @@ func NewAnteHandler(options HandlerOptions) sdk.AnteHandler {
 			opts := txWithExtensions.GetExtensionOptions()
 			if len(opts) > 0 {
 				switch typeURL := opts[0].GetTypeUrl(); typeURL {
-				case "/ethermint.evm.v1.ExtensionOptionsEthereumTx":
+				case constants.EthermintExtensionOptionsEthereumTx:
 					// handle as *evmtypes.MsgEthereumTx
 					anteHandler = newEVMAnteHandler(options)
-				case "/ethermint.types.v1.ExtensionOptionsWeb3Tx":
+				case constants.EthermintExtensionOptionsWeb3Tx:
 					// handle as normal Cosmos SDK tx, except signature is checked for EIP712 representation
 					anteHandler = newLegacyCosmosAnteHandlerEip712(options)
-				case "/ethermint.types.v1.ExtensionOptionDynamicFeeTx":
+				case constants.EthermintExtensionOptionDynamicFeeTx:
 					// cosmos-sdk tx with dynamic fee extension
 					anteHandler = newCosmosAnteHandler(options)
 				default:

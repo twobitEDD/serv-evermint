@@ -2,6 +2,7 @@ package indexer
 
 import (
 	"fmt"
+	"github.com/EscanBE/evermint/v12/constants"
 
 	errorsmod "cosmossdk.io/errors"
 	rpctypes "github.com/EscanBE/evermint/v12/rpc/types"
@@ -203,7 +204,7 @@ func isEthTx(tx sdk.Tx) bool {
 		return false
 	}
 	opts := extTx.GetExtensionOptions()
-	if len(opts) != 1 || opts[0].GetTypeUrl() != "/ethermint.evm.v1.ExtensionOptionsEthereumTx" {
+	if len(opts) != 1 || opts[0].GetTypeUrl() != constants.EthermintExtensionOptionsEthereumTx {
 		return false
 	}
 	return true
