@@ -7,7 +7,6 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	"github.com/EscanBE/evermint/v12/app"
-	"github.com/EscanBE/evermint/v12/contracts"
 	"github.com/EscanBE/evermint/v12/crypto/ethsecp256k1"
 	"github.com/EscanBE/evermint/v12/testutil"
 	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
@@ -15,7 +14,6 @@ import (
 	"github.com/EscanBE/evermint/v12/x/claims/types"
 	evm "github.com/EscanBE/evermint/v12/x/evm/types"
 	feemarkettypes "github.com/EscanBE/evermint/v12/x/feemarket/types"
-	incentivestypes "github.com/EscanBE/evermint/v12/x/incentives/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -119,26 +117,8 @@ func getAddr(priv *ethsecp256k1.PrivKey) sdk.AccAddress {
 	return sdk.AccAddress(priv.PubKey().Address().Bytes())
 }
 
-func govProposal(priv *ethsecp256k1.PrivKey) (uint64, error) {
-	contractAddress, err := testutil.DeployContract(
-		s.ctx,
-		s.app,
-		priv,
-		s.queryClientEvm,
-		contracts.ERC20MinterBurnerDecimalsContract,
-		"Test", "TTT", uint8(18),
-	)
-	s.Require().NoError(err)
-	s.ctx, err = testutil.Commit(s.ctx, s.app, time.Second*0, nil)
-	s.Require().NoError(err)
-	content := incentivestypes.NewRegisterIncentiveProposal(
-		"test",
-		"description",
-		contractAddress.String(),
-		sdk.DecCoins{sdk.NewDecCoinFromDec(constants.BaseDenom, sdk.NewDecWithPrec(5, 2))},
-		1000,
-	)
-	return testutil.SubmitProposal(s.ctx, s.app, priv, content, 8)
+func govProposal(_ *ethsecp256k1.PrivKey) (uint64, error) {
+	panic("broken test on deprecated module")
 }
 
 func sendEthToSelf(priv *ethsecp256k1.PrivKey) {

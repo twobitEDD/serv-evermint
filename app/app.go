@@ -139,10 +139,6 @@ import (
 	erc20client "github.com/EscanBE/evermint/v12/x/erc20/client"
 	erc20keeper "github.com/EscanBE/evermint/v12/x/erc20/keeper"
 	erc20types "github.com/EscanBE/evermint/v12/x/erc20/types"
-	"github.com/EscanBE/evermint/v12/x/incentives"
-	incentivesclient "github.com/EscanBE/evermint/v12/x/incentives/client"
-	incentiveskeeper "github.com/EscanBE/evermint/v12/x/incentives/keeper"
-	incentivestypes "github.com/EscanBE/evermint/v12/x/incentives/types"
 	"github.com/EscanBE/evermint/v12/x/recovery"
 	recoverykeeper "github.com/EscanBE/evermint/v12/x/recovery/keeper"
 	recoverytypes "github.com/EscanBE/evermint/v12/x/recovery/types"
@@ -200,7 +196,6 @@ var (
 				ibcclientclient.UpdateClientProposalHandler, ibcclientclient.UpgradeProposalHandler,
 				// Evermint proposal types
 				erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler, erc20client.ToggleTokenConversionProposalHandler,
-				incentivesclient.RegisterIncentiveProposalHandler, incentivesclient.CancelIncentiveProposalHandler,
 			},
 		),
 		params.AppModuleBasic{},
@@ -219,7 +214,6 @@ var (
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
 		erc20.AppModuleBasic{},
-		incentives.AppModuleBasic{},
 		epochs.AppModuleBasic{},
 		claims.AppModuleBasic{},
 		recovery.AppModuleBasic{},
@@ -240,13 +234,10 @@ var (
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
 		erc20types.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		claimstypes.ModuleName:         nil,
-		incentivestypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
-	allowedReceivingModAcc = map[string]bool{
-		incentivestypes.ModuleName: true,
-	}
+	allowedReceivingModAcc = map[string]bool{}
 )
 
 var (
@@ -301,13 +292,12 @@ type Evermint struct {
 	FeeMarketKeeper feemarketkeeper.Keeper
 
 	// Evermint keepers
-	ClaimsKeeper     *claimskeeper.Keeper
-	Erc20Keeper      erc20keeper.Keeper
-	IncentivesKeeper incentiveskeeper.Keeper
-	EpochsKeeper     epochskeeper.Keeper
-	VestingKeeper    vestingkeeper.Keeper
-	RecoveryKeeper   *recoverykeeper.Keeper
-	RevenueKeeper    revenuekeeper.Keeper
+	ClaimsKeeper   *claimskeeper.Keeper
+	Erc20Keeper    erc20keeper.Keeper
+	EpochsKeeper   epochskeeper.Keeper
+	VestingKeeper  vestingkeeper.Keeper
+	RecoveryKeeper *recoverykeeper.Keeper
+	RevenueKeeper  revenuekeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -363,7 +353,7 @@ func NewEvermint(
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
 		// evermint module keys
-		erc20types.StoreKey, incentivestypes.StoreKey,
+		erc20types.StoreKey,
 		epochstypes.StoreKey, claimstypes.StoreKey, vestingtypes.StoreKey,
 		revenuetypes.StoreKey, recoverytypes.StoreKey,
 	)
@@ -466,8 +456,7 @@ func NewEvermint(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(chainApp.ParamsKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(&chainApp.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(chainApp.IBCKeeper.ClientKeeper)).
-		AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&chainApp.Erc20Keeper)).
-		AddRoute(incentivestypes.RouterKey, incentives.NewIncentivesProposalHandler(&chainApp.IncentivesKeeper))
+		AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&chainApp.Erc20Keeper))
 
 	govConfig := govtypes.DefaultConfig()
 	govConfig.MaxMetadataLen = 10000
@@ -509,11 +498,6 @@ func NewEvermint(
 		chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.EvmKeeper, chainApp.StakingKeeper, chainApp.ClaimsKeeper,
 	)
 
-	chainApp.IncentivesKeeper = incentiveskeeper.NewKeeper(
-		keys[incentivestypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
-		chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.MintKeeper, chainApp.StakingKeeper, chainApp.EvmKeeper,
-	)
-
 	chainApp.RevenueKeeper = revenuekeeper.NewKeeper(
 		keys[revenuetypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
 		chainApp.BankKeeper, chainApp.EvmKeeper,
@@ -523,8 +507,7 @@ func NewEvermint(
 	epochsKeeper := epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
 	chainApp.EpochsKeeper = *epochsKeeper.SetHooks(
 		epochskeeper.NewMultiEpochHooks(
-			// insert epoch hooks receivers here
-			chainApp.IncentivesKeeper.Hooks(),
+		// insert epoch hooks receivers here
 		),
 	)
 
@@ -537,7 +520,6 @@ func NewEvermint(
 	chainApp.EvmKeeper = chainApp.EvmKeeper.SetHooks(
 		evmkeeper.NewMultiEvmHooks(
 			chainApp.Erc20Keeper.Hooks(),
-			chainApp.IncentivesKeeper.Hooks(),
 			chainApp.RevenueKeeper.Hooks(),
 			chainApp.ClaimsKeeper.Hooks(),
 		),
@@ -665,8 +647,6 @@ func NewEvermint(
 		// Evermint app modules
 		erc20.NewAppModule(chainApp.Erc20Keeper, chainApp.AccountKeeper,
 			chainApp.GetSubspace(erc20types.ModuleName)),
-		incentives.NewAppModule(chainApp.IncentivesKeeper, chainApp.AccountKeeper,
-			chainApp.GetSubspace(incentivestypes.ModuleName)),
 		epochs.NewAppModule(appCodec, chainApp.EpochsKeeper),
 		claims.NewAppModule(appCodec, *chainApp.ClaimsKeeper,
 			chainApp.GetSubspace(claimstypes.ModuleName)),
@@ -710,7 +690,6 @@ func NewEvermint(
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
 		claimstypes.ModuleName,
-		incentivestypes.ModuleName,
 		recoverytypes.ModuleName,
 		revenuetypes.ModuleName,
 		consensusparamtypes.ModuleName,
@@ -745,7 +724,6 @@ func NewEvermint(
 		// Evermint modules
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
-		incentivestypes.ModuleName,
 		recoverytypes.ModuleName,
 		revenuetypes.ModuleName,
 		consensusparamtypes.ModuleName,
@@ -786,7 +764,6 @@ func NewEvermint(
 		// Evermint modules
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
-		incentivestypes.ModuleName,
 		epochstypes.ModuleName,
 		recoverytypes.ModuleName,
 		revenuetypes.ModuleName,
@@ -1126,7 +1103,6 @@ func initParamsKeeper(
 	// evermint subspaces
 	paramsKeeper.Subspace(erc20types.ModuleName)
 	paramsKeeper.Subspace(claimstypes.ModuleName)
-	paramsKeeper.Subspace(incentivestypes.ModuleName)
 	paramsKeeper.Subspace(recoverytypes.ModuleName)
 	paramsKeeper.Subspace(revenuetypes.ModuleName)
 	return paramsKeeper

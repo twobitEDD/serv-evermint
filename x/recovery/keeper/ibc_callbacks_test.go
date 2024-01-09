@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
 	"github.com/EscanBE/evermint/v12/crypto/ethsecp256k1"
 	"github.com/EscanBE/evermint/v12/testutil"
@@ -20,7 +21,6 @@ import (
 	ibcmock "github.com/cosmos/ibc-go/v7/testing/mock"
 
 	claimstypes "github.com/EscanBE/evermint/v12/x/claims/types"
-	incentivestypes "github.com/EscanBE/evermint/v12/x/incentives/types"
 	"github.com/EscanBE/evermint/v12/x/recovery/keeper"
 	"github.com/EscanBE/evermint/v12/x/recovery/types"
 	vestingtypes "github.com/EscanBE/evermint/v12/x/vesting/types"
@@ -187,18 +187,18 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 			coins,
 		},
 		{
-			"continue - receiver is a module account",
-			func() {
-				incentivesAcc := suite.app.AccountKeeper.GetModuleAccount(suite.ctx, incentivestypes.ModuleName)
-				suite.Require().NotNil(incentivesAcc)
-				addr := incentivesAcc.GetAddress().String()
+			name: "reject - receiver is a module account that not allowed to receive",
+			malleate: func() {
+				mintAcc := suite.app.AccountKeeper.GetModuleAccount(suite.ctx, minttypes.ModuleName)
+				suite.Require().NotNil(mintAcc)
+				addr := mintAcc.GetAddress().String()
 				transfer := transfertypes.NewFungibleTokenPacketData(denom, "100", addr, addr, "")
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 				packet = channeltypes.NewPacket(bz, 100, transfertypes.PortID, sourceChannel, transfertypes.PortID, evermintChannel, timeoutHeight, 0)
 			},
-			true,
-			false,
-			coins,
+			ackSuccess:  false,
+			expRecovery: false,
+			expCoins:    coins,
 		},
 		{
 			"continue - receiver pubkey is a supported key",

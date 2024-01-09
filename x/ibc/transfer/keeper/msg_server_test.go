@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"fmt"
 	"github.com/EscanBE/evermint/v12/constants"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -173,8 +174,8 @@ func (suite *KeeperTestSuite) TestTransfer() {
 			true,
 		},
 		{
-			"no-op - sender is a module account",
-			func() *types.MsgTransfer {
+			name: "error - sender is a module account, lacking permission to receive funds",
+			malleate: func() *types.MsgTransfer {
 				contractAddr, err := suite.DeployContract("coin", "token", uint8(6))
 				suite.Require().NoError(err)
 				suite.Commit()
@@ -183,8 +184,7 @@ func (suite *KeeperTestSuite) TestTransfer() {
 				suite.Require().NoError(err)
 				suite.Commit()
 
-				// module account needs permission to send funds (perms set in allowedReceivingModAcc)
-				senderAcc := suite.app.AccountKeeper.GetModuleAccount(suite.ctx, "incentives")
+				senderAcc := suite.app.AccountKeeper.GetModuleAccount(suite.ctx, minttypes.ModuleName)
 
 				err = testutil.FundModuleAccount(suite.ctx, suite.app.BankKeeper, senderAcc.GetName(), sdk.NewCoins(sdk.NewCoin(pair.Denom, sdk.NewInt(10))))
 				suite.Require().NoError(err)
@@ -195,7 +195,7 @@ func (suite *KeeperTestSuite) TestTransfer() {
 
 				return transferMsg
 			},
-			true,
+			expPass: false,
 		},
 		{
 			"pass - has enough balance in erc20 - need to convert",
