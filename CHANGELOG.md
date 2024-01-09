@@ -76,6 +76,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (deps) [#58](https://github.com/EscanBE/evermint/pull/58) Bump Cosmos-SDK from v0.47.5 to v0.47.7
 - (ante) [#62](https://github.com/EscanBE/evermint/pull/62) Disable more authz msgs + refactor optimize AuthzLimiterDecorator
 - (incentives) [#67](https://github.com/EscanBE/evermint/pull/67) Remove `x/incentives` module
+- (revenue) [#68](https://github.com/EscanBE/evermint/pull/68) Remove `x/revenue` module
 
 # Evermint changelog
 
