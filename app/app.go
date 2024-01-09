@@ -142,9 +142,6 @@ import (
 	"github.com/EscanBE/evermint/v12/x/recovery"
 	recoverykeeper "github.com/EscanBE/evermint/v12/x/recovery/keeper"
 	recoverytypes "github.com/EscanBE/evermint/v12/x/recovery/types"
-	revenue "github.com/EscanBE/evermint/v12/x/revenue/v1"
-	revenuekeeper "github.com/EscanBE/evermint/v12/x/revenue/v1/keeper"
-	revenuetypes "github.com/EscanBE/evermint/v12/x/revenue/v1/types"
 	"github.com/EscanBE/evermint/v12/x/vesting"
 	vestingkeeper "github.com/EscanBE/evermint/v12/x/vesting/keeper"
 	vestingtypes "github.com/EscanBE/evermint/v12/x/vesting/types"
@@ -217,7 +214,6 @@ var (
 		epochs.AppModuleBasic{},
 		claims.AppModuleBasic{},
 		recovery.AppModuleBasic{},
-		revenue.AppModuleBasic{},
 		consensus.AppModuleBasic{},
 	)
 
@@ -297,7 +293,6 @@ type Evermint struct {
 	EpochsKeeper   epochskeeper.Keeper
 	VestingKeeper  vestingkeeper.Keeper
 	RecoveryKeeper *recoverykeeper.Keeper
-	RevenueKeeper  revenuekeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -355,7 +350,7 @@ func NewEvermint(
 		// evermint module keys
 		erc20types.StoreKey,
 		epochstypes.StoreKey, claimstypes.StoreKey, vestingtypes.StoreKey,
-		revenuetypes.StoreKey, recoverytypes.StoreKey,
+		recoverytypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
@@ -498,12 +493,6 @@ func NewEvermint(
 		chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.EvmKeeper, chainApp.StakingKeeper, chainApp.ClaimsKeeper,
 	)
 
-	chainApp.RevenueKeeper = revenuekeeper.NewKeeper(
-		keys[revenuetypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
-		chainApp.BankKeeper, chainApp.EvmKeeper,
-		authtypes.FeeCollectorName,
-	)
-
 	epochsKeeper := epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
 	chainApp.EpochsKeeper = *epochsKeeper.SetHooks(
 		epochskeeper.NewMultiEpochHooks(
@@ -520,7 +509,6 @@ func NewEvermint(
 	chainApp.EvmKeeper = chainApp.EvmKeeper.SetHooks(
 		evmkeeper.NewMultiEvmHooks(
 			chainApp.Erc20Keeper.Hooks(),
-			chainApp.RevenueKeeper.Hooks(),
 			chainApp.ClaimsKeeper.Hooks(),
 		),
 	)
@@ -653,8 +641,6 @@ func NewEvermint(
 		vesting.NewAppModule(chainApp.VestingKeeper, chainApp.AccountKeeper, chainApp.BankKeeper, *chainApp.StakingKeeper),
 		recovery.NewAppModule(*chainApp.RecoveryKeeper,
 			chainApp.GetSubspace(recoverytypes.ModuleName)),
-		revenue.NewAppModule(chainApp.RevenueKeeper, chainApp.AccountKeeper,
-			chainApp.GetSubspace(revenuetypes.ModuleName)),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -691,7 +677,6 @@ func NewEvermint(
 		erc20types.ModuleName,
 		claimstypes.ModuleName,
 		recoverytypes.ModuleName,
-		revenuetypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -725,7 +710,6 @@ func NewEvermint(
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
 		recoverytypes.ModuleName,
-		revenuetypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -748,7 +732,6 @@ func NewEvermint(
 		govtypes.ModuleName,
 		ibcexported.ModuleName,
 		// Ethermint modules
-		// evm module denomination is used by the revenue module, in AnteHandle
 		evmtypes.ModuleName,
 		// NOTE: feemarket module needs to be initialized before genutil module:
 		// gentx transactions use MinGasPriceDecorator.AnteHandle
@@ -766,7 +749,6 @@ func NewEvermint(
 		erc20types.ModuleName,
 		epochstypes.ModuleName,
 		recoverytypes.ModuleName,
-		revenuetypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
@@ -1104,7 +1086,6 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(erc20types.ModuleName)
 	paramsKeeper.Subspace(claimstypes.ModuleName)
 	paramsKeeper.Subspace(recoverytypes.ModuleName)
-	paramsKeeper.Subspace(revenuetypes.ModuleName)
 	return paramsKeeper
 }
 
@@ -1134,7 +1115,6 @@ func (app *Evermint) setupUpgradeHandlers() {
 	switch upgradeInfo.Name {
 	case v3_sample.UpgradeName:
 		storeUpgrades = &storetypes.StoreUpgrades{
-			//Added:   []string{revenuetypes.ModuleName},
 			//Deleted: []string{"feesplit"},
 		}
 	}
