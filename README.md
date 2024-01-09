@@ -39,7 +39,7 @@ which runs on top of the [Tendermint Core](https://github.com/cometbft/cometbft)
 
 - Evermint is for research and development purpose.
 - Evermint is fork of open source Evmos v12.1.6 plus bug fixes.
-- Evermint is [currently removing some modules](https://github.com/EscanBE/evermint/issues/41) from Evmos codebase and only keep `x/evm`, `x/erc20`, `x/feemarket`, `x/epoch`. The goal is to make it more simple for research.
+- Evermint is [currently removing some modules](https://github.com/EscanBE/evermint/issues/41) from Evmos codebase and only keep `x/evm`, `x/erc20`, `x/feemarket`. The goal is to make it more simple for research and only focus on the skeleton of Evmos.
 
 ## Documentation
 
