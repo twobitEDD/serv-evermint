@@ -423,7 +423,8 @@ proto-download-deps:
 	git remote add origin "https://github.com/cosmos/cosmos-sdk.git" && \
 	git config core.sparseCheckout true && \
 	printf "proto\nthird_party\n" > .git/info/sparse-checkout && \
-	git pull origin "$(DEPS_COSMOS_SDK_VERSION)" && \
+	git fetch --depth=1 origin "$(DEPS_COSMOS_SDK_VERSION)" && \
+	git checkout FETCH_HEAD && \
 	rm -f ./proto/buf.* && \
 	mv ./proto/* ..
 	rm -rf "$(THIRD_PARTY_DIR)/cosmos_tmp"
@@ -434,7 +435,8 @@ proto-download-deps:
 	git remote add origin "https://github.com/cosmos/ibc-go.git" && \
 	git config core.sparseCheckout true && \
 	printf "proto\n" > .git/info/sparse-checkout && \
-	git pull origin "$(DEPS_IBC_GO_VERSION)" && \
+	git fetch --depth=1 origin "$(DEPS_IBC_GO_VERSION)" && \
+	git checkout FETCH_HEAD && \
 	rm -f ./proto/buf.* && \
 	mv ./proto/* ..
 	rm -rf "$(THIRD_PARTY_DIR)/ibc_tmp"
@@ -445,7 +447,8 @@ proto-download-deps:
 	git remote add origin "https://github.com/cosmos/cosmos-proto.git" && \
 	git config core.sparseCheckout true && \
 	printf "proto\n" > .git/info/sparse-checkout && \
-	git pull origin "$(DEPS_COSMOS_PROTO_VERSION)" && \
+	git fetch --depth=1 origin "$(DEPS_COSMOS_PROTO_VERSION)" && \
+	git checkout FETCH_HEAD && \
 	rm -f ./proto/buf.* && \
 	mv ./proto/* ..
 	rm -rf "$(THIRD_PARTY_DIR)/cosmos_proto_tmp"
