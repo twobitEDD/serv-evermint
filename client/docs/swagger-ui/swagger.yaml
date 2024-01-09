@@ -961,56 +961,6 @@ paths:
           type: string
       tags:
         - Query
-  /evmos/recovery/v1/params:
-    get:
-      summary: Params retrieves the total set of recovery parameters.
-      operationId: RecoveryParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params defines the parameters of the module.
-                type: object
-                properties:
-                  enable_recovery:
-                    type: boolean
-                    title: enable_recovery IBC middleware
-                  packet_timeout_duration:
-                    type: string
-                    title: >-
-                      packet_timeout_duration is the duration added to timeout
-                      timestamp for balances recovered via IBC packets
-                title: Params holds parameters for the recovery module
-            description: >-
-              QueryParamsResponse is the response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      tags:
-        - Query
   /evmos/evm/v1/account/{address}:
     get:
       summary: Account queries an Ethereum account.
@@ -43567,35 +43517,6 @@ definitions:
     description: |-
       QueryBalancesResponse is the response type for the Query/Balances RPC
       method.
-  evmos.recovery.v1.Params:
-    type: object
-    properties:
-      enable_recovery:
-        type: boolean
-        title: enable_recovery IBC middleware
-      packet_timeout_duration:
-        type: string
-        title: >-
-          packet_timeout_duration is the duration added to timeout timestamp for
-          balances recovered via IBC packets
-    title: Params holds parameters for the recovery module
-  evmos.recovery.v1.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params defines the parameters of the module.
-        type: object
-        properties:
-          enable_recovery:
-            type: boolean
-            title: enable_recovery IBC middleware
-          packet_timeout_duration:
-            type: string
-            title: >-
-              packet_timeout_duration is the duration added to timeout timestamp
-              for balances recovered via IBC packets
-        title: Params holds parameters for the recovery module
-    description: QueryParamsResponse is the response type for the Query/Params RPC method.
   ethermint.evm.v1.ChainConfig:
     type: object
     properties:
