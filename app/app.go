@@ -132,23 +132,10 @@ import (
 	"github.com/EscanBE/evermint/v12/x/claims"
 	claimskeeper "github.com/EscanBE/evermint/v12/x/claims/keeper"
 	claimstypes "github.com/EscanBE/evermint/v12/x/claims/types"
-	"github.com/EscanBE/evermint/v12/x/epochs"
-	epochskeeper "github.com/EscanBE/evermint/v12/x/epochs/keeper"
-	epochstypes "github.com/EscanBE/evermint/v12/x/epochs/types"
 	"github.com/EscanBE/evermint/v12/x/erc20"
 	erc20client "github.com/EscanBE/evermint/v12/x/erc20/client"
 	erc20keeper "github.com/EscanBE/evermint/v12/x/erc20/keeper"
 	erc20types "github.com/EscanBE/evermint/v12/x/erc20/types"
-	"github.com/EscanBE/evermint/v12/x/incentives"
-	incentivesclient "github.com/EscanBE/evermint/v12/x/incentives/client"
-	incentiveskeeper "github.com/EscanBE/evermint/v12/x/incentives/keeper"
-	incentivestypes "github.com/EscanBE/evermint/v12/x/incentives/types"
-	"github.com/EscanBE/evermint/v12/x/recovery"
-	recoverykeeper "github.com/EscanBE/evermint/v12/x/recovery/keeper"
-	recoverytypes "github.com/EscanBE/evermint/v12/x/recovery/types"
-	revenue "github.com/EscanBE/evermint/v12/x/revenue/v1"
-	revenuekeeper "github.com/EscanBE/evermint/v12/x/revenue/v1/keeper"
-	revenuetypes "github.com/EscanBE/evermint/v12/x/revenue/v1/types"
 	"github.com/EscanBE/evermint/v12/x/vesting"
 	vestingkeeper "github.com/EscanBE/evermint/v12/x/vesting/keeper"
 	vestingtypes "github.com/EscanBE/evermint/v12/x/vesting/types"
@@ -200,7 +187,6 @@ var (
 				ibcclientclient.UpdateClientProposalHandler, ibcclientclient.UpgradeProposalHandler,
 				// Evermint proposal types
 				erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler, erc20client.ToggleTokenConversionProposalHandler,
-				incentivesclient.RegisterIncentiveProposalHandler, incentivesclient.CancelIncentiveProposalHandler,
 			},
 		),
 		params.AppModuleBasic{},
@@ -219,11 +205,7 @@ var (
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
 		erc20.AppModuleBasic{},
-		incentives.AppModuleBasic{},
-		epochs.AppModuleBasic{},
 		claims.AppModuleBasic{},
-		recovery.AppModuleBasic{},
-		revenue.AppModuleBasic{},
 		consensus.AppModuleBasic{},
 	)
 
@@ -240,13 +222,10 @@ var (
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
 		erc20types.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		claimstypes.ModuleName:         nil,
-		incentivestypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
-	allowedReceivingModAcc = map[string]bool{
-		incentivestypes.ModuleName: true,
-	}
+	allowedReceivingModAcc = map[string]bool{}
 )
 
 var (
@@ -301,13 +280,9 @@ type Evermint struct {
 	FeeMarketKeeper feemarketkeeper.Keeper
 
 	// Evermint keepers
-	ClaimsKeeper     *claimskeeper.Keeper
-	Erc20Keeper      erc20keeper.Keeper
-	IncentivesKeeper incentiveskeeper.Keeper
-	EpochsKeeper     epochskeeper.Keeper
-	VestingKeeper    vestingkeeper.Keeper
-	RecoveryKeeper   *recoverykeeper.Keeper
-	RevenueKeeper    revenuekeeper.Keeper
+	ClaimsKeeper  *claimskeeper.Keeper
+	Erc20Keeper   erc20keeper.Keeper
+	VestingKeeper vestingkeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -363,9 +338,8 @@ func NewEvermint(
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
 		// evermint module keys
-		erc20types.StoreKey, incentivestypes.StoreKey,
-		epochstypes.StoreKey, claimstypes.StoreKey, vestingtypes.StoreKey,
-		revenuetypes.StoreKey, recoverytypes.StoreKey,
+		erc20types.StoreKey,
+		claimstypes.StoreKey, vestingtypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
@@ -466,8 +440,7 @@ func NewEvermint(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(chainApp.ParamsKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(&chainApp.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(chainApp.IBCKeeper.ClientKeeper)).
-		AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&chainApp.Erc20Keeper)).
-		AddRoute(incentivestypes.RouterKey, incentives.NewIncentivesProposalHandler(&chainApp.IncentivesKeeper))
+		AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&chainApp.Erc20Keeper))
 
 	govConfig := govtypes.DefaultConfig()
 	govConfig.MaxMetadataLen = 10000
@@ -509,25 +482,6 @@ func NewEvermint(
 		chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.EvmKeeper, chainApp.StakingKeeper, chainApp.ClaimsKeeper,
 	)
 
-	chainApp.IncentivesKeeper = incentiveskeeper.NewKeeper(
-		keys[incentivestypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
-		chainApp.AccountKeeper, chainApp.BankKeeper, chainApp.MintKeeper, chainApp.StakingKeeper, chainApp.EvmKeeper,
-	)
-
-	chainApp.RevenueKeeper = revenuekeeper.NewKeeper(
-		keys[revenuetypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
-		chainApp.BankKeeper, chainApp.EvmKeeper,
-		authtypes.FeeCollectorName,
-	)
-
-	epochsKeeper := epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
-	chainApp.EpochsKeeper = *epochsKeeper.SetHooks(
-		epochskeeper.NewMultiEpochHooks(
-			// insert epoch hooks receivers here
-			chainApp.IncentivesKeeper.Hooks(),
-		),
-	)
-
 	chainApp.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
 			chainApp.ClaimsKeeper.Hooks(),
@@ -537,8 +491,6 @@ func NewEvermint(
 	chainApp.EvmKeeper = chainApp.EvmKeeper.SetHooks(
 		evmkeeper.NewMultiEvmHooks(
 			chainApp.Erc20Keeper.Hooks(),
-			chainApp.IncentivesKeeper.Hooks(),
-			chainApp.RevenueKeeper.Hooks(),
 			chainApp.ClaimsKeeper.Hooks(),
 		),
 	)
@@ -551,22 +503,10 @@ func NewEvermint(
 		chainApp.Erc20Keeper, // Add ERC20 Keeper for ERC20 transfers
 	)
 
-	chainApp.RecoveryKeeper = recoverykeeper.NewKeeper(
-		keys[recoverytypes.StoreKey],
-		appCodec,
-		authtypes.NewModuleAddress(govtypes.ModuleName),
-		chainApp.AccountKeeper,
-		chainApp.BankKeeper,
-		chainApp.IBCKeeper.ChannelKeeper,
-		chainApp.TransferKeeper,
-		chainApp.ClaimsKeeper,
-	)
-
 	// NOTE: app.Erc20Keeper is already initialized elsewhere
 
 	// Set the ICS4 wrappers for custom module middlewares
-	chainApp.RecoveryKeeper.SetICS4Wrapper(chainApp.IBCKeeper.ChannelKeeper)
-	chainApp.ClaimsKeeper.SetICS4Wrapper(chainApp.RecoveryKeeper)
+	chainApp.ClaimsKeeper.SetICS4Wrapper(chainApp.IBCKeeper.ChannelKeeper)
 
 	// Override the ICS20 app module
 	transferModule := transfer.NewAppModule(chainApp.TransferKeeper)
@@ -591,15 +531,14 @@ func NewEvermint(
 
 		transfer stack contains (from bottom to top):
 			- ERC-20 Middleware
-		 	- Recovery Middleware
 		 	- Airdrop Claims Middleware
 			- IBC Transfer
 
 		SendPacket, since it is originating from the application to core IBC:
-		 	transferKeeper.SendPacket -> claim.SendPacket -> recovery.SendPacket -> erc20.SendPacket -> channel.SendPacket
+		 	transferKeeper.SendPacket -> claim.SendPacket -> erc20.SendPacket -> channel.SendPacket
 
 		RecvPacket, message that originates from core IBC and goes down to app, the flow is the other way
-			channel.RecvPacket -> erc20.OnRecvPacket -> recovery.OnRecvPacket -> claim.OnRecvPacket -> transfer.OnRecvPacket
+			channel.RecvPacket -> erc20.OnRecvPacket -> claim.OnRecvPacket -> transfer.OnRecvPacket
 	*/
 
 	// create IBC module from top to bottom of stack
@@ -607,7 +546,6 @@ func NewEvermint(
 
 	transferStack = transfer.NewIBCModule(chainApp.TransferKeeper)
 	transferStack = claims.NewIBCMiddleware(*chainApp.ClaimsKeeper, transferStack)
-	transferStack = recovery.NewIBCMiddleware(*chainApp.RecoveryKeeper, transferStack)
 	transferStack = erc20.NewIBCMiddleware(chainApp.Erc20Keeper, transferStack)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -665,16 +603,9 @@ func NewEvermint(
 		// Evermint app modules
 		erc20.NewAppModule(chainApp.Erc20Keeper, chainApp.AccountKeeper,
 			chainApp.GetSubspace(erc20types.ModuleName)),
-		incentives.NewAppModule(chainApp.IncentivesKeeper, chainApp.AccountKeeper,
-			chainApp.GetSubspace(incentivestypes.ModuleName)),
-		epochs.NewAppModule(appCodec, chainApp.EpochsKeeper),
 		claims.NewAppModule(appCodec, *chainApp.ClaimsKeeper,
 			chainApp.GetSubspace(claimstypes.ModuleName)),
 		vesting.NewAppModule(chainApp.VestingKeeper, chainApp.AccountKeeper, chainApp.BankKeeper, *chainApp.StakingKeeper),
-		recovery.NewAppModule(*chainApp.RecoveryKeeper,
-			chainApp.GetSubspace(recoverytypes.ModuleName)),
-		revenue.NewAppModule(chainApp.RevenueKeeper, chainApp.AccountKeeper,
-			chainApp.GetSubspace(revenuetypes.ModuleName)),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -686,8 +617,6 @@ func NewEvermint(
 	chainApp.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
-		// Note: epochs' begin should be "real" start of epochs, we keep epochs beginblock at the beginning
-		epochstypes.ModuleName,
 		minttypes.ModuleName,
 		feemarkettypes.ModuleName,
 		evmtypes.ModuleName,
@@ -710,9 +639,6 @@ func NewEvermint(
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
 		claimstypes.ModuleName,
-		incentivestypes.ModuleName,
-		recoverytypes.ModuleName,
-		revenuetypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -723,8 +649,6 @@ func NewEvermint(
 		stakingtypes.ModuleName,
 		evmtypes.ModuleName,
 		feemarkettypes.ModuleName,
-		// Note: epochs' endblock should be "real" end of epochs, we keep epochs endblock at the end
-		epochstypes.ModuleName,
 		claimstypes.ModuleName,
 		// no-op modules
 		ibcexported.ModuleName,
@@ -745,9 +669,6 @@ func NewEvermint(
 		// Evermint modules
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
-		incentivestypes.ModuleName,
-		recoverytypes.ModuleName,
-		revenuetypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -770,7 +691,6 @@ func NewEvermint(
 		govtypes.ModuleName,
 		ibcexported.ModuleName,
 		// Ethermint modules
-		// evm module denomination is used by the revenue module, in AnteHandle
 		evmtypes.ModuleName,
 		// NOTE: feemarket module needs to be initialized before genutil module:
 		// gentx transactions use MinGasPriceDecorator.AnteHandle
@@ -786,10 +706,6 @@ func NewEvermint(
 		// Evermint modules
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
-		incentivestypes.ModuleName,
-		epochstypes.ModuleName,
-		recoverytypes.ModuleName,
-		revenuetypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
@@ -1126,9 +1042,6 @@ func initParamsKeeper(
 	// evermint subspaces
 	paramsKeeper.Subspace(erc20types.ModuleName)
 	paramsKeeper.Subspace(claimstypes.ModuleName)
-	paramsKeeper.Subspace(incentivestypes.ModuleName)
-	paramsKeeper.Subspace(recoverytypes.ModuleName)
-	paramsKeeper.Subspace(revenuetypes.ModuleName)
 	return paramsKeeper
 }
 
@@ -1158,7 +1071,6 @@ func (app *Evermint) setupUpgradeHandlers() {
 	switch upgradeInfo.Name {
 	case v3_sample.UpgradeName:
 		storeUpgrades = &storetypes.StoreUpgrades{
-			//Added:   []string{revenuetypes.ModuleName},
 			//Deleted: []string{"feesplit"},
 		}
 	}

@@ -30,7 +30,6 @@ import (
 	"github.com/EscanBE/evermint/v12/testutil"
 	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
 	evertypes "github.com/EscanBE/evermint/v12/types"
-	epochstypes "github.com/EscanBE/evermint/v12/x/epochs/types"
 	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
 	"github.com/EscanBE/evermint/v12/x/vesting/types"
 
@@ -70,17 +69,6 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 	queryHelper := baseapp.NewQueryServerTestHelper(suite.ctx, suite.app.InterfaceRegistry())
 	types.RegisterQueryServer(queryHelper, suite.app.VestingKeeper)
 	suite.queryClient = types.NewQueryClient(queryHelper)
-
-	// Set epoch start time and height for all epoch identifiers from the epoch
-	// module
-	identifiers := []string{epochstypes.WeekEpochID, epochstypes.DayEpochID}
-	for _, identifier := range identifiers {
-		epoch, found := suite.app.EpochsKeeper.GetEpochInfo(suite.ctx, identifier)
-		suite.Require().True(found)
-		epoch.StartTime = suite.ctx.BlockTime()
-		epoch.CurrentEpochStartHeight = suite.ctx.BlockHeight()
-		suite.app.EpochsKeeper.SetEpochInfo(suite.ctx, epoch)
-	}
 
 	acc := &evertypes.EthAccount{
 		BaseAccount: authtypes.NewBaseAccount(sdk.AccAddress(suite.address.Bytes()), nil, 0, 0),

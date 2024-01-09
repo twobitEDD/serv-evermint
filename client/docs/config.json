@@ -15,9 +15,6 @@
       }
     },
     {
-      "url": "./tmp-swagger-gen/evmos/epochs/v1/query.swagger.json"
-    },
-    {
       "url": "./tmp-swagger-gen/evmos/erc20/v1/query.swagger.json",
       "operationIds": {
         "rename": {
@@ -26,23 +23,7 @@
       }
     },
     {
-      "url": "./tmp-swagger-gen/evmos/incentives/v1/query.swagger.json",
-      "operationIds": {
-        "rename": {
-          "Params": "IncentivesParams"
-        }
-      }
-    },
-    {
       "url": "./tmp-swagger-gen/evmos/vesting/v1/query.swagger.json"
-    },
-    {
-      "url": "./tmp-swagger-gen/evmos/recovery/v1/query.swagger.json",
-      "operationIds": {
-        "rename": {
-          "Params": "RecoveryParams"
-        }
-      }
     },
     {
       "url": "./tmp-swagger-gen/ethermint/evm/v1/query.swagger.json",
