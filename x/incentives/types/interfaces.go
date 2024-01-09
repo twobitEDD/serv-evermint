@@ -15,8 +15,7 @@ import (
 
 	"github.com/EscanBE/evermint/v12/x/evm/statedb"
 	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
-
-	inflationtypes "github.com/EscanBE/evermint/v12/x/inflation/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 )
 
 // AccountKeeper defines the expected interface needed to retrieve account info.
@@ -49,9 +48,9 @@ type GovKeeper interface {
 	SetProposal(ctx sdk.Context, proposal govv1beta1.Proposal)
 }
 
-// InflationKeeper defines the expected mint keeper interface used on incentives
-type InflationKeeper interface {
-	GetParams(ctx sdk.Context) (params inflationtypes.Params)
+// MintKeeper defines the expected mint keeper interface used on incentives
+type MintKeeper interface {
+	GetParams(ctx sdk.Context) (params minttypes.Params)
 }
 
 // EVMKeeper defines the expected EVM keeper interface used on erc20

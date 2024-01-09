@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/EscanBE/evermint/v12/constants"
 	"math/big"
 	"time"
@@ -62,9 +63,10 @@ func (suite *KeeperTestSuite) SetupApp(chainId string) {
 	err = suite.app.EvmKeeper.SetParams(suite.ctx, evmParams)
 	require.NoError(t, err)
 
-	inflationParams := suite.app.InflationKeeper.GetParams(suite.ctx)
-	inflationParams.EnableInflation = false
-	err = suite.app.InflationKeeper.SetParams(suite.ctx, inflationParams)
+	mintParams := suite.app.MintKeeper.GetParams(suite.ctx)
+	mintParams.InflationMin = sdkmath.LegacyZeroDec()
+	mintParams.InflationMax = sdkmath.LegacyZeroDec()
+	err = suite.app.MintKeeper.SetParams(suite.ctx, mintParams)
 	require.NoError(t, err)
 
 	// Set Validator

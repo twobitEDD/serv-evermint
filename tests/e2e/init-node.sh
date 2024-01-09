@@ -57,7 +57,7 @@ jq '.app_state.crisis.constant_fee.denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENES
 jq '.app_state.gov.deposit_params.min_deposit[0].denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # legacy
 jq '.app_state.gov.params.min_deposit[0].denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # v0.47
 jq '.app_state.evm.params.evm_denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
-jq '.app_state.inflation.params.mint_denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
+jq '.app_state.mint.params.mint_denom="'$MIN_DENOM'"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
 
 # set gov proposing && voting period
 jq '.app_state.gov.deposit_params.max_deposit_period="30s"' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS" # legacy

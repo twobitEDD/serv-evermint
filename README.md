@@ -32,6 +32,12 @@ that is fully compatible and interoperable with Ethereum.
 It's built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/)
 which runs on top of the [Tendermint Core](https://github.com/cometbft/cometbft) consensus engine.
 
+### Different of Evermint & Evmos
+
+- Evermint is for research and development purpose.
+- Evermint is fork of open source Evmos v12.1.6 plus bug fixes.
+- Evermint is [currently removing some modules](https://github.com/EscanBE/evermint/issues/41) from Evmos codebase and only keep `x/evm`, `x/erc20`, `x/feemarket`. The goal is to make it more simple for research and only focus on the skeleton of Evmos.
+
 ## Documentation
 
 SERV's Evermint does not yet maintain its own documentation site, user can refer to Evmos documentation hosted at [evmos/docs](https://github.com/evmos/docs) and can be found at [docs.evmos.org](https://docs.evmos.org).

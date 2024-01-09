@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"github.com/EscanBE/evermint/v12/constants"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"math"
 	"time"
 
@@ -17,7 +18,6 @@ import (
 	"github.com/EscanBE/evermint/v12/testutil"
 	"github.com/EscanBE/evermint/v12/testutil/tx"
 	"github.com/EscanBE/evermint/v12/x/claims/types"
-	inflationtypes "github.com/EscanBE/evermint/v12/x/inflation/types"
 )
 
 var _ = Describe("Claiming", Ordered, func() {
@@ -70,9 +70,9 @@ var _ = Describe("Claiming", Ordered, func() {
 		// mint coins for claiming and send them to the claims module
 		coins := sdk.NewCoins(totalClaimsAmount)
 
-		err = testutil.FundModuleAccount(s.ctx, s.app.BankKeeper, inflationtypes.ModuleName, coins)
+		err = testutil.FundModuleAccount(s.ctx, s.app.BankKeeper, minttypes.ModuleName, coins)
 		s.Require().NoError(err)
-		err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, inflationtypes.ModuleName, types.ModuleName, coins)
+		err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, minttypes.ModuleName, types.ModuleName, coins)
 		s.Require().NoError(err)
 
 		// fund testing accounts and create claim records

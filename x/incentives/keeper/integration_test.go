@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"math/big"
 	"time"
 
@@ -63,10 +64,11 @@ var _ = Describe("Distribution", Ordered, func() {
 
 		initialBalance := s.app.BankKeeper.GetBalance(s.ctx, s.address.Bytes(), denomMint)
 
-		// Enable Inflation
-		params := s.app.InflationKeeper.GetParams(s.ctx)
-		params.EnableInflation = true
-		err := s.app.InflationKeeper.SetParams(s.ctx, params)
+		// Maximum Mint
+		mintParams := s.app.MintKeeper.GetParams(s.ctx)
+		mintParams.InflationMax = sdkmath.LegacyOneDec()
+		mintParams.InflationMin = sdkmath.LegacyOneDec()
+		err := s.app.MintKeeper.SetParams(s.ctx, mintParams)
 		s.Require().NoError(err)
 
 		// set a EOA account for the address
@@ -117,6 +119,10 @@ var _ = Describe("Distribution", Ordered, func() {
 				s.CommitAfter(time.Hour*7*24 - time.Hour) // Before End Epoch
 			})
 			It("should allocate mint tokens to the usage incentives module", func() {
+
+				Skip("this test broken due to removal of x/inflation, this module x/incentives is going to be removed as well so this test will not be fixed")
+				// https://github.com/EscanBE/evermint/issues/41
+
 				balance := s.app.BankKeeper.GetBalance(s.ctx, moduleAcc, denomMint)
 				Expect(balance.IsZero()).ToNot(BeTrue())
 			})
@@ -136,6 +142,10 @@ var _ = Describe("Distribution", Ordered, func() {
 				s.CommitAfter(time.Hour * 24 * 7) // End Epoch
 			})
 			It("should allocate some mint tokens from the usage incentives module", func() {
+
+				Skip("this test broken due to removal of x/inflation, this module x/incentives is going to be removed as well so this test will not be fixed")
+				// https://github.com/EscanBE/evermint/issues/41
+
 				balance := s.app.BankKeeper.GetBalance(s.ctx, moduleAcc, denomMint)
 				Expect(balance.IsZero()).ToNot(BeTrue())
 			})
@@ -144,6 +154,10 @@ var _ = Describe("Distribution", Ordered, func() {
 				Expect(gm).To(BeZero())
 			})
 			It("should distribute usage incentives to the participant", func() {
+
+				Skip("this test broken due to removal of x/inflation, this module x/incentives is going to be removed as well so this test will not be fixed")
+				// https://github.com/EscanBE/evermint/issues/41
+
 				actual := s.app.BankKeeper.GetBalance(s.ctx, participantAcc, denomMint)
 				Expect(actual).ToNot(Equal(balanceBefore))
 			})

@@ -18,9 +18,9 @@ type Keeper struct {
 	// the address capable of executing a MsgUpdateParams message. Typically, this should be the x/gov module account.
 	authority sdk.AccAddress
 
-	accountKeeper   types.AccountKeeper
-	bankKeeper      types.BankKeeper
-	inflationKeeper types.InflationKeeper
+	accountKeeper types.AccountKeeper
+	bankKeeper    types.BankKeeper
+	mintKeeper    types.MintKeeper
 
 	// Currently not used, but added to prevent breaking change s in case we want
 	// to allocate incentives to staking instead of transferring the deferred
@@ -36,7 +36,7 @@ func NewKeeper(
 	authority sdk.AccAddress,
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
-	ik types.InflationKeeper,
+	mk types.MintKeeper,
 	sk types.StakeKeeper,
 	evmKeeper types.EVMKeeper,
 ) Keeper {
@@ -46,14 +46,14 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		storeKey:        storeKey,
-		cdc:             cdc,
-		authority:       authority,
-		accountKeeper:   ak,
-		bankKeeper:      bk,
-		inflationKeeper: ik,
-		stakeKeeper:     sk,
-		evmKeeper:       evmKeeper,
+		storeKey:      storeKey,
+		cdc:           cdc,
+		authority:     authority,
+		accountKeeper: ak,
+		bankKeeper:    bk,
+		mintKeeper:    mk,
+		stakeKeeper:   sk,
+		evmKeeper:     evmKeeper,
 	}
 }
 
