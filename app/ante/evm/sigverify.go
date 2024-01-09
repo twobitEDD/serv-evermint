@@ -59,7 +59,16 @@ func (esvd EthSigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, s
 		}
 
 		// set up the sender to the transaction field if not already
-		msgEthTx.From = sender.Hex()
+		senderHex := sender.Hex()
+		if msgEthTx.From == "" {
+			msgEthTx.From = senderHex
+		} else if msgEthTx.From != senderHex {
+			return ctx, errorsmod.Wrapf(
+				errortypes.ErrorInvalidSigner,
+				"mis-match sender address %s vs %s from signer",
+				msgEthTx.From, senderHex,
+			)
+		}
 	}
 
 	return next(ctx, tx, simulate)

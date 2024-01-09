@@ -62,6 +62,20 @@ func (suite *AnteTestSuite) TestEthSigVerificationDecorator() {
 		{"successful signature verification", signedTx, false, false, true},
 		{"invalid, reject unprotected txs", unprotectedTx, false, false, false},
 		{"successful, allow unprotected txs", unprotectedTx, true, false, true},
+		{
+			name: "invalid, reject if sender is already set and doesn't match the signature",
+			tx: func() *evmtypes.MsgEthereumTx {
+				addr2, _ := testutiltx.NewAddrKey()
+
+				copied := *signedTx
+				copied.From = addr2.Hex()
+
+				return &copied
+			}(),
+			allowUnprotectedTxs: false,
+			reCheckTx:           false,
+			expPass:             false,
+		},
 	}
 
 	for _, tc := range testCases {

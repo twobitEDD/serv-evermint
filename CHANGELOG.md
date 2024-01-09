@@ -48,7 +48,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (flags) [#22](https://github.com/EscanBE/evermint/pull/22) Change default gas adjustment to 1.2 and update default value of some flags
 - (fee) [#37](https://github.com/EscanBE/evermint/pull/37) Reject cosmos txs that fee denom is not evm denom
 - (test) [#46](https://github.com/EscanBE/evermint/pull/46) Use static mnemonic for scripts init nodes and `evmd testnet init-files`
-- (ante) [#62](https://github.com/EscanBE/evermint/pull/62) Disable more authz msgs + refactor optimize AuthzLimiterDecorator
+- (ante) [#64](https://github.com/EscanBE/evermint/pull/64) Add EvmTx sender override protection in ante and correct changelog
 
 ### Bug Fixes
 
@@ -72,6 +72,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (evm) [#39](https://github.com/EscanBE/evermint/pull/39) Consume all gas upon `ApplyTransaction` failure without VM error
 - (deps) [#57](https://github.com/EscanBE/evermint/pull/57) Use vanilla Cosmos-SDK v0.47.5
 - (deps) [#58](https://github.com/EscanBE/evermint/pull/58) Bump Cosmos-SDK from v0.47.5 to v0.47.7
+- (ante) [#62](https://github.com/EscanBE/evermint/pull/62) Disable more authz msgs + refactor optimize AuthzLimiterDecorator
 
 # Evermint changelog
 
