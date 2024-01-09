@@ -77,6 +77,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 - (ante) [#62](https://github.com/EscanBE/evermint/pull/62) Disable more authz msgs + refactor optimize AuthzLimiterDecorator
 - (incentives) [#67](https://github.com/EscanBE/evermint/pull/67) Remove `x/incentives` module
 - (revenue) [#68](https://github.com/EscanBE/evermint/pull/68) Remove `x/revenue` module
+- (recovery) [#69](https://github.com/EscanBE/evermint/pull/69) Remove `x/recovery` module
 
 # Evermint changelog
 
