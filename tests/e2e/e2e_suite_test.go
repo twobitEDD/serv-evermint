@@ -266,12 +266,6 @@ func (s *IntegrationTestSuite) executeQueries() {
 		moduleName string
 		subCommand string
 	}{
-		{"inflation: params", "inflation", "params"},
-		{"inflation: circulating-supply", "inflation", "circulating-supply"},
-		{"inflation: inflation-rate", "inflation", "inflation-rate"},
-		{"inflation: period", "inflation", "period"},
-		{"inflation: skipped-epochs", "inflation", "skipped-epochs"},
-		{"inflation: epoch-mint-provision", "inflation", "epoch-mint-provision"},
 		{"erc20: params", "erc20", "params"},
 		{"erc20: token-pairs", "erc20", "token-pairs"},
 		{"evm: params", "evm", "params"},
@@ -279,11 +273,6 @@ func (s *IntegrationTestSuite) executeQueries() {
 		{"feemarket: base-fee", "feemarket", "base-fee"},
 		{"feemarket: block-gas", "feemarket", "block-gas"},
 		{"feemarket: block-gas", "feemarket", "block-gas"},
-		{"revenue: params", "revenue", "params"},
-		{"revenue: contracts", "revenue", "contracts"},
-		{"incentives: params", "incentives", "params"},
-		{"incentives: allocation-meters", "incentives", "allocation-meters"},
-		{"incentives: incentives", "incentives", "incentives"},
 	}
 
 	for _, tc := range testCases {
