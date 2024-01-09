@@ -26,14 +26,6 @@
       }
     },
     {
-      "url": "./tmp-swagger-gen/evmos/incentives/v1/query.swagger.json",
-      "operationIds": {
-        "rename": {
-          "Params": "IncentivesParams"
-        }
-      }
-    },
-    {
       "url": "./tmp-swagger-gen/evmos/vesting/v1/query.swagger.json"
     },
     {
