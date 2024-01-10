@@ -3,7 +3,7 @@ package network
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	"path/filepath"
 	"time"
 
@@ -30,8 +30,8 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/EscanBE/evermint/v12/server"
-	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	"github.com/twobitEDD/servermint/v12/server"
+	evmtypes "github.com/twobitEDD/servermint/v12/x/evm/types"
 )
 
 func startInProcess(cfg Config, val *Validator) error {

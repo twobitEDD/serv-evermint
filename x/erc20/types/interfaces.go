@@ -13,9 +13,9 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	claimstypes "github.com/EscanBE/evermint/v12/x/claims/types"
-	"github.com/EscanBE/evermint/v12/x/evm/statedb"
-	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	claimstypes "github.com/twobitEDD/servermint/v12/x/claims/types"
+	"github.com/twobitEDD/servermint/v12/x/evm/statedb"
+	evmtypes "github.com/twobitEDD/servermint/v12/x/evm/types"
 )
 
 // AccountKeeper defines the expected interface needed to retrieve account info.

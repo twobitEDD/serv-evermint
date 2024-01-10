@@ -16,9 +16,9 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	"github.com/EscanBE/evermint/v12/x/erc20/client/cli"
-	"github.com/EscanBE/evermint/v12/x/erc20/keeper"
-	"github.com/EscanBE/evermint/v12/x/erc20/types"
+	"github.com/twobitEDD/servermint/v12/x/erc20/client/cli"
+	"github.com/twobitEDD/servermint/v12/x/erc20/keeper"
+	"github.com/twobitEDD/servermint/v12/x/erc20/types"
 )
 
 // type check to ensure the interface is properly implemented

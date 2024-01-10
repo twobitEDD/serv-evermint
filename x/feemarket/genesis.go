@@ -5,8 +5,8 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/EscanBE/evermint/v12/x/feemarket/keeper"
-	"github.com/EscanBE/evermint/v12/x/feemarket/types"
+	"github.com/twobitEDD/servermint/v12/x/feemarket/keeper"
+	"github.com/twobitEDD/servermint/v12/x/feemarket/types"
 )
 
 // InitGenesis initializes genesis state based on exported genesis

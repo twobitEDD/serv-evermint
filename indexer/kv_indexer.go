@@ -2,10 +2,10 @@ package indexer
 
 import (
 	"fmt"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 
 	errorsmod "cosmossdk.io/errors"
-	rpctypes "github.com/EscanBE/evermint/v12/rpc/types"
+	rpctypes "github.com/twobitEDD/servermint/v12/rpc/types"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
@@ -16,8 +16,8 @@ import (
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/ethereum/go-ethereum/common"
 
-	evertypes "github.com/EscanBE/evermint/v12/types"
-	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	evertypes "github.com/twobitEDD/servermint/v12/types"
+	evmtypes "github.com/twobitEDD/servermint/v12/x/evm/types"
 )
 
 const (

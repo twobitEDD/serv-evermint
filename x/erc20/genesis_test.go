@@ -1,7 +1,7 @@
 package erc20_test
 
 import (
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	"testing"
 	"time"
 
@@ -14,18 +14,18 @@ import (
 	tmversion "github.com/cometbft/cometbft/proto/tendermint/version"
 	"github.com/cometbft/cometbft/version"
 
-	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
-	feemarkettypes "github.com/EscanBE/evermint/v12/x/feemarket/types"
+	utiltx "github.com/twobitEDD/servermint/v12/testutil/tx"
+	feemarkettypes "github.com/twobitEDD/servermint/v12/x/feemarket/types"
 
-	"github.com/EscanBE/evermint/v12/app"
-	"github.com/EscanBE/evermint/v12/x/erc20"
-	"github.com/EscanBE/evermint/v12/x/erc20/types"
+	"github.com/twobitEDD/servermint/v12/app"
+	"github.com/twobitEDD/servermint/v12/x/erc20"
+	"github.com/twobitEDD/servermint/v12/x/erc20/types"
 )
 
 type GenesisTestSuite struct {
 	suite.Suite
 	ctx     sdk.Context
-	app     *app.Evermint
+	app     *app.Servermint
 	genesis types.GenesisState
 }
 

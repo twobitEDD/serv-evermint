@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"time"
@@ -17,7 +17,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/EscanBE/evermint/v12/encoding"
+	"github.com/twobitEDD/servermint/v12/encoding"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
@@ -27,7 +27,7 @@ import (
 )
 
 // EthDefaultConsensusParams defines the default Tendermint consensus params used in
-// Evermint app testing.
+// Servermint app testing.
 var EthDefaultConsensusParams = &tmproto.ConsensusParams{
 	Block: &tmproto.BlockParams{
 		MaxBytes: 200000,
@@ -45,15 +45,15 @@ var EthDefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
-// EthSetup initializes a new Evermint app. A Nop logger is set in Evermint app.
-func EthSetup(isCheckTx bool, patchGenesis func(*Evermint, simapp.GenesisState) simapp.GenesisState) *Evermint {
+// EthSetup initializes a new Servermint app. A Nop logger is set in Servermint app.
+func EthSetup(isCheckTx bool, patchGenesis func(*Servermint, simapp.GenesisState) simapp.GenesisState) *Servermint {
 	return EthSetupWithDB(isCheckTx, patchGenesis, dbm.NewMemDB())
 }
 
-// EthSetupWithDB initializes a new Evermint app. A Nop logger is set in Evermint app.
-func EthSetupWithDB(isCheckTx bool, patchGenesis func(*Evermint, simapp.GenesisState) simapp.GenesisState, db dbm.DB) *Evermint {
+// EthSetupWithDB initializes a new Servermint app. A Nop logger is set in Servermint app.
+func EthSetupWithDB(isCheckTx bool, patchGenesis func(*Servermint, simapp.GenesisState) simapp.GenesisState, db dbm.DB) *Servermint {
 	chainID := constants.TestnetFullChainId
-	chainApp := NewEvermint(log.NewNopLogger(),
+	chainApp := NewServermint(log.NewNopLogger(),
 		db,
 		nil,
 		true,

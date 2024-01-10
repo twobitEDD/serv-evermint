@@ -13,8 +13,8 @@ import (
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/EscanBE/evermint/v12/ibc"
-	"github.com/EscanBE/evermint/v12/x/erc20/types"
+	"github.com/twobitEDD/servermint/v12/ibc"
+	"github.com/twobitEDD/servermint/v12/x/erc20/types"
 )
 
 // OnRecvPacket performs the ICS20 middleware receive callback for automatically

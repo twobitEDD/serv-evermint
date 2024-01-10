@@ -3,15 +3,15 @@ package personal
 import (
 	"context"
 	"fmt"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	"os"
 	"path"
 	"time"
 
-	"github.com/EscanBE/evermint/v12/rpc/backend"
+	"github.com/twobitEDD/servermint/v12/rpc/backend"
 
-	"github.com/EscanBE/evermint/v12/crypto/hd"
-	"github.com/EscanBE/evermint/v12/types"
+	"github.com/twobitEDD/servermint/v12/crypto/hd"
+	"github.com/twobitEDD/servermint/v12/types"
 
 	"github.com/cometbft/cometbft/libs/log"
 
@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	evmtypes "github.com/twobitEDD/servermint/v12/x/evm/types"
 )
 
 // PrivateAccountAPI is the personal_ prefixed set of APIs in the Web3 JSON-RPC spec.

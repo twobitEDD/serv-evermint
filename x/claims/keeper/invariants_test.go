@@ -1,10 +1,10 @@
 package keeper_test
 
 import (
-	"github.com/EscanBE/evermint/v12/constants"
-	"github.com/EscanBE/evermint/v12/testutil"
-	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
-	"github.com/EscanBE/evermint/v12/x/claims/types"
+	"github.com/twobitEDD/servermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/testutil"
+	utiltx "github.com/twobitEDD/servermint/v12/testutil/tx"
+	"github.com/twobitEDD/servermint/v12/x/claims/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

@@ -2,7 +2,7 @@ package keeper_test
 
 import (
 	"encoding/json"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"math/big"
 
@@ -10,18 +10,18 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	chainapp "github.com/EscanBE/evermint/v12/app"
-	"github.com/EscanBE/evermint/v12/crypto/ethsecp256k1"
-	"github.com/EscanBE/evermint/v12/encoding"
-	"github.com/EscanBE/evermint/v12/testutil"
-	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
-	"github.com/EscanBE/evermint/v12/x/feemarket/types"
+	chainapp "github.com/twobitEDD/servermint/v12/app"
+	"github.com/twobitEDD/servermint/v12/crypto/ethsecp256k1"
+	"github.com/twobitEDD/servermint/v12/encoding"
+	"github.com/twobitEDD/servermint/v12/testutil"
+	utiltx "github.com/twobitEDD/servermint/v12/testutil/tx"
+	"github.com/twobitEDD/servermint/v12/x/feemarket/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	evmtypes "github.com/twobitEDD/servermint/v12/x/evm/types"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
@@ -175,7 +175,7 @@ func setupChain(localMinGasPricesStr string) {
 	// validator-specific min-gas-prices setting
 	db := dbm.NewMemDB()
 	chainID := constants.TestnetFullChainId
-	chainApp := chainapp.NewEvermint(
+	chainApp := chainapp.NewServermint(
 		log.NewNopLogger(),
 		db,
 		nil,

@@ -1,8 +1,8 @@
 package testutil
 
 import (
-	"github.com/EscanBE/evermint/v12/app"
-	"github.com/EscanBE/evermint/v12/encoding"
+	"github.com/twobitEDD/servermint/v12/app"
+	"github.com/twobitEDD/servermint/v12/encoding"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

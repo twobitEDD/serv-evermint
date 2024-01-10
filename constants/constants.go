@@ -9,13 +9,13 @@ import (
 // App
 
 const (
-	ApplicationName = "evermint"
+	ApplicationName = "servermint"
 
-	ApplicationBinaryName = "evmd"
+	ApplicationBinaryName = "servnode"
 
-	ApplicationHome = ".evermint"
+	ApplicationHome = ".serv"
 
-	GitHubRepo = "https://github.com/EscanBE/evermint" // must be well-formed url pattern: "https://github.com/owner/repo"
+	GitHubRepo = "https://github.com/twobitEDD/servermint" // must be well-formed url pattern: "https://github.com/owner/repo"
 )
 
 // Denom
@@ -31,11 +31,11 @@ const (
 	//
 	// During code, we will use the term 'native coin' for this denomination
 	// so other developers can take advantage of renaming constants when forking this project.
-	BaseDenom = "wei"
+	BaseDenom = "aservo"
 
-	DisplayDenom = "ether"
+	DisplayDenom = "serv"
 
-	SymbolDenom = "ETH"
+	SymbolDenom = "SERV"
 
 	BaseDenomExponent = 18
 )
@@ -44,7 +44,7 @@ const (
 
 const (
 	// Bech32Prefix is the HRP (human-readable part) of the Bech32 encoded address of this chain
-	Bech32Prefix = "evm"
+	Bech32Prefix = "sx"
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = Bech32Prefix
@@ -68,20 +68,19 @@ const (
 // Chain ID
 
 const (
-	ChainIdPrefix = "evermint"
+	ChainIdPrefix = "serv"
 
 	// MainnetChainID defines the Cosmos-style EIP155 chain ID for mainnet
-	MainnetChainID = ChainIdPrefix + "_90909"
+	MainnetChainID = ChainIdPrefix + "_53970"
 	// TestnetChainID defines the Cosmos-style EIP155 chain ID for testnet
-	TestnetChainID = ChainIdPrefix + "_80808"
+	TestnetChainID = ChainIdPrefix + "_43970"
 	// DevnetChainID defines the Cosmos-style EIP155 chain ID for devnet
-	DevnetChainID = ChainIdPrefix + "_70707"
+	DevnetChainID = ChainIdPrefix + "_33970"
 
-	MainnetFullChainId = MainnetChainID + "-1"
-	TestnetFullChainId = TestnetChainID + "-1"
-	DevnetFullChainId  = DevnetChainID + "-1"
-
-	MainnetEIP155ChainId = 90909
-	TestnetEIP155ChainId = 80808
-	DevnetEIP155ChainId  = 70707
+	MainnetFullChainId   = MainnetChainID + "-1"
+	TestnetFullChainId   = TestnetChainID + "-1"
+	DevnetFullChainId    = DevnetChainID + "-1"
+	MainnetEIP155ChainId = 53970
+	TestnetEIP155ChainId = 43970
+	DevnetEIP155ChainId  = 33970
 )

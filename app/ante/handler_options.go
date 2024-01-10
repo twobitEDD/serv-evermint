@@ -2,7 +2,7 @@ package ante
 
 import (
 	errorsmod "cosmossdk.io/errors"
-	anteutils "github.com/EscanBE/evermint/v12/app/ante/utils"
+	anteutils "github.com/twobitEDD/servermint/v12/app/ante/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
@@ -13,11 +13,11 @@ import (
 	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
-	cosmosante "github.com/EscanBE/evermint/v12/app/ante/cosmos"
-	evmante "github.com/EscanBE/evermint/v12/app/ante/evm"
-	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	cosmosante "github.com/twobitEDD/servermint/v12/app/ante/cosmos"
+	evmante "github.com/twobitEDD/servermint/v12/app/ante/evm"
+	evmtypes "github.com/twobitEDD/servermint/v12/x/evm/types"
 
-	vestingtypes "github.com/EscanBE/evermint/v12/x/vesting/types"
+	vestingtypes "github.com/twobitEDD/servermint/v12/x/vesting/types"
 	sdkvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
