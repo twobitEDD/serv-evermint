@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/twobitEDD/servermint/v12/constants"
-	"github.com/cosmos/cosmos-sdk/types/bech32"
-	"github.com/spf13/cobra"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/cosmos/cosmos-sdk/types/bech32"
+	"github.com/spf13/cobra"
+	"github.com/twobitEDD/servermint/v12/constants"
 )
 
 // NewConvertAddressCmd creates a helper command that convert account bech32 address into hex address or vice versa
@@ -22,7 +23,7 @@ Eg:
 %s ca 0x830bb7a3c4c664e1c611d16dba1ef4067c697bd7 evmos
 The output will be:
 EVM address: 0x830bb7a3c4c664e1c611d16dba1ef4067c697bd7
-Bech32 %s: evm1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz
+Bech32 %s: sx1sv9m0g7ycejwr3s369km58h5qe7xj77hxrsmsz
 Bech32 evmos: evmos1sv9m0g7ycejwr3s369km58h5qe7xj77hvcxrms
 `, constants.ApplicationBinaryName, constants.Bech32Prefix),
 		Args: cobra.RangeArgs(1, 2),
