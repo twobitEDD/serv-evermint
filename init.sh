@@ -5,8 +5,10 @@ echo "Building binary..."
 go build ./cmd/servnode
 
 # Clear home folder
+HOMEDIR="$HOME/.serv"
+
 echo "Clearing home folder..."
-rm -rf $HOME
+rm -rf "$HOMEDIR"
 
 KEY="dev0"
 CHAINID="serv_43970-1"
@@ -17,19 +19,14 @@ KEYALGO="eth_secp256k1"
 LOGLEVEL="info"
 MIN_DENOM="aservo"
 TRACE=""
-HOME="$HOME/.serv"
-echo $HOME
-ETHCONFIG="$HOME/config/config.toml"
-GENESIS="$HOME/config/genesis.json"
-TMPGENESIS="$HOME/config/tmp_genesis.json"
+echo $HOMEDIR
+ETHCONFIG="$HOMEDIR/config/config.toml"
+GENESIS="$HOMEDIR/config/genesis.json"
+TMPGENESIS="$HOMEDIR/config/tmp_genesis.json"
 
 # Build binary
 echo "Building binary..."
 go build ./cmd/$BINARY
-
-# Clear home folder
-echo "Clearing home folder..."
-rm -rf $HOME
 
 # Set keyring-backend and chain-id
 echo "Configuring $BINARY..."
