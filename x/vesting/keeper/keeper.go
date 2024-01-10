@@ -8,7 +8,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/EscanBE/evermint/v12/x/vesting/types"
+	"github.com/twobitEDD/servermint/v12/x/vesting/types"
 )
 
 // Keeper of this module maintains collections of vesting.

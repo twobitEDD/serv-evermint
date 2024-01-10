@@ -1,12 +1,12 @@
 package ledger_test
 
 import (
-	"github.com/EscanBE/evermint/v12/app"
-	"github.com/EscanBE/evermint/v12/constants"
-	"github.com/EscanBE/evermint/v12/encoding"
-	"github.com/EscanBE/evermint/v12/ethereum/eip712"
-	"github.com/EscanBE/evermint/v12/wallets/accounts"
-	"github.com/EscanBE/evermint/v12/wallets/ledger"
+	"github.com/twobitEDD/servermint/v12/app"
+	"github.com/twobitEDD/servermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/encoding"
+	"github.com/twobitEDD/servermint/v12/ethereum/eip712"
+	"github.com/twobitEDD/servermint/v12/wallets/accounts"
+	"github.com/twobitEDD/servermint/v12/wallets/ledger"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gethaccounts "github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
@@ -39,7 +39,7 @@ func (suite *LedgerTestSuite) TestEvmosLedgerDerivation() {
 	for _, tc := range testCases {
 		suite.Run(tc.name, func() {
 			suite.SetupTest() // reset
-			derivationFunc := ledger.EvermintLedgerDerivation()
+			derivationFunc := ledger.ServermintLedgerDerivation()
 			_, err := derivationFunc()
 			if tc.expPass {
 				suite.Require().NoError(err)

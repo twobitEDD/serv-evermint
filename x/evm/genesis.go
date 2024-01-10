@@ -10,9 +10,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	evertypes "github.com/EscanBE/evermint/v12/types"
-	"github.com/EscanBE/evermint/v12/x/evm/keeper"
-	"github.com/EscanBE/evermint/v12/x/evm/types"
+	evertypes "github.com/twobitEDD/servermint/v12/types"
+	"github.com/twobitEDD/servermint/v12/x/evm/keeper"
+	"github.com/twobitEDD/servermint/v12/x/evm/types"
 )
 
 // InitGenesis initializes genesis state based on exported genesis

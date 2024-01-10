@@ -8,8 +8,8 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 
-	"github.com/EscanBE/evermint/v12/ibc"
-	"github.com/EscanBE/evermint/v12/x/claims/types"
+	"github.com/twobitEDD/servermint/v12/ibc"
+	"github.com/twobitEDD/servermint/v12/x/claims/types"
 )
 
 // OnAcknowledgementPacket performs an IBC send callback. Once a user submits an

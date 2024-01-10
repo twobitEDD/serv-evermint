@@ -17,9 +17,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/EscanBE/evermint/v12/x/evm/client/cli"
-	"github.com/EscanBE/evermint/v12/x/evm/keeper"
-	"github.com/EscanBE/evermint/v12/x/evm/types"
+	"github.com/twobitEDD/servermint/v12/x/evm/client/cli"
+	"github.com/twobitEDD/servermint/v12/x/evm/keeper"
+	"github.com/twobitEDD/servermint/v12/x/evm/types"
 )
 
 var (
@@ -175,7 +175,7 @@ func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedP
 func (AppModule) GenerateGenesisState(_ *module.SimulationState) {
 }
 
-// WeightedOperations returns the all the evm module operations with their respective weights.
+// WeightedOperations returns the all the evm module operations with their respective aservoghts.
 func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
 	return nil
 }

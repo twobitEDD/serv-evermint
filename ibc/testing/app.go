@@ -2,7 +2,7 @@ package ibctesting
 
 import (
 	"encoding/json"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	"testing"
 	"time"
 
@@ -20,8 +20,8 @@ import (
 
 	ibcgotesting "github.com/cosmos/ibc-go/v7/testing"
 
-	chainapp "github.com/EscanBE/evermint/v12/app"
-	"github.com/EscanBE/evermint/v12/types"
+	chainapp "github.com/twobitEDD/servermint/v12/app"
+	"github.com/twobitEDD/servermint/v12/types"
 )
 
 var DefaultTestingAppInit func(chainID string) func() (ibcgotesting.TestingApp, map[string]json.RawMessage) = chainapp.SetupTestingApp

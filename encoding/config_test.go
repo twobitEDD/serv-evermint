@@ -8,10 +8,10 @@ import (
 
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/EscanBE/evermint/v12/app"
-	"github.com/EscanBE/evermint/v12/encoding"
-	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
-	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	"github.com/twobitEDD/servermint/v12/app"
+	"github.com/twobitEDD/servermint/v12/encoding"
+	utiltx "github.com/twobitEDD/servermint/v12/testutil/tx"
+	evmtypes "github.com/twobitEDD/servermint/v12/x/evm/types"
 )
 
 func TestTxEncoding(t *testing.T) {

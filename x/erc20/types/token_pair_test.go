@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
-	"github.com/EscanBE/evermint/v12/x/erc20/types"
+	utiltx "github.com/twobitEDD/servermint/v12/testutil/tx"
+	"github.com/twobitEDD/servermint/v12/x/erc20/types"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/suite"

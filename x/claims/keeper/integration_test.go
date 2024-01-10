@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"math"
 	"time"
@@ -14,15 +14,15 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/EscanBE/evermint/v12/crypto/ethsecp256k1"
-	"github.com/EscanBE/evermint/v12/testutil"
-	"github.com/EscanBE/evermint/v12/testutil/tx"
-	"github.com/EscanBE/evermint/v12/x/claims/types"
+	"github.com/twobitEDD/servermint/v12/crypto/ethsecp256k1"
+	"github.com/twobitEDD/servermint/v12/testutil"
+	"github.com/twobitEDD/servermint/v12/testutil/tx"
+	"github.com/twobitEDD/servermint/v12/x/claims/types"
 )
 
 var _ = Describe("Claiming", Ordered, func() {
 	Skip("this test broken due to removal of x/incentives, this module x/claims is going to be removed as well so this test will not be fixed")
-	// https://github.com/EscanBE/evermint/issues/41
+	// https://github.com/twobitEDD/servermint/issues/41
 
 	claimsAddr := s.app.AccountKeeper.GetModuleAddress(types.ModuleName)
 	distrAddr := s.app.AccountKeeper.GetModuleAddress(distrtypes.ModuleName)
@@ -96,7 +96,7 @@ var _ = Describe("Claiming", Ordered, func() {
 			s.app.AccountKeeper.SetAccount(s.ctx, acc)
 			claimsRecords = append(claimsRecords, claimsRecord)
 
-			balance := s.app.BankKeeper.GetBalance(s.ctx, addr, constants.BaseDenom) // claimsDenom == evmDenom == 'wei'
+			balance := s.app.BankKeeper.GetBalance(s.ctx, addr, constants.BaseDenom) // claimsDenom == evmDenom == 'aservo'
 			Expect(balance.Amount).To(Equal(initClaimsAmount.Add(initBalanceAmount)))
 		}
 

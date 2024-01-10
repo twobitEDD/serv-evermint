@@ -17,10 +17,10 @@ RPC_PORT="854"
 IP_ADDR="0.0.0.0"
 
 KEY="dev0"
-CHAINID="evermint_80808-1"
+CHAINID="servermint_80808-1"
 MONIKER="mymoniker"
-BINARY="evmd"
-MIN_DENOM="wei"
+BINARY="servnode"
+MIN_DENOM="aservo"
 
 ## default port prefixes for node
 NODE_P2P_PORT="2660"
@@ -54,14 +54,14 @@ done
 
 set -euxo pipefail
 
-DATA_DIR=$(mktemp -d -t evermint-datadir.XXXXX)
+DATA_DIR=$(mktemp -d -t servermint-datadir.XXXXX)
 
 if [[ ! "$DATA_DIR" ]]; then
     echo "Could not create $DATA_DIR"
     exit 1
 fi
 
-# Compile evermint
+# Compile servermint
 echo "compiling binary"
 make build
 

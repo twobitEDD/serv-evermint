@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/EscanBE/evermint/v12/indexer"
+	"github.com/twobitEDD/servermint/v12/indexer"
 	tmnode "github.com/cometbft/cometbft/node"
 	sm "github.com/cometbft/cometbft/state"
 	tmstore "github.com/cometbft/cometbft/store"

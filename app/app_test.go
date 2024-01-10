@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"os"
@@ -21,10 +21,10 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	tmtypes "github.com/cometbft/cometbft/types"
 
-	"github.com/EscanBE/evermint/v12/encoding"
+	"github.com/twobitEDD/servermint/v12/encoding"
 )
 
-func TestEvermintExport(t *testing.T) {
+func TestServermintExport(t *testing.T) {
 	// create public key
 	privVal := mock.NewPV()
 	pubKey, err := privVal.GetPubKey()
@@ -44,7 +44,7 @@ func TestEvermintExport(t *testing.T) {
 
 	chainID := constants.TestnetFullChainId
 	db := dbm.NewMemDB()
-	chainApp := NewEvermint(
+	chainApp := NewServermint(
 		log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics),
 		simtestutil.NewAppOptionsWithFlagHome(DefaultNodeHome),
 		baseapp.SetChainID(chainID),
@@ -66,7 +66,7 @@ func TestEvermintExport(t *testing.T) {
 	chainApp.Commit()
 
 	// Making a new app object with the db, so that initchain hasn't been called
-	app2 := NewEvermint(
+	app2 := NewServermint(
 		log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics),
 		simtestutil.NewAppOptionsWithFlagHome(DefaultNodeHome),
 		baseapp.SetChainID(chainID),

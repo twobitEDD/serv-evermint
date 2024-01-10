@@ -2,7 +2,7 @@ package keeper_test
 
 import (
 	"encoding/json"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	"math"
 	"math/big"
 	"testing"
@@ -24,19 +24,19 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/EscanBE/evermint/v12/crypto/ethsecp256k1"
-	"github.com/EscanBE/evermint/v12/server/config"
-	"github.com/EscanBE/evermint/v12/testutil"
-	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
-	"github.com/EscanBE/evermint/v12/x/evm/statedb"
-	evm "github.com/EscanBE/evermint/v12/x/evm/types"
-	feemarkettypes "github.com/EscanBE/evermint/v12/x/feemarket/types"
+	"github.com/twobitEDD/servermint/v12/crypto/ethsecp256k1"
+	"github.com/twobitEDD/servermint/v12/server/config"
+	"github.com/twobitEDD/servermint/v12/testutil"
+	utiltx "github.com/twobitEDD/servermint/v12/testutil/tx"
+	"github.com/twobitEDD/servermint/v12/x/evm/statedb"
+	evm "github.com/twobitEDD/servermint/v12/x/evm/types"
+	feemarkettypes "github.com/twobitEDD/servermint/v12/x/feemarket/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/EscanBE/evermint/v12/app"
-	"github.com/EscanBE/evermint/v12/contracts"
-	"github.com/EscanBE/evermint/v12/x/erc20/types"
+	"github.com/twobitEDD/servermint/v12/app"
+	"github.com/twobitEDD/servermint/v12/contracts"
+	"github.com/twobitEDD/servermint/v12/x/erc20/types"
 
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
@@ -50,7 +50,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx              sdk.Context
-	app              *app.Evermint
+	app              *app.Servermint
 	queryClientEvm   evm.QueryClient
 	queryClient      types.QueryClient
 	address          common.Address

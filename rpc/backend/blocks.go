@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"strconv"
 
-	rpctypes "github.com/EscanBE/evermint/v12/rpc/types"
-	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	rpctypes "github.com/twobitEDD/servermint/v12/rpc/types"
+	evmtypes "github.com/twobitEDD/servermint/v12/x/evm/types"
 	tmrpctypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"

@@ -15,9 +15,9 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"math/big"
 
-	evertypes "github.com/EscanBE/evermint/v12/types"
-	"github.com/EscanBE/evermint/v12/x/evm/statedb"
-	"github.com/EscanBE/evermint/v12/x/evm/types"
+	evertypes "github.com/twobitEDD/servermint/v12/types"
+	"github.com/twobitEDD/servermint/v12/x/evm/statedb"
+	"github.com/twobitEDD/servermint/v12/x/evm/types"
 )
 
 // Keeper grants access to the EVM module state and implements the go-ethereum StateDB interface.

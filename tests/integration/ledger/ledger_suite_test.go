@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	"io"
 	"testing"
 	"time"
@@ -19,17 +19,17 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/spf13/cobra"
 
-	"github.com/EscanBE/evermint/v12/app"
-	"github.com/EscanBE/evermint/v12/crypto/hd"
-	"github.com/EscanBE/evermint/v12/tests/integration/ledger/mocks"
-	utiltx "github.com/EscanBE/evermint/v12/testutil/tx"
+	"github.com/twobitEDD/servermint/v12/app"
+	"github.com/twobitEDD/servermint/v12/crypto/hd"
+	"github.com/twobitEDD/servermint/v12/tests/integration/ledger/mocks"
+	utiltx "github.com/twobitEDD/servermint/v12/testutil/tx"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	"github.com/cometbft/cometbft/version"
 	"github.com/stretchr/testify/suite"
 
-	clientkeys "github.com/EscanBE/evermint/v12/client/keys"
-	appkeyring "github.com/EscanBE/evermint/v12/crypto/keyring"
-	feemarkettypes "github.com/EscanBE/evermint/v12/x/feemarket/types"
+	clientkeys "github.com/twobitEDD/servermint/v12/client/keys"
+	appkeyring "github.com/twobitEDD/servermint/v12/crypto/keyring"
+	feemarkettypes "github.com/twobitEDD/servermint/v12/x/feemarket/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmversion "github.com/cometbft/cometbft/proto/tendermint/version"
 	rpcclientmock "github.com/cometbft/cometbft/rpc/client/mock"
@@ -45,7 +45,7 @@ var s *LedgerTestSuite
 type LedgerTestSuite struct {
 	suite.Suite
 
-	app *app.Evermint
+	app *app.Servermint
 	ctx sdk.Context
 
 	ledger       *mocks.SECP256K1

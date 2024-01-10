@@ -7,7 +7,7 @@ import (
 	"cosmossdk.io/errors"
 	"encoding/json"
 	"fmt"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/constants"
 	tmconfig "github.com/cometbft/cometbft/config"
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	"github.com/cometbft/cometbft/types"
@@ -40,15 +40,15 @@ import (
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/EscanBE/evermint/v12/crypto/hd"
-	"github.com/EscanBE/evermint/v12/server/config"
-	srvflags "github.com/EscanBE/evermint/v12/server/flags"
+	"github.com/twobitEDD/servermint/v12/crypto/hd"
+	"github.com/twobitEDD/servermint/v12/server/config"
+	srvflags "github.com/twobitEDD/servermint/v12/server/flags"
 
-	evertypes "github.com/EscanBE/evermint/v12/types"
-	evmtypes "github.com/EscanBE/evermint/v12/x/evm/types"
+	evertypes "github.com/twobitEDD/servermint/v12/types"
+	evmtypes "github.com/twobitEDD/servermint/v12/x/evm/types"
 
-	appkeyring "github.com/EscanBE/evermint/v12/crypto/keyring"
-	"github.com/EscanBE/evermint/v12/testutil/network"
+	appkeyring "github.com/twobitEDD/servermint/v12/crypto/keyring"
+	"github.com/twobitEDD/servermint/v12/testutil/network"
 )
 
 var (

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/EscanBE/evermint/v12/rpc/backend"
-	"github.com/EscanBE/evermint/v12/rpc/types"
+	"github.com/twobitEDD/servermint/v12/rpc/backend"
+	"github.com/twobitEDD/servermint/v12/rpc/types"
 
 	"github.com/cometbft/cometbft/libs/log"
 	tmrpctypes "github.com/cometbft/cometbft/rpc/core/types"

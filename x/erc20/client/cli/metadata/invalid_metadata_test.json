@@ -4,18 +4,18 @@
       "description": 1,
       "denom_units": [
         {
-          "denom": "wei",
+          "denom": "aservo",
           "exponent": 0
         },
         {
-          "denom": "ether",
+          "denom": "serv",
           "exponent": 18
         }
       ],
-      "base": "wei",
-      "display": "wei",
-      "name": "wei",
-      "symbol": "ETH"
+      "base": "aservo",
+      "display": "aservo",
+      "name": "aservo",
+      "symbol": "SERV"
     }
   ]
 }

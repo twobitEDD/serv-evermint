@@ -3,9 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/EscanBE/evermint/v12/cmd/evmd/inspect"
-	cmdutils "github.com/EscanBE/evermint/v12/cmd/evmd/utils"
-	"github.com/EscanBE/evermint/v12/constants"
+	"github.com/twobitEDD/servermint/v12/cmd/servnode/inspect"
+	cmdutils "github.com/twobitEDD/servermint/v12/cmd/servnode/utils"
+	"github.com/twobitEDD/servermint/v12/constants"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/spf13/viper"
@@ -42,20 +42,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	appclient "github.com/EscanBE/evermint/v12/client"
-	"github.com/EscanBE/evermint/v12/client/debug"
-	"github.com/EscanBE/evermint/v12/encoding"
-	"github.com/EscanBE/evermint/v12/ethereum/eip712"
-	appserver "github.com/EscanBE/evermint/v12/server"
-	servercfg "github.com/EscanBE/evermint/v12/server/config"
-	srvflags "github.com/EscanBE/evermint/v12/server/flags"
+	appclient "github.com/twobitEDD/servermint/v12/client"
+	"github.com/twobitEDD/servermint/v12/client/debug"
+	"github.com/twobitEDD/servermint/v12/encoding"
+	"github.com/twobitEDD/servermint/v12/ethereum/eip712"
+	appserver "github.com/twobitEDD/servermint/v12/server"
+	servercfg "github.com/twobitEDD/servermint/v12/server/config"
+	srvflags "github.com/twobitEDD/servermint/v12/server/flags"
 
-	chainapp "github.com/EscanBE/evermint/v12/app"
-	appkeyring "github.com/EscanBE/evermint/v12/crypto/keyring"
+	chainapp "github.com/twobitEDD/servermint/v12/app"
+	appkeyring "github.com/twobitEDD/servermint/v12/crypto/keyring"
 )
 
 const (
-	ViperEnvPrefix = "EVERMINT"
+	ViperEnvPrefix = "SERVERMINT"
 )
 
 // NewRootCmd creates a new root command for our binary. It is called once in the
@@ -79,7 +79,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 	rootCmd := &cobra.Command{
 		Use:   constants.ApplicationBinaryName,
-		Short: "Evermint Daemon",
+		Short: "Servermint Daemon",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())
@@ -329,7 +329,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		chainID = conf.ChainID
 	}
 
-	chainApp := chainapp.NewEvermint(
+	chainApp := chainapp.NewServermint(
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
@@ -364,20 +364,20 @@ func (a appCreator) appExport(
 	appOpts servertypes.AppOptions,
 	modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
-	var app *chainapp.Evermint
+	var app *chainapp.Servermint
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {
 		return servertypes.ExportedApp{}, errors.New("application home not set")
 	}
 
 	if height != -1 {
-		app = chainapp.NewEvermint(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		app = chainapp.NewServermint(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
 
 		if err := app.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		app = chainapp.NewEvermint(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		app = chainapp.NewServermint(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
 	}
 
 	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
