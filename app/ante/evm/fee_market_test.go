@@ -1,9 +1,9 @@
 package evm_test
 
 import (
-	"github.com/twobitEDD/servermint/v12/constants"
-	"github.com/twobitEDD/servermint/v12/rename_chain/marker"
 	"math/big"
+
+	"github.com/twobitEDD/servermint/v12/constants"
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"

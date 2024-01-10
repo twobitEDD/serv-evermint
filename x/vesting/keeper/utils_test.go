@@ -1,11 +1,11 @@
 package keeper_test
 
 import (
-	"github.com/twobitEDD/servermint/v12/constants"
-	"github.com/twobitEDD/servermint/v12/rename_chain/marker"
 	"math"
 	"strings"
 	"time"
+
+	"github.com/twobitEDD/servermint/v12/constants"
 
 	. "github.com/onsi/gomega"
 

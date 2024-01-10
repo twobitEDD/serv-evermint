@@ -2,10 +2,10 @@ package claims_test
 
 import (
 	"fmt"
-	"github.com/twobitEDD/servermint/v12/constants"
-	"github.com/twobitEDD/servermint/v12/rename_chain/marker"
 	"testing"
 	"time"
+
+	"github.com/twobitEDD/servermint/v12/constants"
 
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"

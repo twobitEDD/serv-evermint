@@ -1,14 +1,14 @@
 package keeper_test
 
 import (
-	errorsmod "cosmossdk.io/errors"
 	"fmt"
-	"github.com/twobitEDD/servermint/v12/constants"
-	"github.com/twobitEDD/servermint/v12/rename_chain/marker"
+
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/twobitEDD/servermint/v12/constants"
 
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"

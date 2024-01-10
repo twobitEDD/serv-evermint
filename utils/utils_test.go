@@ -2,9 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"github.com/twobitEDD/servermint/v12/constants"
-	"github.com/twobitEDD/servermint/v12/rename_chain/marker"
 	"testing"
+
+	"github.com/twobitEDD/servermint/v12/constants"
 
 	"github.com/stretchr/testify/require"
 

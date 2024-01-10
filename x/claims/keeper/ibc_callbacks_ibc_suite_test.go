@@ -2,10 +2,10 @@ package keeper_test
 
 import (
 	"fmt"
-	"github.com/twobitEDD/servermint/v12/constants"
-	"github.com/twobitEDD/servermint/v12/rename_chain/marker"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"testing"
+
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	"github.com/twobitEDD/servermint/v12/constants"
 
 	"github.com/stretchr/testify/suite"
 

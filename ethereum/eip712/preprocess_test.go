@@ -2,10 +2,10 @@ package eip712_test
 
 import (
 	"encoding/hex"
-	"github.com/twobitEDD/servermint/v12/constants"
-	"github.com/twobitEDD/servermint/v12/rename_chain/marker"
 	"strings"
 	"testing"
+
+	"github.com/twobitEDD/servermint/v12/constants"
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -16,12 +16,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
+	"github.com/stretchr/testify/require"
 	"github.com/twobitEDD/servermint/v12/app"
 	"github.com/twobitEDD/servermint/v12/encoding"
 	"github.com/twobitEDD/servermint/v12/ethereum/eip712"
 	utiltx "github.com/twobitEDD/servermint/v12/testutil/tx"
 	"github.com/twobitEDD/servermint/v12/types"
-	"github.com/stretchr/testify/require"
 )
 
 // Testing Constants

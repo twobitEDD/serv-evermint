@@ -1,19 +1,19 @@
 package ibc
 
 import (
-	"github.com/twobitEDD/servermint/v12/constants"
-	"github.com/twobitEDD/servermint/v12/rename_chain/marker"
 	"testing"
 
-	"github.com/twobitEDD/servermint/v12/x/claims/types"
+	"github.com/twobitEDD/servermint/v12/constants"
+
 	"github.com/stretchr/testify/require"
+	"github.com/twobitEDD/servermint/v12/x/claims/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	teststypes "github.com/twobitEDD/servermint/v12/types/tests"
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
+	teststypes "github.com/twobitEDD/servermint/v12/types/tests"
 )
 
 func init() {
